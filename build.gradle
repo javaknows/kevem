@@ -12,6 +12,8 @@ repositories {
 ext {
     junitParamsVersion = '5.4.0'
     junitMockitoVersion = '2.24.0'
+    assertjVersion = '3.12.2'
+    bouncycastleVersion = '1.61'
 }
 
 dependencies {
@@ -19,13 +21,16 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-test-junit5"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}"
     testCompile "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
     testCompile "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
+    testCompile "org.assertj:assertj-core:${assertjVersion}"
+
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.10"
+    kotlinOptions.jvmTarget = "10"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.10"
+    kotlinOptions.jvmTarget = "10"
 }
