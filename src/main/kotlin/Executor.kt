@@ -3,6 +3,10 @@ package com.gammadex.kevin
 import java.math.BigInteger
 import java.time.Clock
 
+operator fun <T> List<T>.component6(): T = get(5)
+
+operator fun <T> List<T>.component7(): T = get(6)
+
 fun stripHexPrefix(num: String) = num.replaceFirst("0x", "")
 
 fun hexPrefix(num: String) = "0x$num"
@@ -92,6 +96,8 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
 
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
+
+    fun contractAt(address: Address): Contract? = addresses[address]?.contract
 }
 
 class Memory(private val data: Map<Int, Byte> = emptyMap()) {
@@ -166,12 +172,20 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
 
 enum class CallType { CALL, CALLCODE, STATICCALL, DELEGATECALL }
 
-data class Call(
+data class CallContext(
     val caller: Address,
     val value: BigInteger,
     val valueRemaining: BigInteger,
     val callData: List<Byte>,
-    val type: CallType
+    val type: CallType,
+    val contract: Contract,
+    val returnLocation: Int,
+    val returnSize: Int,
+    val gasRemaining: BigInteger = BigInteger.ZERO,
+    val stack: Stack = Stack(),
+    val memory: Memory = Memory(),
+    val storage: Storage = Storage(),
+    val currentLocation: Int = 0
 )
 
 data class Block(
@@ -193,26 +207,60 @@ data class Log(
 data class ExecutionContext(
     val currentBlock: Block,
     val currentTransaction: Transaction,
-    val contract: Contract,
     val coinBase: Address,
-    val callStack: List<Call> = emptyList(),
+    val callStack: List<CallContext> = emptyList(),
     val evmState: EvmState = EvmState(),
-    val stack: Stack = Stack(),
-    val memory: Memory = Memory(),
-    val storage: Storage = Storage(),
     val logs: List<Log> = emptyList(),
-    val currentLocation: Int = 0,
-    val gasRemaining: Int = 0,
     val completed: Boolean = false,
     val lastReturnData: List<Byte> = emptyList(),
     val clock: Clock = Clock.systemUTC()
-)
+) {
+    val currentCallContext: CallContext
+        get() = callStack.last()
+
+    val stack: Stack
+        get() = currentCallContext.stack
+
+    val storage: Storage
+        get() = currentCallContext.storage
+
+    val memory: Memory
+        get() = currentCallContext.memory
+
+    val currentLocation: Int
+        get() = currentCallContext.currentLocation
+
+    fun updateCurrentCallContext(
+        stack: Stack? = null,
+        memory: Memory? = null,
+        storage: Storage? = null,
+        currentLocation: Int? = null,
+        gasRemaining: BigInteger? = null
+    ): ExecutionContext {
+        val call = currentCallContext
+        val newCall = currentCallContext.copy(
+            stack = stack ?: call.stack,
+            memory = memory ?: call.memory,
+            storage = storage ?: call.storage,
+            currentLocation = currentLocation ?: call.currentLocation,
+            gasRemaining = gasRemaining ?: call.gasRemaining
+        )
+
+        return replaceCurrentCallContext(newCall)
+    }
+
+    fun replaceCurrentCallContext(callContext: CallContext): ExecutionContext {
+        val calls = callStack.dropLast(1) + callContext
+
+        return copy(callStack = calls)
+    }
+}
 
 fun uniStackOp(executionContext: ExecutionContext, op: (w1: Word) -> Word): ExecutionContext {
     val (a, newStack) = executionContext.stack.popWord()
     val finalStack = newStack.pushWord(op(a))
 
-    return executionContext.copy(stack = finalStack)
+    return executionContext.updateCurrentCallContext(stack = finalStack)
 }
 
 fun biStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word) -> Word): ExecutionContext {
@@ -220,7 +268,7 @@ fun biStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word) -> Wo
     val (a, b) = elements
     val finalStack = newStack.pushWord(op(a, b))
 
-    return executionContext.copy(stack = finalStack)
+    return executionContext.updateCurrentCallContext(stack = finalStack)
 }
 
 fun triStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word, w3: Word) -> Word): ExecutionContext {
@@ -228,73 +276,74 @@ fun triStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word, w3: 
     val (a, b, c) = elements
     val finalStack = newStack.pushWord(op(a, b, c))
 
-    return executionContext.copy(stack = finalStack)
+    return executionContext.updateCurrentCallContext(stack = finalStack)
 }
 
-fun execute(context: ExecutionContext): ExecutionContext = with(context) {
-    val opcode = Opcode.byCode[contract[currentLocation]]
+fun execute(currentContext: ExecutionContext, startContext: ExecutionContext): ExecutionContext = with(currentContext) {
+    val opcode = Opcode.byCode[currentCallContext.contract[currentLocation]]
 
     when (opcode) {
-        Opcode.STOP -> context.copy(completed = true)
-        Opcode.ADD -> biStackOp(context, VmMath::add)
-        Opcode.MUL -> biStackOp(context, VmMath::mul)
-        Opcode.SUB -> biStackOp(context, VmMath::sub)
-        Opcode.DIV -> biStackOp(context, VmMath::div)
-        Opcode.SDIV -> biStackOp(context, VmMath::sdiv)
-        Opcode.MOD -> biStackOp(context, VmMath::mod)
-        Opcode.SMOD -> biStackOp(context, VmMath::smod)
-        Opcode.ADDMOD -> triStackOp(context, VmMath::addMod)
-        Opcode.MULMOD -> triStackOp(context, VmMath::mulMod)
-        Opcode.EXP -> biStackOp(context, VmMath::exp)
-        Opcode.SIGNEXTEND -> biStackOp(context, VmMath::signExtend)
-        Opcode.LT -> biStackOp(context, VmMath::lt)
-        Opcode.GT -> biStackOp(context, VmMath::gt)
-        Opcode.SLT -> biStackOp(context, VmMath::slt)
-        Opcode.SGT -> biStackOp(context, VmMath::sgt)
-        Opcode.EQ -> biStackOp(context) { a, b -> Word.coerceFrom(a == b) }
-        Opcode.ISZERO -> uniStackOp(context) { w -> Word.coerceFrom(w.data.none { it != Byte.Zero }) }
-        Opcode.AND -> biStackOp(context, VmMath::and)
-        Opcode.OR -> biStackOp(context, VmMath::or)
-        Opcode.XOR -> biStackOp(context, VmMath::xor)
-        Opcode.NOT -> uniStackOp(context, VmMath::not)
-        Opcode.BYTE -> biStackOp(context) { a, b ->
+        Opcode.STOP -> currentContext.copy(completed = true)
+        Opcode.ADD -> biStackOp(currentContext, VmMath::add)
+        Opcode.MUL -> biStackOp(currentContext, VmMath::mul)
+        Opcode.SUB -> biStackOp(currentContext, VmMath::sub)
+        Opcode.DIV -> biStackOp(currentContext, VmMath::div)
+        Opcode.SDIV -> biStackOp(currentContext, VmMath::sdiv)
+        Opcode.MOD -> biStackOp(currentContext, VmMath::mod)
+        Opcode.SMOD -> biStackOp(currentContext, VmMath::smod)
+        Opcode.ADDMOD -> triStackOp(currentContext, VmMath::addMod)
+        Opcode.MULMOD -> triStackOp(currentContext, VmMath::mulMod)
+        Opcode.EXP -> biStackOp(currentContext, VmMath::exp)
+        Opcode.SIGNEXTEND -> biStackOp(currentContext, VmMath::signExtend)
+        Opcode.LT -> biStackOp(currentContext, VmMath::lt)
+        Opcode.GT -> biStackOp(currentContext, VmMath::gt)
+        Opcode.SLT -> biStackOp(currentContext, VmMath::slt)
+        Opcode.SGT -> biStackOp(currentContext, VmMath::sgt)
+        Opcode.EQ -> biStackOp(currentContext) { a, b -> Word.coerceFrom(a == b) }
+        Opcode.ISZERO -> uniStackOp(currentContext) { w -> Word.coerceFrom(w.data.none { it != Byte.Zero }) }
+        Opcode.AND -> biStackOp(currentContext, VmMath::and)
+        Opcode.OR -> biStackOp(currentContext, VmMath::or)
+        Opcode.XOR -> biStackOp(currentContext, VmMath::xor)
+        Opcode.NOT -> uniStackOp(currentContext, VmMath::not)
+        Opcode.BYTE -> biStackOp(currentContext) { a, b ->
             val location = a.toBigInt().toInt().coerceIn(0..31)
             Word.coerceFrom(b.data[location])
         }
-        Opcode.SHL -> biStackOp(context, VmMath::shl)
-        Opcode.SHR -> biStackOp(context, VmMath::shr)
-        Opcode.SAR -> biStackOp(context, VmMath::sar)
-        Opcode.SHA3 -> biStackOp(context) { a, b ->
+        Opcode.SHL -> biStackOp(currentContext, VmMath::shl)
+        Opcode.SHR -> biStackOp(currentContext, VmMath::shr)
+        Opcode.SAR -> biStackOp(currentContext, VmMath::sar)
+        Opcode.SHA3 -> biStackOp(currentContext) { a, b ->
             val bytes = memory.get(a.toInt(), b.toInt())
             keccak256(bytes)
         }
         Opcode.ADDRESS -> {
-            val newStack = stack.pushWord(Word.coerceFrom(contract.address.value))
+            val call = callStack.last()
+            val newStack = stack.pushWord(Word.coerceFrom(call.contract.address.value))
 
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.BALANCE -> {
             val (popped, newStack) = stack.popWord()
             val balance = evmState.balanceOf(popped.toAddress())
             val finalStack = newStack.pushWord(Word.coerceFrom(balance))
 
-            context.copy(stack = finalStack)
+            currentContext.updateCurrentCallContext(stack = finalStack)
         }
         Opcode.ORIGIN -> {
             val newStack = stack.pushWord(Word.coerceFrom(currentTransaction.origin.value))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.CALLER -> {
             val call = callStack.last { it.type != CallType.DELEGATECALL }
             val newStack = stack.pushWord(call.caller.toWord())
 
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.CALLVALUE -> {
             val call = callStack.last { it.type != CallType.DELEGATECALL }
             val newStack = stack.pushWord(Word.coerceFrom(call.value))
 
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.CALLDATALOAD -> {
             val (position, newStack) = stack.popWord()
@@ -303,13 +352,13 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
             val data = call.callData.subList(position.toInt(), position.toInt() + 32)
             val finalStack = newStack.pushWord(Word.coerceFrom(data))
 
-            context.copy(stack = finalStack)
+            currentContext.updateCurrentCallContext(stack = finalStack)
         }
         Opcode.CALLDATASIZE -> {
             val size = callStack.last().callData.size
             val newStack = stack.pushWord(Word.coerceFrom(size))
 
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.CALLDATACOPY -> {
             val (elements, newStack) = stack.popWords(3)
@@ -318,30 +367,32 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
             val data = call.callData.subList(from, from + size)
             val newMemory = memory.set(to, data)
 
-            context.copy(stack = newStack, memory = newMemory)
+            currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
         }
         Opcode.CODESIZE -> {
-            val newStack = stack.pushWord(Word.coerceFrom(contract.code.size))
-            context.copy(stack = newStack)
+            val call = callStack.last()
+            val newStack = stack.pushWord(Word.coerceFrom(call.contract.code.size))
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.CODECOPY -> {
             val (elements, newStack) = stack.popWords(3)
             val (to, from, size) = elements.map { it.toInt() }
-            val data = contract.code.subList(from, from + size)
+            val call = callStack.last()
+            val data = call.contract.code.subList(from, from + size)
             val newMemory = memory.set(to, data)
 
-            context.copy(stack = newStack, memory = newMemory)
+            currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
         }
         Opcode.GASPRICE -> {
             val newStack = stack.pushWord(Word.coerceFrom(currentTransaction.gasPrice))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.EXTCODESIZE -> {
             val (popped, newStack) = stack.popWord()
             val code = evmState.codeAt(popped.toAddress())
             val finalStack = newStack.pushWord(Word.coerceFrom(code.size))
 
-            context.copy(stack = finalStack)
+            currentContext.updateCurrentCallContext(stack = finalStack)
         }
         Opcode.EXTCODECOPY -> {
             val (elements, newStack) = stack.popWords(4)
@@ -351,11 +402,11 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
             val data = code.subList(from.toInt(), size.toInt())
             val newMemory = memory.set(to.toInt(), data)
 
-            context.copy(stack = newStack, memory = newMemory)
+            currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
         }
         Opcode.RETURNDATASIZE -> {
             val newStack = stack.pushWord(Word.coerceFrom(lastReturnData.size))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.RETURNDATACOPY -> {
             val (elements, newStack) = stack.popWords(3)
@@ -363,76 +414,77 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
             val data = lastReturnData.subList(from, from + size)
             val newMemory = memory.set(to, data)
 
-            context.copy(stack = newStack, memory = newMemory)
+            currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
         }
         Opcode.BLOCKHASH -> TODO()
         Opcode.COINBASE -> {
             val newStack = stack.pushWord(coinBase.toWord())
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.TIMESTAMP -> {
             val epoch = clock.instant().epochSecond
             val newStack = stack.pushWord(Word.coerceFrom(epoch.toBigInteger()))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.NUMBER -> {
             val newStack = stack.pushWord(Word.coerceFrom(currentBlock.number))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.DIFFICULTY -> {
             val newStack = stack.pushWord(Word.coerceFrom(currentBlock.difficulty))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.GASLIMIT -> {
             val newStack = stack.pushWord(Word.coerceFrom(currentBlock.difficulty))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.POP -> {
             val (_, newStack) = stack.pop()
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.MLOAD -> {
             val (word, newStack) = stack.popWord()
             val data = memory.get(word.toInt(), 32)
             val finalStack = newStack.pushWord(Word(data))
 
-            context.copy(stack = finalStack)
+            currentContext.updateCurrentCallContext(stack = finalStack)
         }
         Opcode.MSTORE -> {
             val (elements, newStack) = stack.popWords(2)
             val (p, v) = elements
             val newMemory = memory.set(p.toInt(), v.data)
 
-            context.copy(stack = newStack, memory = newMemory)
+            currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
         }
         Opcode.MSTORE8 -> {
             val (p, newStack) = stack.popWord()
             val (v, newStack2) = newStack.pop()
             val newMemory = memory.set(p.toInt(), v.take(1))
 
-            context.copy(stack = newStack2, memory = newMemory)
+            currentContext.updateCurrentCallContext(stack = newStack2, memory = newMemory)
         }
         Opcode.SLOAD -> {
             val (word, newStack) = stack.popWord()
             val index = word.toInt()
             val finalStack = newStack.pushWord(storage[index])
 
-            context.copy(stack = finalStack)
+            currentContext.updateCurrentCallContext(stack = finalStack)
         }
         Opcode.SSTORE -> {
             val (elements, newStack) = stack.popWords(2)
             val (a, v) = elements
             val newStorage = storage.set(a.toInt(), v)
 
-            context.copy(stack = newStack, storage = newStorage)
+            currentContext.updateCurrentCallContext(stack = newStack, storage = newStorage)
         }
         Opcode.JUMP -> {
             val (to, newStack) = stack.popWord()
             val toLocation = to.toInt()
-            val nextOpCode = Opcode.byCode[contract[toLocation]]
+            val call = callStack.last()
+            val nextOpCode = Opcode.byCode[call.contract[toLocation]]
 
             if (nextOpCode == Opcode.JUMPDEST) {
-                context.copy(stack = newStack, currentLocation = toLocation)
+                currentContext.updateCurrentCallContext(stack = newStack, currentLocation = toLocation)
             } else {
                 TODO()
             }
@@ -442,103 +494,104 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
             val (to, condition) = elements
 
             if (condition.toBoolean()) {
+                val call = callStack.last()
                 val toLocation = to.toInt()
-                val nextOpCode = Opcode.byCode[contract[toLocation]]
+                val nextOpCode = Opcode.byCode[call.contract[toLocation]]
 
                 if (nextOpCode == Opcode.JUMPDEST) {
-                    context.copy(stack = newStack, currentLocation = toLocation)
+                    currentContext.updateCurrentCallContext(stack = newStack, currentLocation = toLocation)
                 } else {
                     TODO()
                 }
             } else {
-                context.copy(stack = newStack)
+                currentContext.updateCurrentCallContext(stack = newStack)
             }
         }
         Opcode.PC -> {
             val newStack = stack.pushWord(Word.coerceFrom(currentLocation))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.MSIZE -> {
             val size = memory.maxIndex()?.plus(1) ?: 0
             val newStack = stack.pushWord(Word.coerceFrom(size))
-            context.copy(stack = newStack)
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.GAS -> {
-            val newStack = stack.pushWord(Word.coerceFrom(gasRemaining))
-            context.copy(stack = newStack)
+            val newStack = stack.pushWord(Word.coerceFrom(currentCallContext.gasRemaining))
+            currentContext.updateCurrentCallContext(stack = newStack)
         }
         Opcode.JUMPDEST -> {
-            context
+            currentContext
         }
-        Opcode.PUSH1 -> push(context, 1)
-        Opcode.PUSH2 -> push(context, 2)
-        Opcode.PUSH3 -> push(context, 3)
-        Opcode.PUSH4 -> push(context, 4)
-        Opcode.PUSH5 -> push(context, 5)
-        Opcode.PUSH6 -> push(context, 6)
-        Opcode.PUSH7 -> push(context, 7)
-        Opcode.PUSH8 -> push(context, 8)
-        Opcode.PUSH9 -> push(context, 9)
-        Opcode.PUSH10 -> push(context, 10)
-        Opcode.PUSH11 -> push(context, 11)
-        Opcode.PUSH12 -> push(context, 12)
-        Opcode.PUSH13 -> push(context, 13)
-        Opcode.PUSH14 -> push(context, 14)
-        Opcode.PUSH15 -> push(context, 15)
-        Opcode.PUSH16 -> push(context, 16)
-        Opcode.PUSH17 -> push(context, 17)
-        Opcode.PUSH18 -> push(context, 18)
-        Opcode.PUSH19 -> push(context, 19)
-        Opcode.PUSH20 -> push(context, 20)
-        Opcode.PUSH21 -> push(context, 21)
-        Opcode.PUSH22 -> push(context, 22)
-        Opcode.PUSH23 -> push(context, 23)
-        Opcode.PUSH24 -> push(context, 24)
-        Opcode.PUSH25 -> push(context, 25)
-        Opcode.PUSH26 -> push(context, 26)
-        Opcode.PUSH27 -> push(context, 27)
-        Opcode.PUSH28 -> push(context, 28)
-        Opcode.PUSH29 -> push(context, 29)
-        Opcode.PUSH30 -> push(context, 30)
-        Opcode.PUSH31 -> push(context, 31)
-        Opcode.PUSH32 -> push(context, 32)
-        Opcode.DUP1 -> dup(context, 0)
-        Opcode.DUP2 -> dup(context, 1)
-        Opcode.DUP3 -> dup(context, 2)
-        Opcode.DUP4 -> dup(context, 3)
-        Opcode.DUP5 -> dup(context, 4)
-        Opcode.DUP6 -> dup(context, 5)
-        Opcode.DUP7 -> dup(context, 6)
-        Opcode.DUP8 -> dup(context, 7)
-        Opcode.DUP9 -> dup(context, 8)
-        Opcode.DUP10 -> dup(context, 9)
-        Opcode.DUP11 -> dup(context, 10)
-        Opcode.DUP12 -> dup(context, 11)
-        Opcode.DUP13 -> dup(context, 12)
-        Opcode.DUP14 -> dup(context, 13)
-        Opcode.DUP15 -> dup(context, 14)
-        Opcode.DUP16 -> dup(context, 15)
-        Opcode.SWAP1 -> swap(context, 0)
-        Opcode.SWAP2 -> swap(context, 1)
-        Opcode.SWAP3 -> swap(context, 2)
-        Opcode.SWAP4 -> swap(context, 3)
-        Opcode.SWAP5 -> swap(context, 4)
-        Opcode.SWAP6 -> swap(context, 5)
-        Opcode.SWAP7 -> swap(context, 6)
-        Opcode.SWAP8 -> swap(context, 7)
-        Opcode.SWAP9 -> swap(context, 8)
-        Opcode.SWAP10 -> swap(context, 9)
-        Opcode.SWAP11 -> swap(context, 10)
-        Opcode.SWAP12 -> swap(context, 11)
-        Opcode.SWAP13 -> swap(context, 12)
-        Opcode.SWAP14 -> swap(context, 13)
-        Opcode.SWAP15 -> swap(context, 14)
-        Opcode.SWAP16 -> swap(context, 15)
-        Opcode.LOG0 -> log(context, 0)
-        Opcode.LOG1 -> log(context, 1)
-        Opcode.LOG2 -> log(context, 2)
-        Opcode.LOG3 -> log(context, 3)
-        Opcode.LOG4 -> log(context, 4)
+        Opcode.PUSH1 -> push(currentContext, 1)
+        Opcode.PUSH2 -> push(currentContext, 2)
+        Opcode.PUSH3 -> push(currentContext, 3)
+        Opcode.PUSH4 -> push(currentContext, 4)
+        Opcode.PUSH5 -> push(currentContext, 5)
+        Opcode.PUSH6 -> push(currentContext, 6)
+        Opcode.PUSH7 -> push(currentContext, 7)
+        Opcode.PUSH8 -> push(currentContext, 8)
+        Opcode.PUSH9 -> push(currentContext, 9)
+        Opcode.PUSH10 -> push(currentContext, 10)
+        Opcode.PUSH11 -> push(currentContext, 11)
+        Opcode.PUSH12 -> push(currentContext, 12)
+        Opcode.PUSH13 -> push(currentContext, 13)
+        Opcode.PUSH14 -> push(currentContext, 14)
+        Opcode.PUSH15 -> push(currentContext, 15)
+        Opcode.PUSH16 -> push(currentContext, 16)
+        Opcode.PUSH17 -> push(currentContext, 17)
+        Opcode.PUSH18 -> push(currentContext, 18)
+        Opcode.PUSH19 -> push(currentContext, 19)
+        Opcode.PUSH20 -> push(currentContext, 20)
+        Opcode.PUSH21 -> push(currentContext, 21)
+        Opcode.PUSH22 -> push(currentContext, 22)
+        Opcode.PUSH23 -> push(currentContext, 23)
+        Opcode.PUSH24 -> push(currentContext, 24)
+        Opcode.PUSH25 -> push(currentContext, 25)
+        Opcode.PUSH26 -> push(currentContext, 26)
+        Opcode.PUSH27 -> push(currentContext, 27)
+        Opcode.PUSH28 -> push(currentContext, 28)
+        Opcode.PUSH29 -> push(currentContext, 29)
+        Opcode.PUSH30 -> push(currentContext, 30)
+        Opcode.PUSH31 -> push(currentContext, 31)
+        Opcode.PUSH32 -> push(currentContext, 32)
+        Opcode.DUP1 -> dup(currentContext, 0)
+        Opcode.DUP2 -> dup(currentContext, 1)
+        Opcode.DUP3 -> dup(currentContext, 2)
+        Opcode.DUP4 -> dup(currentContext, 3)
+        Opcode.DUP5 -> dup(currentContext, 4)
+        Opcode.DUP6 -> dup(currentContext, 5)
+        Opcode.DUP7 -> dup(currentContext, 6)
+        Opcode.DUP8 -> dup(currentContext, 7)
+        Opcode.DUP9 -> dup(currentContext, 8)
+        Opcode.DUP10 -> dup(currentContext, 9)
+        Opcode.DUP11 -> dup(currentContext, 10)
+        Opcode.DUP12 -> dup(currentContext, 11)
+        Opcode.DUP13 -> dup(currentContext, 12)
+        Opcode.DUP14 -> dup(currentContext, 13)
+        Opcode.DUP15 -> dup(currentContext, 14)
+        Opcode.DUP16 -> dup(currentContext, 15)
+        Opcode.SWAP1 -> swap(currentContext, 0)
+        Opcode.SWAP2 -> swap(currentContext, 1)
+        Opcode.SWAP3 -> swap(currentContext, 2)
+        Opcode.SWAP4 -> swap(currentContext, 3)
+        Opcode.SWAP5 -> swap(currentContext, 4)
+        Opcode.SWAP6 -> swap(currentContext, 5)
+        Opcode.SWAP7 -> swap(currentContext, 6)
+        Opcode.SWAP8 -> swap(currentContext, 7)
+        Opcode.SWAP9 -> swap(currentContext, 8)
+        Opcode.SWAP10 -> swap(currentContext, 9)
+        Opcode.SWAP11 -> swap(currentContext, 10)
+        Opcode.SWAP12 -> swap(currentContext, 11)
+        Opcode.SWAP13 -> swap(currentContext, 12)
+        Opcode.SWAP14 -> swap(currentContext, 13)
+        Opcode.SWAP15 -> swap(currentContext, 14)
+        Opcode.SWAP16 -> swap(currentContext, 15)
+        Opcode.LOG0 -> log(currentContext, 0)
+        Opcode.LOG1 -> log(currentContext, 1)
+        Opcode.LOG2 -> log(currentContext, 2)
+        Opcode.LOG3 -> log(currentContext, 3)
+        Opcode.LOG4 -> log(currentContext, 4)
         Opcode.CREATE -> {
             val (elements, newStack) = stack.popWords(3)
             val (v, p, s) = elements.map { it.toInt() }
@@ -546,9 +599,162 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
             val data = memory.get(p, s)
 
             //val newStack = stack.pushWord(Word.coerceFrom(currentLocation))
-            context.copy(stack = newStack)
-        }
+            currentContext.updateCurrentCallContext(stack = newStack)
 
+            TODO()
+        }
+        Opcode.CALL -> {
+            val (elements, newStack) = stack.popWords(7)
+            val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
+
+            // TODO - update contract value in updated address list
+
+            val address = a.toAddress()
+            val newContract = evmState.contractAt(address) ?: TODO()
+
+            val newCall = CallContext(
+                currentCallContext.contract.address,
+                v.toBigInt(),
+                v.toBigInt(),
+                memory.get(inLocation.toInt(), inSize.toInt()),
+                CallType.CALL,
+                newContract,
+                outLocation.toInt(),
+                outSize.toInt(),
+                g.toBigInt()
+            )
+
+            currentContext
+                .updateCurrentCallContext(
+                    stack = newStack,
+                    gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
+                )
+                .copy(callStack = callStack + newCall)
+        }
+        Opcode.CALLCODE -> {
+            val (elements, newStack) = stack.popWords(7)
+            val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
+
+            val address = a.toAddress()
+            val nextContract = evmState.contractAt(address) ?: TODO()
+
+            val newCall = CallContext(
+                currentCallContext.contract.address,
+                v.toBigInt(),
+                v.toBigInt(),
+                memory.get(inLocation.toInt(), inSize.toInt()),
+                CallType.CALLCODE,
+                nextContract,
+                outLocation.toInt(),
+                outSize.toInt(),
+                g.toBigInt(),
+                storage = currentCallContext.storage
+            )
+
+            currentContext
+                .updateCurrentCallContext(
+                    stack = newStack,
+                    gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
+                )
+                .copy(callStack = callStack + newCall)
+        }
+        Opcode.RETURN -> {
+            val (elements, _) = stack.popWords(2)
+            val (p, s) = elements.map { it.toInt() }
+
+            val remainingCalls = callStack.dropLast(1)
+
+            val returnData = memory.get(p, s)
+
+            val (newMemory, newStorage) =
+                if (currentCallContext.type == CallType.DELEGATECALL) // TODO
+                    Pair(currentCallContext.memory, currentCallContext.storage)
+                else
+                    Pair(remainingCalls.last().memory, remainingCalls.last().storage)
+
+            currentContext
+                .copy(lastReturnData = returnData, callStack = remainingCalls)
+                .updateCurrentCallContext(memory = newMemory, storage = newStorage)
+        }
+        Opcode.DELEGATECALL -> {
+            val (elements, newStack) = stack.popWords(7)
+            val (g, a, inLocation, inSize, outLocation, outSize) = elements
+
+            val address = a.toAddress()
+            val newContract = evmState.contractAt(address) ?: TODO()
+
+            val newCall = CallContext(
+                currentCallContext.caller,
+                currentCallContext.value,
+                currentCallContext.value,
+                memory.get(inLocation.toInt(), inSize.toInt()),
+                CallType.DELEGATECALL,
+                newContract,
+                outLocation.toInt(),
+                outSize.toInt(),
+                g.toBigInt(),
+                storage = currentCallContext.storage
+            )
+
+            currentContext
+                .updateCurrentCallContext(
+                    stack = newStack,
+                    gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
+                )
+                .copy(callStack = callStack + newCall)
+        }
+        Opcode.STATICCALL -> {
+            val (elements, newStack) = stack.popWords(7)
+            val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
+
+            val address = a.toAddress()
+            val newContract = evmState.contractAt(address) ?: TODO()
+
+            val newCall = CallContext(
+                currentCallContext.caller,
+                v.toBigInt(),
+                v.toBigInt(),
+                memory.get(inLocation.toInt(), inSize.toInt()),
+                CallType.STATICCALL,
+                newContract,
+                outLocation.toInt(),
+                outSize.toInt(),
+                g.toBigInt()
+            )
+
+            currentContext
+                .updateCurrentCallContext(
+                    stack = newStack,
+                    gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
+                )
+                .copy(callStack = callStack + newCall)
+        }
+        Opcode.CREATE2 -> TODO()
+        Opcode.REVERT -> {
+            val (elements, _) = stack.popWords(2)
+            val (p, s) = elements.map { it.toInt() }
+            val returnData = memory.get(p, s)
+
+            // TODO - caller balance loses used gas
+
+            startContext.copy(
+                lastReturnData = returnData,
+                completed = true,
+                logs = emptyList(),
+                callStack = callStack.take(1)
+            )
+        }
+        Opcode.INVALID -> {
+            // TODO - caller balance loses gas limit
+
+            startContext.copy(
+                lastReturnData = emptyList(),
+                completed = true,
+                logs = emptyList(),
+                callStack = callStack.take(1)
+            )
+        }
+        Opcode.SUICIDE -> TODO()
 
 
         /*
@@ -561,60 +767,3 @@ fun execute(context: ExecutionContext): ExecutionContext = with(context) {
         else -> TODO("$opcode is not implemented")
     }
 }
-
-private fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {
-    val data = context.contract.code.subList(context.currentLocation + 1, context.currentLocation + 1 + numBytes)
-    val newStack = context.stack.push(data)
-
-    return context.copy(stack = newStack)
-}
-
-private fun dup(context: ExecutionContext, offset: Int): ExecutionContext {
-    val word = context.stack.peekWord(offset)
-    val newStack = context.stack.pushWord(word)
-
-    return context.copy(stack = newStack)
-}
-
-private fun swap(context: ExecutionContext, offset: Int): ExecutionContext {
-    val a = context.stack.peekWord(offset)
-    val b = context.stack.peekWord(offset + 1)
-    val newStack = context.stack
-        .set(offset, b.data)
-        .set(offset + 1, a.data)
-
-    return context.copy(stack = newStack)
-}
-
-private fun log(context: ExecutionContext, num: Int): ExecutionContext = with(context) {
-    val (elements, newStack) = stack.popWords(2)
-    val (p, s) = elements.map { it.toInt() }
-    val data = memory.get(p, s)
-    val (topics, newStack2) = newStack.popWords(num)
-    val newLog = Log(data, topics)
-
-    return context.copy(stack = newStack2, logs = context.logs + newLog)
-}
-
-/*
-data class Log(
-    val data: List<Byte>,
-    val topics: List<Word> = emptyList()
-)
- */
-
-/*
-        Opcode.DUP1 -> {
-            val offset = 0
-            val word = stack.peekWord(offset)
-            val newStack = stack.pushWord(word)
-
-            context.copy(stack = newStack)
-
-            TODO()
-        }
- */
-
-/*
-
- */
