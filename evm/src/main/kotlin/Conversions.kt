@@ -10,5 +10,5 @@ fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))
     .dropWhile { it == "0" }
     .map { Byte(it) }
 
-fun toBigInteger(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16)
+fun bytesToBigInteger(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16)
 

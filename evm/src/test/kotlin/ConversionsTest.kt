@@ -9,7 +9,7 @@ class ConversionsTest {
 
     @Test
     internal fun `check big integer to bytes`() {
-        val bytes = bigIntegerToBytes(BigInteger.valueOf(257))
+        val bytes = toBytes(BigInteger.valueOf(257))
 
         assertThat(bytes).isEqualTo(listOf(Byte(0x01), Byte(0x01)))
     }
