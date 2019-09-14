@@ -1,7 +1,3 @@
-plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
-}
-
 group 'com.gammadex'
 version '1.0-SNAPSHOT'
 
@@ -17,17 +13,7 @@ repositories {
 }
 
 subprojects {
-
     repositories {
         mavenCentral()
     }
-
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = "10"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "10"
-    }
-
 }
