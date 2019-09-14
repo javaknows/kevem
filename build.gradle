@@ -5,10 +5,6 @@ plugins {
 group 'com.gammadex'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
-
 ext {
     junitParamsVersion = '5.4.0'
     junitMockitoVersion = '2.24.0'
@@ -16,21 +12,22 @@ ext {
     bouncycastleVersion = '1.61'
 }
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.jetbrains.kotlin:kotlin-test-junit5"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}"
-    testCompile "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
-    testCompile "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
-    testCompile "org.assertj:assertj-core:${assertjVersion}"
-
+repositories {
+    mavenCentral()
 }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "10"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "10"
+subprojects {
+
+    repositories {
+        mavenCentral()
+    }
+
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = "10"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "10"
+    }
+
 }
