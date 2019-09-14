@@ -40,9 +40,9 @@ object VmMath {
 
     fun gt(w1: Word, w2: Word): Word = coerceFrom(w1.toBigInt() > w2.toBigInt())
 
-    fun slt(w1: Word, w2: Word): Word = coerceFrom(w1.toBigInt() < w2.toBigInt())
+    fun slt(w1: Word, w2: Word): Word = TODO()
 
-    fun sgt(w1: Word, w2: Word): Word = coerceFrom(w1.toBigInt() > w2.toBigInt())
+    fun sgt(w1: Word, w2: Word): Word = TODO()
 
     fun and(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() and w2.toBigInt())
 
@@ -50,7 +50,7 @@ object VmMath {
 
     fun xor(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() xor w2.toBigInt())
 
-    fun not(w1: Word) = coerceFrom(w1.toBigInt().not())
+    fun not(w1: Word): Word = TODO()
 
     fun shl(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() shl w2.toBigInt().toInt())
 
