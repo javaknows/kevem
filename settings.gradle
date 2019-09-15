@@ -1,3 +1,5 @@
 include 'evm'
-//include 'generated'
+include 'compat:generated'
+include 'compat:runner'
+
 rootProject.name = 'kevin'

@@ -1,0 +1,1 @@
+[{"constant":false,"inputs":[{"internalType":"bytes32","name":"a","type":"bytes32"},{"internalType":"bytes32","name":"b","type":"bytes32"}],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]

@@ -6,6 +6,7 @@ ext {
     junitMockitoVersion = '2.24.0'
     assertjVersion = '3.12.2'
     bouncycastleVersion = '1.61'
+    web3Version = '4.2.0'
 }
 
 repositories {
