@@ -1,4 +1,6 @@
 .idea/*
 .gradle/*
-out/*
-**/build/*
+out
+*/build/*
+compat/runner/out/*
+compat/generated/out/*
