@@ -3,10 +3,8 @@ package com.gammadex.kevin
 import com.gammadex.kevin.Word.Companion.coerceFrom
 import com.gammadex.kevin.numbers.fromTwosComplement
 import com.gammadex.kevin.numbers.toTwosComplement
-import java.math.BigDecimal
 import java.math.BigInteger
 
-// TODO - make operations overflow like a real EVM
 object VmMath {
     fun add(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() + w2.toBigInt())
 
@@ -14,7 +12,7 @@ object VmMath {
 
     fun sub(w1: Word, w2: Word): Word {
         val neg = w1.toBigInt() - w2.toBigInt()
-        val large = BigInteger("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16) + BigInteger.ONE
+        val large = Word.max().toBigInt() + BigInteger.ONE
         val over = (neg + large).mod(large)
 
         return coerceFrom(over)
@@ -95,6 +93,10 @@ object VmMath {
 
     fun sgt(w1: Word, w2: Word): Word = coerceFrom(fromTwosComplement(w1) > (fromTwosComplement(w2)))
 
+    fun eq(w1: Word, w2: Word): Word = coerceFrom(w1 == w2)
+
+    fun isZero(w1: Word): Word = coerceFrom(w1.data.none { it != Byte.Zero })
+
     fun and(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() and w2.toBigInt())
 
     fun or(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() or w2.toBigInt())
@@ -102,6 +104,13 @@ object VmMath {
     fun xor(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() xor w2.toBigInt())
 
     fun not(w1: Word): Word = w1.not()
+
+    fun byte(a: Word, b: Word): Word {
+        val location = a.toBigInt()
+
+        return if (location > BigInteger("31")) Word.Zero
+        else coerceFrom(b.data[location.toInt()])
+    }
 
     fun shl(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() shl w2.toBigInt().toInt())
 

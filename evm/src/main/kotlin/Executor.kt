@@ -324,18 +324,13 @@ class Executor {
                 Opcode.GT -> biStackOp(currentContext, VmMath::gt)
                 Opcode.SLT -> biStackOp(currentContext, VmMath::slt)
                 Opcode.SGT -> biStackOp(currentContext, VmMath::sgt)
-                Opcode.EQ -> biStackOp(currentContext) { a, b -> Word.coerceFrom(a == b) }
-                Opcode.ISZERO -> uniStackOp(currentContext) { w -> Word.coerceFrom(w.data.none { it != Byte.Zero }) }
+                Opcode.EQ -> biStackOp(currentContext, VmMath::eq)
+                Opcode.ISZERO -> uniStackOp(currentContext, VmMath::isZero)
                 Opcode.AND -> biStackOp(currentContext, VmMath::and)
                 Opcode.OR -> biStackOp(currentContext, VmMath::or)
                 Opcode.XOR -> biStackOp(currentContext, VmMath::xor)
                 Opcode.NOT -> uniStackOp(currentContext, VmMath::not)
-                Opcode.BYTE -> biStackOp(currentContext) { a, b ->
-                    val location = a.toBigInt()
-
-                    if (location > BigInteger("31")) Word.Zero
-                    else Word.coerceFrom(b.data[location.toInt()])
-                }
+                Opcode.BYTE -> biStackOp(currentContext, VmMath::byte)
                 Opcode.SHL -> biStackOp(currentContext, VmMath::shl)
                 Opcode.SHR -> biStackOp(currentContext, VmMath::shr)
                 Opcode.SAR -> biStackOp(currentContext, VmMath::sar)
@@ -450,7 +445,7 @@ class Executor {
                 }
                 Opcode.TIMESTAMP -> {
                     val epoch = clock.instant().epochSecond
-                    val newStack = stack.pushWord(Word.coerceFrom(epoch.toBigInteger()))
+                    val newStack = stack.pushWord(Word.coerceFrom(epoch))
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.NUMBER -> {
