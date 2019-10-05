@@ -202,5 +202,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int) {
 
     companion object {
         val byCode = values().map { it.code to it }.toMap()
+
+        fun fromString(name: String): Opcode? = values().find { it.name == name.toUpperCase() }
     }
 }

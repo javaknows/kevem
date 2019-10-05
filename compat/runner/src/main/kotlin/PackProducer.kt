@@ -18,61 +18,80 @@ data class ConstantGasProvider(val limit: BigInteger, val price: BigInteger) : C
     override fun getGasPrice(): BigInteger = price
 }
 
-tailrec fun toTypes(list: List<String>, acc: Array<Class<*>> = emptyArray()): Array<Class<*>> =
-    if (list.size <= 1) acc
-    else {
-        val t = when (list[0]) {
-            "byteArray" -> ByteArray::class.java
-            else -> TODO("not implemented")
-        }
-
-        toTypes(list.drop(2), acc + t)
-    }
-
-tailrec fun toArguments(list: List<String>, acc: Array<Any> = emptyArray()): Array<Any> =
-    if (list.size <= 1) acc
-    else {
-        val v = when (list[0]) {
-            "byteArray" -> Numeric.hexStringToByteArray(list[1])
-            else -> TODO("not implemented")
-        }
-
-        toArguments(list.drop(2), acc + v)
-    }
-
 fun main(args: Array<String>) {
 
     val (web3j, contract) = init()
 
-    val fileContent =
-        ConstantGasProvider::class.java.getResource("/com/gammadex/kevin/compat/runner/pack.tsv").readText()
+    val single = listOf(
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "0x0000000000000000000000000000000000000000000000000000000000000002",
+        "0x0000000000000000000000000000000000000000000000000000000000000009",
+        "0xffffffffffffffffffffffffffffff0000000000000000000000000000000000",
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe",
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    )
+    val pairs = single.flatMap { i1 ->
+        single.map { i2 ->
+            listOf(i1, i2)
+        }
+    }
+    val triples = pairs.flatMap {
+        val (i1, i2) = it
+        single.map { i3 -> listOf(i1, i2, i3) }
+    }
+    val oneArgMethods = listOf<String>("not", "iszero")
+    val twoArgMethods = listOf(
+        "add",
+        "and",
+        "byte",
+        "div",
+        "eq",
+        "exp",
+        "gt",
+        "lt",
+        "mod",
+        "mul",
+        "or",
+        "sdiv",
+        "sgt",
+        "signextend",
+        "slt",
+        "smod",
+        "sub",
+        "xor",
+        "sar"
+        /*,"sha3"*/
+    )
+    val threeArgMethods = listOf<String>("mulmod", "addmod")
 
-    val out = fileContent.split("\n").filterNot { it.isEmpty() }.map {
-        val parts = it.split("\t")
-        val function = cleanFunctionName(parts[0])
-        val argsWithTypes = parts.drop(1)
+    val out = (oneArgMethods + twoArgMethods + threeArgMethods).flatMap { function ->
+        val argTypes = when (function) {
+            in oneArgMethods -> arrayOf(ByteArray::class.java)
+            in twoArgMethods -> arrayOf(ByteArray::class.java, ByteArray::class.java)
+            else -> arrayOf(ByteArray::class.java, ByteArray::class.java, ByteArray::class.java)
+        }
 
-        val types = toTypes(argsWithTypes)
-        val method = contract.javaClass.getMethod(function, *types)
+        val argsList: List<List<String>> = when (function) {
+            in oneArgMethods -> single.map { listOf(it) }
+            in twoArgMethods -> pairs
+            else -> triples
+        }
 
-        val functionArgs = toArguments(argsWithTypes)
-        val txHash = (method.invoke(contract, *functionArgs) as RemoteCall<TransactionReceipt>).send().transactionHash
-        val receipt = web3j.ethGetTransactionReceipt(txHash).send().transactionReceipt.get()
+        val method = contract.javaClass.getMethod(contractFunctionName(function), *argTypes)
 
-        val result = receipt.logs[0].data
+        argsList.map { args ->
+            val argsX = args.map { Numeric.hexStringToByteArray(it) }.toTypedArray()
 
-        (parts + result).joinToString("\t")
+            val txHash = (method.invoke(contract, *argsX) as RemoteCall<TransactionReceipt>).send().transactionHash
+            val receipt = web3j.ethGetTransactionReceipt(txHash).send().transactionReceipt.get()
+            val result = receipt.logs[0].data
+
+            (listOf(function) + listOf(result) + args + listOf("", "", "", "")).take(6).joinToString("\t")
+        }
     }.joinToString("\n")
 
     println(out)
-}
-
-fun cleanFunctionName(name: String) = when {
-    name.startsWith("call") -> {
-        val n = name.replace("call", "")
-        n[0].toLowerCase() + n.drop(1)
-    }
-    else -> name
 }
 
 private fun init(): Pair<Web3j, Kevin> {
@@ -84,3 +103,7 @@ private fun init(): Pair<Web3j, Kevin> {
     return Pair(web3j, contract)
 }
 
+fun contractFunctionName(name: String) = when {
+    name.startsWith("call") -> name
+    else ->"call" + name[0].toUpperCase() + name.drop(1)
+}

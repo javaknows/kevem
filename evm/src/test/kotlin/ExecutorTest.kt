@@ -149,7 +149,7 @@ class ExecutorTest {
 }
 
 
-private fun baseExecutionContext(
+internal fun baseExecutionContext(
     stack: Stack = Stack(),
     memory: Memory = Memory(),
     storage: Storage = Storage(),
