@@ -1,6 +1,6 @@
 package com.gammadex.kevin.compat.runner
 
-import com.gammadex.kevin.compat.generated.Kevin
+import com.gammadex.kevin.compat.generated.NumberFunctions
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.RemoteCall
@@ -40,7 +40,7 @@ fun main(args: Array<String>) {
         val (i1, i2) = it
         single.map { i3 -> listOf(i1, i2, i3) }
     }
-    val oneArgMethods = listOf<String>("not", "iszero")
+    val oneArgMethods = listOf("not", "iszero")
     val twoArgMethods = listOf(
         "add",
         "and",
@@ -61,9 +61,8 @@ fun main(args: Array<String>) {
         "sub",
         "xor",
         "sar"
-        /*,"sha3"*/
     )
-    val threeArgMethods = listOf<String>("mulmod", "addmod")
+    val threeArgMethods = listOf("mulmod", "addmod")
 
     val out = (oneArgMethods + twoArgMethods + threeArgMethods).flatMap { function ->
         val argTypes = when (function) {
@@ -94,12 +93,12 @@ fun main(args: Array<String>) {
     println(out)
 }
 
-private fun init(): Pair<Web3j, Kevin> {
+private fun init(): Pair<Web3j, NumberFunctions> {
     val web3j = Web3j.build(HttpService("http://127.0.0.1:8545"))
     val account = Credentials.create("0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395")
     val txManager = ClientTransactionManager(web3j, "0x4E7D932c0f12Cfe14295B86824B37bB1062bc29E")
     val gasProvider = ConstantGasProvider(BigInteger.valueOf(1000000), BigInteger.valueOf(400))
-    val contract = Kevin.deploy(web3j, txManager, gasProvider).send()
+    val contract = NumberFunctions.deploy(web3j, txManager, gasProvider).send()
     return Pair(web3j, contract)
 }
 

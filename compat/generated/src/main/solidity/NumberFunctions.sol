@@ -1,6 +1,6 @@
 pragma solidity >=0.4.24;
 
-contract Kevin  {
+contract NumberFunctions  {
 
     function callAdd(bytes32 a, bytes32 b) public {
         assembly {
