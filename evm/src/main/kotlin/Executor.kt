@@ -249,7 +249,8 @@ data class ExecutionContext(
     val logs: List<Log> = emptyList(),
     val completed: Boolean = false,
     val lastReturnData: List<Byte> = emptyList(),
-    val clock: Clock = Clock.systemUTC()
+    val clock: Clock = Clock.systemUTC(),
+    val previousBlocks: Map<BigInteger, Word> = emptyMap()
 ) {
     val currentCallContext: CallContext
         get() = callStack.last()
@@ -436,7 +437,7 @@ class Executor {
                     val (address, to, from, size) = elements
 
                     val code = evmState.codeAt(address.toAddress())
-                    val data = code.subList(from.toInt(), size.toInt())
+                    val data = code.subList(from.toInt(), from.toInt() + size.toInt())
                     val newMemory = memory.set(to.toInt(), data)
 
                     currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
@@ -453,7 +454,9 @@ class Executor {
 
                     currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
                 }
-                Opcode.BLOCKHASH -> TODO()
+                Opcode.BLOCKHASH -> uniStackOp(currentContext) {
+                    previousBlocks.getOrDefault(it.toBigInt(), Word.Zero)
+                }
                 Opcode.COINBASE -> {
                     val newStack = stack.pushWord(coinBase.toWord())
                     currentContext.updateCurrentCallContext(stack = newStack)

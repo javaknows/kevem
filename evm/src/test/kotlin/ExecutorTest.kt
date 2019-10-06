@@ -74,11 +74,13 @@ class ExecutorTest {
         val callData = Word.coerceFrom("0xffeefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe").data
 
         val context = baseExecutionContext(
-            stack = Stack(listOf(
-                listOf(Byte(0x3)), // to
-                listOf(Byte(0)),   // from
-                listOf(Byte(2))    // size
-            )),
+            stack = Stack(
+                listOf(
+                    listOf(Byte(0x3)), // to
+                    listOf(Byte(0)),   // from
+                    listOf(Byte(2))    // size
+                )
+            ),
             contractCode = listOf(Opcode.CALLDATACOPY.code),
             callData = callData
         )
@@ -106,11 +108,13 @@ class ExecutorTest {
     @Test
     internal fun `check code copy `() {
         val context = baseExecutionContext(
-            stack = Stack(listOf(
-                listOf(Byte(0x3)), // to
-                listOf(Byte(1)),   // from
-                listOf(Byte(2))    // size
-            )),
+            stack = Stack(
+                listOf(
+                    listOf(Byte(0x3)), // to
+                    listOf(Byte(1)),   // from
+                    listOf(Byte(2))    // size
+                )
+            ),
             contractCode = listOf(Opcode.CODECOPY.code, Opcode.DUP1.code, Opcode.DUP2.code)
         )
 
@@ -124,6 +128,120 @@ class ExecutorTest {
 
     @Test
     internal fun `check gas price`() = checkStackResult(Opcode.GASPRICE, "0x200")
+
+    @Test
+    internal fun `check ext code copy`() {
+        val externaLaddress = Address("0xeefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe")
+        val externalCode = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).map { Byte(it) }
+
+        val context = baseExecutionContext(
+            contractCode = listOf(Opcode.EXTCODECOPY.code),
+            evmState = EvmState().updateBalanceAndContract(
+                    externaLaddress,
+                    BigInteger.ZERO,
+                    Contract(
+                        externalCode,
+                        externaLaddress
+                    )
+                ),
+            stack = Stack(
+                listOf(
+                    Word.coerceFrom(externaLaddress.value).data, // a
+                    listOf(Byte(2)), // t
+                    listOf(Byte(3)), // f
+                    listOf(Byte(2))  // s
+                )
+            )
+        )
+
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(0)
+        assertThat(result.memory.get(2, 2)).isEqualTo(listOf(Byte(4), Byte(5)))
+    }
+
+    @Test
+    internal fun `check ext code size`() {
+        val externaLaddress = Address("0xeefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe")
+        val externalCode = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).map { Byte(it) }
+
+        val context = baseExecutionContext(
+            contractCode = listOf(Opcode.EXTCODESIZE.code),
+            evmState = EvmState().updateBalanceAndContract(
+                externaLaddress,
+                BigInteger.ZERO,
+                Contract(
+                    externalCode,
+                    externaLaddress
+                )
+            ),
+            stack = Stack(listOf(Word.coerceFrom(externaLaddress.value).data))
+        )
+
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(1)
+        assertThat(result.stack.peek(0)).isEqualTo(listOf(Byte(10)))
+    }
+
+    @Test
+    internal fun `check return data size`() {
+        val lastReturnData = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).map { Byte(it) }
+
+        val context = baseExecutionContext(
+            contractCode = listOf(Opcode.RETURNDATASIZE.code),
+            lastReturnData = lastReturnData
+        )
+
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(1)
+        assertThat(result.stack.peek(0)).isEqualTo(listOf(Byte(10)))
+    }
+
+    @Test
+    internal fun `check return data copy`() {
+        val lastReturnData = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).map { Byte(it) }
+
+        val context = baseExecutionContext(
+            contractCode = listOf(Opcode.RETURNDATACOPY.code),
+            lastReturnData = lastReturnData,
+            stack = Stack(
+                listOf(
+                    listOf(Byte(3)), // t
+                    listOf(Byte(4)), // f
+                    listOf(Byte(3))  // s
+                )
+            )
+        )
+
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(0)
+        assertThat(result.memory.get(3, 3)).isEqualTo(listOf(Byte(5), Byte(6), Byte(7)))
+    }
+
+    @Test
+    internal fun `check blockhash`() {
+        val lastReturnData = listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).map { Byte(it) }
+
+        val context = baseExecutionContext(
+            contractCode = listOf(Opcode.BLOCKHASH.code),
+            lastReturnData = lastReturnData,
+            previousBlocks = mapOf(Pair(BigInteger.TEN, Word.coerceFrom(2))),
+            stack = Stack(listOf(listOf(Byte(10))))
+        )
+
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(1)
+        assertThat(result.stack.peek(0)).isEqualTo(listOf(Byte(2)))
+    }
+
+
+
+
+
 
 
 
@@ -156,7 +274,9 @@ internal fun baseExecutionContext(
     storage: Storage = Storage(),
     contractCode: List<Byte> = emptyList(),
     evmState: EvmState = EvmState().updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT),
-    callData: List<Byte> = emptyList()
+    callData: List<Byte> = emptyList(),
+    lastReturnData: List<Byte> = emptyList(),
+    previousBlocks: Map<BigInteger,Word> = emptyMap()
 ): ExecutionContext {
     val call = CallContext(
         caller = Address(CALLER),
@@ -185,7 +305,8 @@ internal fun baseExecutionContext(
         evmState = evmState,
         logs = emptyList(),
         completed = false,
-        lastReturnData = emptyList(),
-        clock = Clock.systemUTC()
+        lastReturnData = lastReturnData,
+        clock = Clock.systemUTC(),
+        previousBlocks = previousBlocks
     )
 }
