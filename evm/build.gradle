@@ -9,6 +9,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}"
     testCompile "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
+    testCompile "org.junit.vintage:junit-vintage-engine:${junitParamsVersion}"
+    testImplementation "io.cucumber:cucumber-java8:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit:4.7.1${cucumberVersion}"
     testCompile "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
     testCompile "org.assertj:assertj-core:${assertjVersion}"
 }

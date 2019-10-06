@@ -7,6 +7,7 @@ ext {
     assertjVersion = '3.12.2'
     bouncycastleVersion = '1.61'
     web3Version = '4.2.0'
+    cucumberVersion = '4.7.2'
 }
 
 repositories {
