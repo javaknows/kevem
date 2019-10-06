@@ -7,16 +7,8 @@ import org.web3j.protocol.core.RemoteCall
 import org.web3j.protocol.core.methods.response.TransactionReceipt
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.ClientTransactionManager
-import org.web3j.tx.gas.ContractGasProvider
 import org.web3j.utils.Numeric
 import java.math.BigInteger
-
-data class ConstantGasProvider(val limit: BigInteger, val price: BigInteger) : ContractGasProvider {
-    override fun getGasLimit(contractFunc: String?): BigInteger = limit
-    override fun getGasLimit(): BigInteger = limit
-    override fun getGasPrice(contractFunc: String?): BigInteger = price
-    override fun getGasPrice(): BigInteger = price
-}
 
 fun main(args: Array<String>) {
 
@@ -102,7 +94,4 @@ private fun init(): Pair<Web3j, NumberFunctions> {
     return Pair(web3j, contract)
 }
 
-fun contractFunctionName(name: String) = when {
-    name.startsWith("call") -> name
-    else ->"call" + name[0].toUpperCase() + name.drop(1)
-}
+private fun contractFunctionName(name: String) = "call" + name[0].toUpperCase() + name.drop(1)

@@ -1,0 +1,1 @@
+[{"constant":false,"inputs":[{"name":"a","type":"bytes32"}],"name":"callKeccak256","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]

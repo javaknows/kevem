@@ -326,17 +326,4 @@ contract NumberFunctions  {
             log0(memPointer, 0x20)
         }
     }
-
-    function callSha3(bytes32 a, bytes32 b) public {
-        assembly {
-            let arg1 := calldataload(4)
-            let arg2 := calldataload(0x24)
-
-            let ret := keccak256(arg1, arg2)
-
-            let memPointer := mload(0x40)
-            mstore(memPointer, ret)
-            log0(memPointer, 0x20)
-        }
-    }
 }
