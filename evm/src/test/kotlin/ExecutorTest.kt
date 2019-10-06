@@ -5,135 +5,136 @@ import org.junit.jupiter.api.Test
 import java.math.BigInteger
 import java.time.Clock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
+
+private const val CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000cccccc"
+private const val BALANCE_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000aaaaaa"
+private val BALANCE_AMOUNT = BigInteger("1234", 16)
+private const val CALLER = "0x0000000000000000000000000000000000000000000000000000000000aabbcc"
+private val CALL_VALUE = BigInteger("1111", 16)
+private val GAS_PRICE = BigInteger("200", 16)
 
 class ExecutorTest {
 
     private val underTest = Executor()
 
     @Test
-    internal fun `check add two numbers`() =
-        checkStackResult(listOf(Byte(1)), listOf(Byte(2)), Opcode.ADD, listOf(Byte(3)))
+    internal fun `check address is that of current contract`() =
+        checkStackResult(emptyList(), Opcode.ADDRESS, CONTRACT_ADDRESS)
 
     @Test
-    internal fun `check multiply two numbers`() =
-        checkStackResult(listOf(Byte(3)), listOf(Byte(2)), Opcode.MUL, listOf(Byte(6)))
+    internal fun `check balance of address comes from evm state`() =
+        checkStackResult(listOf(Word.coerceFrom(BALANCE_ADDRESS).data), Opcode.BALANCE, "0x1234")
 
     @Test
-    internal fun `check subtract two numbers`() =
-        checkStackResult(listOf(Byte(3)), listOf(Byte(2)), Opcode.SUB, listOf(Byte(1)))
+    internal fun `check origin is original caller`() =
+        checkStackResult(emptyList(), Opcode.ORIGIN, CALLER)
 
     @Test
-    internal fun `check divide two numbers`() =
-        checkStackResult(listOf(Byte(6)), listOf(Byte(2)), Opcode.DIV, listOf(Byte(3)))
+    internal fun `check caller is current caller`() =
+        checkStackResult(emptyList(), Opcode.CALLER, CALLER)
 
     @Test
-    @Disabled("not implemented yet")
-    internal fun `check signed divide two numbers`() =
-        checkStackResult(listOf(Byte(6)), listOf(Byte(2)), Opcode.SDIV, listOf(Byte(3)))
+    internal fun `check call value `() =
+        checkStackResult(emptyList(), Opcode.CALLVALUE, "0x1111")
 
     @Test
-    internal fun `check modulo of two numbers`() =
-        checkStackResult(listOf(Byte(7)), listOf(Byte(2)), Opcode.MOD, listOf(Byte(1)))
+    internal fun `check call data load `() {
+        val callData = Word.coerceFrom("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe").data
 
-    @Test
-    @Disabled("not implemented yet")
-    internal fun `check signed modulo of two numbers`() =
-        checkStackResult(listOf(Byte(7)), listOf(Byte(2)), Opcode.SMOD, listOf(Byte(1)))
-
-    @Test
-    internal fun `check add modulo of two numbers`() =
-        checkStackResult(listOf(listOf(Byte(6)), listOf(Byte(1)), listOf(Byte(2))), Opcode.ADDMOD, listOf(Byte(1)))
-
-    @Test
-    internal fun `check multiply modulo of two numbers`() =
-        checkStackResult(listOf(listOf(Byte(7)), listOf(Byte(3)), listOf(Byte(2))), Opcode.MULMOD, listOf(Byte(1)))
-
-    @Test
-    internal fun `check exponential of two numbers`() =
-        checkStackResult(listOf(Byte(2)), listOf(Byte(2)), Opcode.EXP, listOf(Byte(4)))
-
-    @Test
-    @Disabled("not implemented yet")
-    internal fun `check signed extend of two numbers`() =
-        checkStackResult(listOf(Byte(7)), listOf(Byte(2)), Opcode.SIGNEXTEND, listOf(Byte(1)))
-
-    @Test
-    internal fun `check less than for two numbers`() =
-        checkStackResult(listOf(Byte(1)), listOf(Byte(2)), Opcode.LT, listOf(Byte(1)))
-
-    @Test
-    internal fun `check greater than for two numbers`() =
-        checkStackResult(listOf(Byte(2)), listOf(Byte(1)), Opcode.GT, listOf(Byte(1)))
-
-    @Test
-    @Disabled("not implemented yet")
-    internal fun `check signed less than for two numbers`() =
-        checkStackResult(listOf(Byte(1)), listOf(Byte(2)), Opcode.LT, listOf(Byte(1)))
-
-    @Test
-    @Disabled("not implemented yet")
-    internal fun `check signed greater than for two numbers`() =
-        checkStackResult(listOf(Byte(2)), listOf(Byte(1)), Opcode.GT, listOf(Byte(1)))
-
-    @Test
-    internal fun `check for equality of two numbers`() =
-        checkStackResult(listOf(Byte(2)), listOf(Byte(2)), Opcode.EQ, listOf(Byte(1)))
-
-    @Test
-    internal fun `check if a number is zero`() =
-        checkStackResult(listOf(listOf(Byte(0))), Opcode.ISZERO, listOf(Byte(1)))
-
-    @Test
-    internal fun `check and of two numbers`() =
-        checkStackResult(listOf(Byte(1)), listOf(Byte(1)), Opcode.AND, listOf(Byte(1)))
-
-    @Test
-    internal fun `check or of two numbers`() =
-        checkStackResult(listOf(Byte(0)), listOf(Byte(1)), Opcode.OR, listOf(Byte(1)))
-
-    @Test
-    internal fun `check xor of two numbers`() =
-        checkStackResult(listOf(Byte(1)), listOf(Byte(1)), Opcode.XOR, listOf())
-
-    @Test
-    @Disabled("not implemented yet")
-    internal fun `check not of a number`() =
-        checkStackResult(listOf(listOf(Byte(1))), Opcode.NOT, listOf(Byte(0)))
-
-    @Test
-    internal fun `check byte from a number`() =
-        checkStackResult(
-            listOf(Byte(0)),
-            Word.coerceFrom("0x62bff314b64217405db9e8200fb766263381bd0152f5186f0e87e46b2472d3ca").data,
-            Opcode.BYTE,
-            listOf(Byte(0x62))
+        val context = baseExecutionContext(
+            stack = Stack(listOf(listOf(Byte(0)))),
+            contractCode = listOf(Opcode.CALLDATALOAD.code),
+            callData = callData
         )
 
-    @Test
-    internal fun `check shift right than for two numbers`() =
-        checkStackResult(listOf(Byte(0xFF), Byte(0x00)), listOf(Byte(8)), Opcode.SHR, listOf(Byte(0xFF)))
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(1)
+        assertThat(result.stack.peek(0)).isEqualTo(callData)
+    }
 
     @Test
-    internal fun `check shift left than for two numbers`() =
-        checkStackResult(listOf(Byte(0xFF)), listOf(Byte(8)), Opcode.SHL, listOf(Byte(0xFF), Byte(0x00)))
+    internal fun `check call data size `() {
+        val callData = Word.coerceFrom("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe").data
+
+        val context = baseExecutionContext(
+            stack = Stack(),
+            contractCode = listOf(Opcode.CALLDATASIZE.code),
+            callData = callData
+        )
+
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(1)
+        assertThat(result.stack.peek(0)).isEqualTo(Word.coerceFrom(0x20).data.dropWhile { it == Byte.Zero })
+    }
 
     @Test
-    @Disabled("not implemented yet")
-    internal fun `check sar of a number`(): Nothing = TODO()
+    internal fun `check call data copy `() {
+        val callData = Word.coerceFrom("0xffeefffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe").data
 
+        val context = baseExecutionContext(
+            stack = Stack(listOf(
+                listOf(Byte(0x3)), // to
+                listOf(Byte(0)),   // from
+                listOf(Byte(2))    // size
+            )),
+            contractCode = listOf(Opcode.CALLDATACOPY.code),
+            callData = callData
+        )
 
+        val result = underTest.execute(context, context)
 
+        assertThat(result.stack.size()).isEqualTo(0)
+        assertThat(result.memory.get(3, 2)).isEqualTo(listOf(Byte(0xff), Byte(0xee)))
+        assertThat(result.memory.get(2, 1)).isEqualTo(listOf(Byte(0)))
+        assertThat(result.memory.get(5, 1)).isEqualTo(listOf(Byte(0)))
+    }
 
+    @Test
+    internal fun `check call code size`() {
+        val context = baseExecutionContext(
+            contractCode = listOf(Opcode.CODESIZE.code, Opcode.DUP1.code, Opcode.DUP2.code)
+        )
 
+        val result = underTest.execute(context, context)
 
+        assertThat(result.stack.size()).isEqualTo(1)
+        assertThat(result.stack.peek(0)).isEqualTo(listOf(Byte(3)))
+    }
 
+    @Test
+    internal fun `check code copy `() {
+        val context = baseExecutionContext(
+            stack = Stack(listOf(
+                listOf(Byte(0x3)), // to
+                listOf(Byte(1)),   // from
+                listOf(Byte(2))    // size
+            )),
+            contractCode = listOf(Opcode.CODECOPY.code, Opcode.DUP1.code, Opcode.DUP2.code)
+        )
 
+        val result = underTest.execute(context, context)
+
+        assertThat(result.stack.size()).isEqualTo(0)
+        assertThat(result.memory.get(3, 2)).isEqualTo(listOf(Opcode.DUP1.code, Opcode.DUP2.code))
+        assertThat(result.memory.get(2, 1)).isEqualTo(listOf(Byte(0)))
+        assertThat(result.memory.get(5, 1)).isEqualTo(listOf(Byte(0)))
+    }
+
+    @Test
+    internal fun `check gas price`() = checkStackResult(Opcode.GASPRICE, "0x200")
 
 
 
     private fun checkStackResult(a: List<Byte>, b: List<Byte>, opcode: Opcode, expectedResult: List<Byte>) =
         checkStackResult(listOf(a, b), opcode, expectedResult)
+
+    private fun checkStackResult(opcode: Opcode, expectedResult: String) =
+        checkStackResult(emptyList(), opcode, expectedResult)
+
+    private fun checkStackResult(stackContents: List<List<Byte>>, opcode: Opcode, expectedResult: String) =
+        checkStackResult(stackContents, opcode, Word.coerceFrom(expectedResult).data.dropWhile { it.value == 0 })
 
     private fun checkStackResult(stackContents: List<List<Byte>>, opcode: Opcode, expectedResult: List<Byte>) {
         val context = baseExecutionContext(
@@ -153,16 +154,16 @@ internal fun baseExecutionContext(
     stack: Stack = Stack(),
     memory: Memory = Memory(),
     storage: Storage = Storage(),
-    contractCode: List<Byte> = emptyList()
+    contractCode: List<Byte> = emptyList(),
+    evmState: EvmState = EvmState().updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT),
+    callData: List<Byte> = emptyList()
 ): ExecutionContext {
-    val caller = Address("0xAABBCC")
-
     val call = CallContext(
-        caller = caller,
-        callData = emptyList(),
-        contract = Contract(contractCode, Address("0xCCCCCC")),
+        caller = Address(CALLER),
+        callData = callData,
+        contract = Contract(contractCode, Address(CONTRACT_ADDRESS)),
         type = CallType.INITIAL,
-        value = BigInteger.ZERO,
+        value = CALL_VALUE,
         valueRemaining = BigInteger.ZERO,
         stack = stack,
         memory = memory,
@@ -176,12 +177,12 @@ internal fun baseExecutionContext(
             gasLimit = BigInteger("100")
         ),
         currentTransaction = Transaction(
-            origin = caller,
-            gasPrice = BigInteger("200")
+            origin = Address(CALLER),
+            gasPrice = GAS_PRICE
         ),
         coinBase = Address("0xFFEEDD"),
         callStack = listOf(call),
-        evmState = EvmState(),
+        evmState = evmState,
         logs = emptyList(),
         completed = false,
         lastReturnData = emptyList(),

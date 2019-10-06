@@ -88,8 +88,13 @@ data class Word(val data: List<Byte>, private val numBytes: Int = 32) {
             return coerceFrom(listOf(byte), numBytes)
         }
 
-        fun coerceFrom(str: String, numBytes: Int = 32): Word =
-            coerceFrom(stripHexPrefix(str).chunked(2).map { Byte(it) }, numBytes)
+        fun coerceFrom(str: String, numBytes: Int = 32): Word = coerceFrom(
+            ("0000000000000000000000000000000000000000000000000000000000000000" + stripHexPrefix(str))
+                .takeLast(64)
+                .chunked(2)
+                .map { Byte(it) },
+            numBytes
+        )
 
         fun max(numBytes: Int = 32) = Word(Byte(0xff).repeat(numBytes))
     }
@@ -109,7 +114,7 @@ class Contract(val code: List<Byte>, val address: Address) {
     }
 }
 
-class AddressLocation(val address: Address, val balance: BigInteger, val contract: Contract?)
+data class AddressLocation(val address: Address, val balance: BigInteger, val contract: Contract?)
 
 class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()) {
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
@@ -117,6 +122,16 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
+
+    fun updateBalance(address: Address, balance: BigInteger): EvmState {
+        val location = addresses[address]?.copy(balance = balance) ?: AddressLocation(address, balance, null)
+        return EvmState(addresses + Pair(address, location))
+    }
+
+    fun updateBalanceAndContract(address: Address, balance: BigInteger, contract: Contract): EvmState {
+        val location = addresses[address]?.copy(balance = balance) ?: AddressLocation(address, balance, contract)
+        return EvmState(addresses + Pair(address, location))
+    }
 }
 
 class Memory(private val data: Map<Int, Byte> = emptyMap()) {
