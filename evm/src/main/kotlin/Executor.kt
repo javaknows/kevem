@@ -106,7 +106,7 @@ data class Address(val value: BigInteger) {
     fun toWord() = Word.coerceFrom(value)
 }
 
-class Contract(val code: List<Byte>, val address: Address) {
+data class Contract(val code: List<Byte>, val address: Address) {
     operator fun get(index: Int): Byte {
         require(index in code.indices) { "out of range" }
 
