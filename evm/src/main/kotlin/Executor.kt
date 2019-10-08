@@ -384,10 +384,13 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.CALLDATALOAD -> {
-                    val (position, newStack) = stack.popWord()
-
                     val call = callStack.last()
-                    val data = call.callData.subList(position.toInt(), position.toInt() + 32)
+
+                    val (position, newStack) = stack.popWord()
+                    val start = position.toInt().coerceIn(0, call.callData.size)
+                    val end = (position.toInt() + 32).coerceIn(call.callData.size, 32)
+
+                    val data = call.callData.subList(start, end)
                     val finalStack = newStack.pushWord(Word.coerceFrom(data))
 
                     currentContext.updateCurrentCallContext(stack = finalStack)
@@ -399,6 +402,7 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.CALLDATACOPY -> {
+                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
@@ -413,6 +417,7 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.CODECOPY -> {
+                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
@@ -433,6 +438,7 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = finalStack)
                 }
                 Opcode.EXTCODECOPY -> {
+                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(4)
                     val (address, to, from, size) = elements
 
@@ -447,6 +453,7 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.RETURNDATACOPY -> {
+                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val data = lastReturnData.subList(from, from + size)
