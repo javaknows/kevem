@@ -128,6 +128,11 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
         return EvmState(addresses + Pair(address, location))
     }
 
+    fun updateContract(address: Address, contract: Contract): EvmState {
+        val location = addresses[address]?.copy(contract = contract) ?: AddressLocation(address, BigInteger.ZERO, contract)
+        return EvmState(addresses + Pair(address, location))
+    }
+
     fun updateBalanceAndContract(address: Address, balance: BigInteger, contract: Contract): EvmState {
         val location = addresses[address]?.copy(balance = balance) ?: AddressLocation(address, balance, contract)
         return EvmState(addresses + Pair(address, location))
@@ -412,6 +417,7 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
                 }
                 Opcode.CODESIZE -> {
+                    // TODO - what should hapen if it is a DELEGATECALL?
                     val call = callStack.last()
                     val newStack = stack.pushWord(Word.coerceFrom(call.contract.code.size))
                     currentContext.updateCurrentCallContext(stack = newStack)

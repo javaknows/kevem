@@ -84,7 +84,7 @@ Feature: Single Opcode Execution
 
   Scenario: Contract code length can be retrieved with CODESIZE
     Given contract code is [CODESIZE, DUP1, DUP1, BLOCKHASH]
-    And the context is executed
+    When the context is executed
     Then the stack contains 0x4
 
   Scenario: Contract code can be coped into memory with CODECOPY
@@ -92,18 +92,45 @@ Feature: Single Opcode Execution
     And 0x3 is pushed onto the stack
     And 0x0 is pushed onto the stack
     And 0x4 is pushed onto the stack
-    And the context is executed
+    When the context is executed
     Then 4 bytes of memory from position 3 is 0x39808040
     And 3 bytes of memory from position 0 is empty
     And 100 bytes of memory from position 7 is empty
 
   Scenario: External contract code can be copied into memory with EXTCODECOPY
-    Given contract at address 0x12345 has code [EXTCODECOPY, DUP1, DUP1, BLOCKHASH]
+    Given contract at address 0x12345 has code [BLOCKHASH, DUP1, DUP1, BLOCKHASH]
+    And 0x12345 is pushed onto the stack
     And 0x3 is pushed onto the stack
     And 0x0 is pushed onto the stack
     And 0x4 is pushed onto the stack
-    And the context is executed
-    Then 4 bytes of memory from position 3 is 0x39808040
+    When opcode EXTCODECOPY is executed
+    Then 4 bytes of memory from position 3 is 0x40808040
     And 3 bytes of memory from position 0 is empty
     And 100 bytes of memory from position 7 is empty
 
+  Scenario: External contract code size is returned with EXTCODESIZE
+    Given contract at address 0x12345 has code [BLOCKHASH, DUP1, DUP1, BLOCKHASH]
+    And 0x12345 is pushed onto the stack
+    When opcode EXTCODESIZE is executed
+    Then the stack contains 0x4
+
+  Scenario: Return data size is returned with RETURNDATASIZE
+    Given return data is 0xABCD
+    When opcode RETURNDATASIZE is executed
+    Then the stack contains 0x2
+
+  Scenario: Return data is copied into memory with RETURNDATACOPY
+    Given return data is 0x10203040
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x4 is pushed onto the stack
+    When opcode RETURNDATACOPY is executed
+    Then 4 bytes of memory from position 3 is 0x10203040
+    And 3 bytes of memory from position 0 is empty
+    And 100 bytes of memory from position 7 is empty
+
+  Scenario: blockhash is returned by BLOCKHASH
+    Given recent block 5 has hash 0x123
+    And 0x5 is pushed onto the stack
+    When opcode BLOCKHASH is executed
+    Then the stack contains 0x123

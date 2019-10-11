@@ -3,6 +3,7 @@ package com.gammadex.kevin
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions
+import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Clock
 
@@ -68,24 +69,28 @@ class StepDefs : En {
         }
 
         When("the current caller address is (0x[a-zA-Z0-9]+)") { address: String ->
-            replaceLastCallContext { callContext ->
-                callContext.copy(caller = Address(address))
+            replaceLastCallContext {
+                it.copy(caller = Address(address))
             }
         }
 
         When("the current call type is ([A-Z]+)") { callType: CallType ->
-            setCurrentCallType(callType)
+            replaceLastCallContext {
+                it.copy(type = callType)
+            }
         }
 
         When("the current call type is any of") { dataTable: DataTable ->
             val callType = CallType.valueOf(dataTable.asList()[0])
 
-            setCurrentCallType(callType)
+            replaceLastCallContext {
+                it.copy(type = callType)
+            }
         }
 
         When("the current call value is (0x[a-zA-Z0-9]+)") { value: String ->
-            replaceLastCallContext { callContext ->
-                callContext.copy(value = BigInteger(value.replaceFirst("0x", ""), 16))
+            replaceLastCallContext {
+                it.copy(value = BigInteger(value.replaceFirst("0x", ""), 16))
             }
         }
 
@@ -146,13 +151,20 @@ class StepDefs : En {
                 .mapNotNull { Opcode.fromString(it) }
                 .map { it.code }
 
-            replaceLastCallContext { callContext ->
-                val newContract = callContext.contract.copy(code = byteCode)
-                callContext.copy(contract = newContract)
-            }
+            val newContract = Contract(byteCode, Address(address))
+            val evmState = executionContext.evmState.updateContract(Address(address), newContract)
+
+            executionContext = executionContext.copy(evmState = evmState)
         }
 
-        // contract at address 0x12345 has code [EXTCODECOPY, DUP1, DUP1, BLOCKHASH]
+        Given("return data is (0x[a-zA-Z0-9]+)") { data: String ->
+            executionContext = executionContext.copy(lastReturnData = toByteList(data))
+        }
+
+        Given("recent block ([0-9]+) has hash (0x[a-zA-Z0-9]+)") { block: String, hash: String ->
+            val newBlocks = executionContext.previousBlocks + Pair(BigInteger(block), Word.coerceFrom(hash))
+            executionContext = executionContext.copy(previousBlocks = newBlocks)
+        }
     }
 
     private fun replaceLastCallContext(updateContext: (ctx: CallContext) -> CallContext) {
