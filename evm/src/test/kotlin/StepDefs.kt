@@ -3,7 +3,6 @@ package com.gammadex.kevin
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions
-import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Clock
 
@@ -17,20 +16,17 @@ class StepDefs : En {
 
     init {
         When("(0x[a-zA-Z0-9]+) is pushed onto the stack") { stack: String ->
-            val lastCallContext: CallContext = executionContext.callStack.last()
-            val newStack = lastCallContext.stack.push(toByteList(stack))
-            val newCallContext = lastCallContext.copy(stack = newStack)
-            val newCallStackList = executionContext.callStack.dropLast(1) + newCallContext
-
-            executionContext = executionContext.copy(callStack = newCallStackList)
+            replaceLastCallContext { callContext ->
+                val newStack = callContext.stack.push(toByteList(stack))
+                callContext.copy(stack = newStack)
+            }
         }
 
         When("opcode ([A-Z]+) is executed") { opcode: String ->
-            val contract = executionContext.currentCallContext.contract.copy(code = listOf(Opcode.valueOf(opcode).code))
-            val callContext = executionContext.currentCallContext.copy(contract = contract)
-            val callStack = executionContext.callStack.dropLast(1) + callContext
-
-            executionContext = executionContext.copy(callStack = callStack)
+            replaceLastCallContext { callContext ->
+                val newContract = callContext.contract.copy(code = listOf(Opcode.valueOf(opcode).code))
+                callContext.copy(contract = newContract)
+            }
 
             result = executor.execute(executionContext, executionContext)
         }
@@ -51,12 +47,10 @@ class StepDefs : En {
         }
 
         When("the contract address is (0x[a-zA-Z0-9]+)") { address: String ->
-            val lastCallContext: CallContext = executionContext.callStack.last()
-            val newContract = lastCallContext.contract.copy(address = Address(address))
-            val newCallContext = lastCallContext.copy(contract = newContract)
-            val newCallStackList = executionContext.callStack.dropLast(1) + newCallContext
-
-            executionContext = executionContext.copy(callStack = newCallStackList)
+            replaceLastCallContext { callContext ->
+                val newContract = callContext.contract.copy(address = Address(address))
+                callContext.copy(contract = newContract)
+            }
         }
 
         When("an account with address (0x[a-zA-Z0-9]+) has balance (0x[a-zA-Z0-9]+)") { address: String, balance: String ->
@@ -74,11 +68,9 @@ class StepDefs : En {
         }
 
         When("the current caller address is (0x[a-zA-Z0-9]+)") { address: String ->
-            val lastCallContext: CallContext = executionContext.callStack.last()
-            val newCallContext = lastCallContext.copy(caller = Address(address))
-            val newCallStackList = executionContext.callStack.dropLast(1) + newCallContext
-
-            executionContext = executionContext.copy(callStack = newCallStackList)
+            replaceLastCallContext { callContext ->
+                callContext.copy(caller = Address(address))
+            }
         }
 
         When("the current call type is ([A-Z]+)") { callType: CallType ->
@@ -92,11 +84,9 @@ class StepDefs : En {
         }
 
         When("the current call value is (0x[a-zA-Z0-9]+)") { value: String ->
-            val lastCallContext: CallContext = executionContext.callStack.last()
-            val newCallContext = lastCallContext.copy(value = BigInteger(value.replaceFirst("0x", ""), 16))
-            val newCallStackList = executionContext.callStack.dropLast(1) + newCallContext
-
-            executionContext = executionContext.copy(callStack = newCallStackList)
+            replaceLastCallContext { callContext ->
+                callContext.copy(value = BigInteger(value.replaceFirst("0x", ""), 16))
+            }
         }
 
         When("the previous caller address is (0x[a-zA-Z0-9]+)") { address: String ->
@@ -120,25 +110,57 @@ class StepDefs : En {
             setPreviousCallType(callType)
         }
 
-        When("call data is (empty|0x[a-zA-Z0-9]+)") { value: String ->
+        Then("call data is (empty|0x[a-zA-Z0-9]+)") { value: String ->
             val callData = toByteList(value.replace("empty", "0x"))
 
-            val lastCallContext: CallContext = executionContext.callStack.last()
-            val newCallContext = lastCallContext.copy(callData = callData)
-            val newCallStackList = executionContext.callStack.dropLast(1) + newCallContext
-
-            executionContext = executionContext.copy(callStack = newCallStackList)
+            replaceLastCallContext { callContext ->
+                callContext.copy(callData = callData)
+            }
         }
 
-        When("(\\d+) bytes of memory from position (\\d+) is (0x[a-zA-Z0-9]+)") {
-                length: Int, start: Int, bytes: String ->
+        Then("(\\d+) bytes of memory from position (\\d+) is (empty|0x[a-zA-Z0-9]+)") { length: Int, start: Int, bytes: String ->
+            val expected =
+                if (bytes == "empty") Byte.Zero.repeat(length)
+                else toByteList(bytes)
 
             val actual = result!!.memory.get(start, length)
-            val expected = toByteList(bytes)
 
             Assertions.assertThat(actual).isEqualTo(expected)
         }
 
+        Given("contract code is \\[([A-Z0-9, ]+)\\]") { byteCodeNames: String ->
+            val byteCode = byteCodeNames.split(",")
+                .map { it.trim() }
+                .mapNotNull { Opcode.fromString(it) }
+                .map { it.code }
+
+            replaceLastCallContext { callContext ->
+                val newContract = callContext.contract.copy(code = byteCode)
+                callContext.copy(contract = newContract)
+            }
+        }
+
+        Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([A-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
+            val byteCode = byteCodeNames.split(",")
+                .map { it.trim() }
+                .mapNotNull { Opcode.fromString(it) }
+                .map { it.code }
+
+            replaceLastCallContext { callContext ->
+                val newContract = callContext.contract.copy(code = byteCode)
+                callContext.copy(contract = newContract)
+            }
+        }
+
+        // contract at address 0x12345 has code [EXTCODECOPY, DUP1, DUP1, BLOCKHASH]
+    }
+
+    private fun replaceLastCallContext(updateContext: (ctx: CallContext) -> CallContext) {
+        val lastCallContext: CallContext = executionContext.callStack.last()
+        val newCallContext = updateContext(lastCallContext)
+        val newCallStackList = executionContext.callStack.dropLast(1) + newCallContext
+
+        executionContext = executionContext.copy(callStack = newCallStackList)
     }
 
     private fun toByteList(stack: String): List<Byte> {

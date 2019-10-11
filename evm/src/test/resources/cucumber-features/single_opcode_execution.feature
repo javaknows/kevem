@@ -79,4 +79,31 @@ Feature: Single Opcode Execution
     And 0x2 is pushed onto the stack
     When opcode CALLDATACOPY is executed
     Then 2 bytes of memory from position 3 is 0x1234
+    And 3 bytes of memory from position 0 is empty
+    And 100 bytes of memory from position 5 is empty
+
+  Scenario: Contract code length can be retrieved with CODESIZE
+    Given contract code is [CODESIZE, DUP1, DUP1, BLOCKHASH]
+    And the context is executed
+    Then the stack contains 0x4
+
+  Scenario: Contract code can be coped into memory with CODECOPY
+    Given contract code is [CODECOPY, DUP1, DUP1, BLOCKHASH]
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x4 is pushed onto the stack
+    And the context is executed
+    Then 4 bytes of memory from position 3 is 0x39808040
+    And 3 bytes of memory from position 0 is empty
+    And 100 bytes of memory from position 7 is empty
+
+  Scenario: External contract code can be copied into memory with EXTCODECOPY
+    Given contract at address 0x12345 has code [EXTCODECOPY, DUP1, DUP1, BLOCKHASH]
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x4 is pushed onto the stack
+    And the context is executed
+    Then 4 bytes of memory from position 3 is 0x39808040
+    And 3 bytes of memory from position 0 is empty
+    And 100 bytes of memory from position 7 is empty
 
