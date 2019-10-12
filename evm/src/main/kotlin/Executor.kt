@@ -47,7 +47,7 @@ data class Word(val data: List<Byte>, private val numBytes: Int = 32) {
 
     fun toAddress() = Address(toBigInt())
 
-    fun toBoolean() = data.last() == Byte.One
+    fun toBoolean() = data.last() != Byte.Zero
 
     fun toStringNoHexPrefix() = data.joinToString("") { it.toStringNoHexPrefix() }
 
@@ -328,6 +328,9 @@ class Executor {
         with(currentContext) {
             val opcode = Opcode.byCode[currentCallContext.contract[currentLocation]]
 
+            // TODO increment contract pointer
+            // TODO deduct gas
+
             when (opcode) {
                 Opcode.STOP -> currentContext.copy(completed = true)
                 Opcode.ADD -> biStackOp(currentContext, VmMath::add)
@@ -488,10 +491,11 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.GASLIMIT -> {
-                    val newStack = stack.pushWord(Word.coerceFrom(currentBlock.difficulty))
+                    val newStack = stack.pushWord(Word.coerceFrom(currentBlock.gasLimit))
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
                 Opcode.POP -> {
+                    // TODO - what if stack is empty
                     val (_, newStack) = stack.pop()
                     currentContext.updateCurrentCallContext(stack = newStack)
                 }
@@ -510,8 +514,8 @@ class Executor {
                     currentContext.updateCurrentCallContext(stack = newStack, memory = newMemory)
                 }
                 Opcode.MSTORE8 -> {
-                    val (p, newStack) = stack.popWord()
-                    val (v, newStack2) = newStack.pop()
+                    val (v, newStack) = stack.pop()
+                    val (p, newStack2) = newStack.popWord()
                     val newMemory = memory.set(p.toInt(), v.take(1))
 
                     currentContext.updateCurrentCallContext(stack = newStack2, memory = newMemory)
@@ -539,7 +543,7 @@ class Executor {
                     if (nextOpCode == Opcode.JUMPDEST) {
                         currentContext.updateCurrentCallContext(stack = newStack, currentLocation = toLocation)
                     } else {
-                        TODO()
+                        TODO("handle invalid jump destination")
                     }
                 }
                 Opcode.JUMPI -> {
@@ -554,7 +558,7 @@ class Executor {
                         if (nextOpCode == Opcode.JUMPDEST) {
                             currentContext.updateCurrentCallContext(stack = newStack, currentLocation = toLocation)
                         } else {
-                            TODO()
+                            TODO("handle invalid jump destination")
                         }
                     } else {
                         currentContext.updateCurrentCallContext(stack = newStack)

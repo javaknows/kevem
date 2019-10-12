@@ -8,6 +8,6 @@ import org.junit.runner.RunWith
 @CucumberOptions(
     plugin = ["pretty"],
     features = ["src/test/resources/cucumber-features"],
-    tags = ["not @ignored"]
+    tags = ["not @Ignore"]
 )
 class RunCucumberTest
