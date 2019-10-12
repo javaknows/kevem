@@ -80,10 +80,16 @@ class StepDefs : En {
         }
 
         When("the current call type is any of") { dataTable: DataTable ->
-            val callType = CallType.valueOf(dataTable.asList()[0])
+            val originalContext = executionContext
 
-            replaceLastCallContext {
-                it.copy(type = callType)
+            dataTable.asLists().forEach {
+                executionContext = originalContext
+
+                val callType = CallType.valueOf(it[0])
+
+                replaceLastCallContext {
+                    it.copy(type = callType)
+                }
             }
         }
 
@@ -223,6 +229,56 @@ class StepDefs : En {
         Given("there is (\\d+) gas remaining") { gas: Integer ->
             replaceLastCallContext {
                 it.copy(gasRemaining = BigInteger.valueOf(gas.toLong()))
+            }
+        }
+
+        Given("contract code ends with (0x[a-zA-Z0-9]+)") { data: String ->
+            replaceLastCallContext { callContext ->
+                val newContract = callContext.contract.copy(code = toByteList(data))
+                callContext.copy(contract = newContract)
+            }
+        }
+
+        Given("the push opcode is executed it will have data on stack") { dataTable: DataTable ->
+            val originalContext = executionContext
+
+            dataTable.asLists().forEach {
+                executionContext = originalContext
+
+                val opcode = Opcode.fromString(it[0])
+                val expected = toByteList(it[1])
+
+                replaceLastCallContext { callContext ->
+                    val newContractCode = listOf(opcode!!.code) + callContext.contract.code
+                    val newContract = callContext.contract.copy(code = newContractCode)
+                    callContext.copy(contract = newContract)
+                }
+
+                result = executor.execute(executionContext, executionContext)
+                val element = result!!.stack.pop().first
+
+                assertThat(element).isEqualTo(expected)
+            }
+        }
+
+        Given("the DUP opcode is executed it will have data on stack") { dataTable: DataTable ->
+            val originalContext = executionContext
+
+            dataTable.asLists().forEach {
+                executionContext = originalContext
+
+                val opcode = Opcode.fromString(it[0])
+                val expected = toByteList(it[1])
+
+                replaceLastCallContext { callContext ->
+                    val newContract = callContext.contract.copy(code = listOf(opcode!!.code))
+                    callContext.copy(contract = newContract)
+                }
+
+                result = executor.execute(executionContext, executionContext)
+
+                val element = result!!.stack.pop().first
+                assertThat(element).isEqualTo(expected)
             }
         }
     }

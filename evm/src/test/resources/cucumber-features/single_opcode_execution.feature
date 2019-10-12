@@ -241,10 +241,10 @@ Feature: Single Opcode Execution
     Then the position in code is 1
 
   Scenario: contract position is retrieved with PC
-    Given contract code is [PC, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
+    Given contract code is [JUMPDEST, DUP1, DUP1, PC, SSTORE, GAS]
     And contract position is 3
     When the context is executed
-    Then the stack contains 0
+    Then the stack contains 0x3
 
   Scenario: max byte address in memory is returned by MSIZE
     Given 0x123456 is stored in memory at location 0x0
@@ -255,4 +255,111 @@ Feature: Single Opcode Execution
     Given there is 5 gas remaining
     When opcode GAS is executed
     Then the stack contains 0x5
+
+  Scenario: Push opcodes push the right amount of bytes onto the stack
+    Given contract code ends with 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    When the push opcode is executed it will have data on stack
+     | PUSH1  | 0xff |
+     | PUSH2  | 0xffff |
+     | PUSH3  | 0xffffff |
+     | PUSH4  | 0xffffffff |
+     | PUSH5  | 0xffffffffff |
+     | PUSH6  | 0xffffffffffff |
+     | PUSH7  | 0xffffffffffffff |
+     | PUSH8  | 0xffffffffffffffff |
+     | PUSH9  | 0xffffffffffffffffff |
+     | PUSH10 | 0xffffffffffffffffffff |
+     | PUSH11 | 0xffffffffffffffffffffff |
+     | PUSH12 | 0xffffffffffffffffffffffff |
+     | PUSH13 | 0xffffffffffffffffffffffffff |
+     | PUSH14 | 0xffffffffffffffffffffffffffff |
+     | PUSH15 | 0xffffffffffffffffffffffffffffff |
+     | PUSH16 | 0xffffffffffffffffffffffffffffffff |
+     | PUSH17 | 0xffffffffffffffffffffffffffffffffff |
+     | PUSH18 | 0xffffffffffffffffffffffffffffffffffff |
+     | PUSH19 | 0xffffffffffffffffffffffffffffffffffffff |
+     | PUSH20 | 0xffffffffffffffffffffffffffffffffffffffff|
+     | PUSH21 | 0xffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH22 | 0xffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH23 | 0xffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH24 | 0xffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH25 | 0xffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH26 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH27 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH28 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH29 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH30 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH31 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+     | PUSH32 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+
+   Scenario: the dup opcodes duplicate the stack element at the correct depth
+     Given 0x1 is pushed onto the stack
+     And 0x2 is pushed onto the stack
+     And 0x3 is pushed onto the stack
+     And 0x4 is pushed onto the stack
+     And 0x5 is pushed onto the stack
+     And 0x6 is pushed onto the stack
+     And 0x7 is pushed onto the stack
+     And 0x8 is pushed onto the stack
+     And 0x9 is pushed onto the stack
+     And 0x10 is pushed onto the stack
+     And 0x11 is pushed onto the stack
+     And 0x12 is pushed onto the stack
+     And 0x13 is pushed onto the stack
+     And 0x14 is pushed onto the stack
+     And 0x15 is pushed onto the stack
+     And 0x16 is pushed onto the stack
+     When the DUP opcode is executed it will have data on stack
+      | DUP1  | 0x16 |
+      | DUP2  | 0x15 |
+      | DUP3  | 0x14 |
+      | DUP4  | 0x13 |
+      | DUP5  | 0x12 |
+      | DUP6  | 0x11 |
+      | DUP7  | 0x10 |
+      | DUP8  | 0x09 |
+      | DUP9  | 0x08 |
+      | DUP10 | 0x07 |
+      | DUP11 | 0x06 |
+      | DUP12 | 0x05 |
+      | DUP13 | 0x04 |
+      | DUP14 | 0x03 |
+      | DUP15 | 0x02 |
+      | DUP16 | 0x01 |
+
+  Scenario: the swap opcodes swap the stack element at the correct depth
+    Given 0x1 is pushed onto the stack
+    And 0x2 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x4 is pushed onto the stack
+    And 0x5 is pushed onto the stack
+    And 0x6 is pushed onto the stack
+    And 0x7 is pushed onto the stack
+    And 0x8 is pushed onto the stack
+    And 0x9 is pushed onto the stack
+    And 0x10 is pushed onto the stack
+    And 0x11 is pushed onto the stack
+    And 0x12 is pushed onto the stack
+    And 0x13 is pushed onto the stack
+    And 0x14 is pushed onto the stack
+    And 0x15 is pushed onto the stack
+    And 0x16 is pushed onto the stack
+    And 0xAA is pushed onto the stack
+    When the DUP opcode is executed it will have data on stack
+      | DUP1  | 0x16 |
+      | DUP2  | 0x15 |
+      | DUP3  | 0x14 |
+      | DUP4  | 0x13 |
+      | DUP5  | 0x12 |
+      | DUP6  | 0x11 |
+      | DUP7  | 0x10 |
+      | DUP8  | 0x09 |
+      | DUP9  | 0x08 |
+      | DUP10 | 0x07 |
+      | DUP11 | 0x06 |
+      | DUP12 | 0x05 |
+      | DUP13 | 0x04 |
+      | DUP14 | 0x03 |
+      | DUP15 | 0x02 |
+      | DUP16 | 0x01 |
 
