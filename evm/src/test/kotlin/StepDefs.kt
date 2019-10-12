@@ -240,11 +240,7 @@ class StepDefs : En {
         }
 
         Given("the push opcode is executed it will have data on stack") { dataTable: DataTable ->
-            val originalContext = executionContext
-
-            dataTable.asLists().forEach {
-                executionContext = originalContext
-
+            processRows(dataTable) {
                 val opcode = Opcode.fromString(it[0])
                 val expected = toByteList(it[1])
 
@@ -262,11 +258,7 @@ class StepDefs : En {
         }
 
         Given("the DUP opcode is executed it will have data on stack") { dataTable: DataTable ->
-            val originalContext = executionContext
-
-            dataTable.asLists().forEach {
-                executionContext = originalContext
-
+            processRows(dataTable) {
                 val opcode = Opcode.fromString(it[0])
                 val expected = toByteList(it[1])
 
@@ -280,6 +272,36 @@ class StepDefs : En {
                 val element = result!!.stack.pop().first
                 assertThat(element).isEqualTo(expected)
             }
+        }
+
+        Given("the SWAP opcode is executed it will have data on top of stack and 0xAA at index") { dataTable: DataTable ->
+            processRows(dataTable) {
+                val opcode = Opcode.fromString(it[0])
+                val expected = Word.coerceFrom(it[1])
+                val indexOfAA = toInt(it[2])
+
+                replaceLastCallContext { callContext ->
+                    val newContract = callContext.contract.copy(code = listOf(opcode!!.code))
+                    callContext.copy(contract = newContract)
+                }
+
+                result = executor.execute(executionContext, executionContext)
+
+                val element = result!!.stack.peekWord()
+                assertThat(element).isEqualTo(expected)
+
+                assertThat(result!!.stack.peekWord(indexOfAA)).isEqualTo(Word.coerceFrom("0xAA"))
+            }
+        }
+    }
+
+    private fun processRows(dataTable: DataTable, processRow: (List<String>) -> Unit) {
+        val originalContext = executionContext
+
+        dataTable.asLists().forEach {
+            executionContext = originalContext
+
+            processRow(it)
         }
     }
 

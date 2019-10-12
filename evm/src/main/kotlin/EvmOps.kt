@@ -10,18 +10,18 @@ fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {
 }
 
 fun dup(context: ExecutionContext, offset: Int): ExecutionContext {
-    val word = context.stack.peekWord(offset)
-    val newStack = context.stack.pushWord(word)
+    val data = context.stack.peek(offset)
+    val newStack = context.stack.push(data)
 
     return context.updateCurrentCallContext(stack = newStack)
 }
 
 fun swap(context: ExecutionContext, offset: Int): ExecutionContext {
-    val a = context.stack.peekWord(offset)
-    val b = context.stack.peekWord(offset + 1)
+    val a = context.stack.peekWord(offset + 1)
+    val b = context.stack.peekWord()
     val newStack = context.stack
-        .set(offset, b.data)
-        .set(offset + 1, a.data)
+        .set(offset + 1, b.data)
+        .set(0, a.data)
 
     return context.updateCurrentCallContext(stack = newStack)
 }

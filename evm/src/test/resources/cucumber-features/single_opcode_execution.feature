@@ -345,21 +345,21 @@ Feature: Single Opcode Execution
     And 0x15 is pushed onto the stack
     And 0x16 is pushed onto the stack
     And 0xAA is pushed onto the stack
-    When the DUP opcode is executed it will have data on stack
-      | DUP1  | 0x16 |
-      | DUP2  | 0x15 |
-      | DUP3  | 0x14 |
-      | DUP4  | 0x13 |
-      | DUP5  | 0x12 |
-      | DUP6  | 0x11 |
-      | DUP7  | 0x10 |
-      | DUP8  | 0x09 |
-      | DUP9  | 0x08 |
-      | DUP10 | 0x07 |
-      | DUP11 | 0x06 |
-      | DUP12 | 0x05 |
-      | DUP13 | 0x04 |
-      | DUP14 | 0x03 |
-      | DUP15 | 0x02 |
-      | DUP16 | 0x01 |
+    When the SWAP opcode is executed it will have data on top of stack and 0xAA at index
+      | SWAP1  | 0x16 | 1  |
+      | SWAP2  | 0x15 | 2  |
+      | SWAP3  | 0x14 | 3  |
+      | SWAP4  | 0x13 | 4  |
+      | SWAP5  | 0x12 | 5  |
+      | SWAP6  | 0x11 | 6  |
+      | SWAP7  | 0x10 | 7  |
+      | SWAP8  | 0x09 | 8  |
+      | SWAP9  | 0x08 | 9  |
+      | SWAP10 | 0x07 | 10 |
+      | SWAP11 | 0x06 | 11 |
+      | SWAP12 | 0x05 | 12 |
+      | SWAP13 | 0x04 | 13 |
+      | SWAP14 | 0x03 | 14 |
+      | SWAP15 | 0x02 | 15 |
+      | SWAP16 | 0x01 | 16 |
 

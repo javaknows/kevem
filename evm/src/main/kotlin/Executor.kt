@@ -198,7 +198,7 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
 
     fun peek(num: Int): List<Byte> = backing.reversed()[num]
 
-    fun peekWord(num: Int) = Word.coerceFrom(peek(num))
+    fun peekWord(num: Int = 0) = Word.coerceFrom(peek(num))
 
     fun set(index: Int, data: List<Byte>): Stack {
         val newBacking = backing.reversed().toMutableList().apply {
