@@ -1,4 +1,5 @@
 Feature: Single Opcode Execution
+
   Check that each opcode executes correctly
 
   Scenario: Two numbers can be added using ADD
@@ -363,3 +364,62 @@ Feature: Single Opcode Execution
       | SWAP15 | 0x02 | 15 |
       | SWAP16 | 0x01 | 16 |
 
+  Scenario: transaction logs are raised with the LOG0 opcode
+    Given 0x123456 is stored in memory at location 0x0
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    When opcode LOG0 is executed
+    Then a log has been generated with data 0x123456
+    And the log has no topics
+
+  Scenario: transaction logs are raised with the LOG1 opcode
+    Given 0x123456 is stored in memory at location 0x0
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0xA is pushed onto the stack
+    When opcode LOG1 is executed
+    Then a log has been generated with data 0x123456
+    And the log has topic data
+      | 0xA |
+
+  Scenario: transaction logs are raised with the LOG2 opcode
+    Given 0x123456 is stored in memory at location 0x0
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0xB is pushed onto the stack
+    When opcode LOG2 is executed
+    Then a log has been generated with data 0x123456
+    And the log has topic data
+      | 0xA |
+      | 0xB |
+
+  Scenario: transaction logs are raised with the LOG3 opcode
+    Given 0x123456 is stored in memory at location 0x0
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0xB is pushed onto the stack
+    And 0xC is pushed onto the stack
+    When opcode LOG3 is executed
+    Then a log has been generated with data 0x123456
+    And the log has topic data
+      | 0xA |
+      | 0xB |
+      | 0xC |
+
+  Scenario: transaction logs are raised with the LOG4 opcode
+    Given 0x123456 is stored in memory at location 0x0
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0xB is pushed onto the stack
+    And 0xC is pushed onto the stack
+    And 0xD is pushed onto the stack
+    When opcode LOG4 is executed
+    Then a log has been generated with data 0x123456
+    And the log has topic data
+      | 0xA |
+      | 0xB |
+      | 0xC |
+      | 0xD |

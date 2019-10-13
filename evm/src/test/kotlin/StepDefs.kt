@@ -17,7 +17,7 @@ class StepDefs : En {
     var result: ExecutionContext? = null
 
     init {
-        When("(0x[a-zA-Z0-9]+) is pushed onto the stack") { stack: String ->
+        Given("(0x[a-zA-Z0-9]+) is pushed onto the stack") { stack: String ->
             replaceLastCallContext { callContext ->
                 val newStack = callContext.stack.push(toByteList(stack))
                 callContext.copy(stack = newStack)
@@ -48,38 +48,38 @@ class StepDefs : En {
             assertThat(result!!.stack.size()).isEqualTo(0)
         }
 
-        When("the contract address is (0x[a-zA-Z0-9]+)") { address: String ->
+        Given("the contract address is (0x[a-zA-Z0-9]+)") { address: String ->
             replaceLastCallContext { callContext ->
                 val newContract = callContext.contract.copy(address = Address(address))
                 callContext.copy(contract = newContract)
             }
         }
 
-        When("an account with address (0x[a-zA-Z0-9]+) has balance (0x[a-zA-Z0-9]+)") { address: String, balance: String ->
+        Given("an account with address (0x[a-zA-Z0-9]+) has balance (0x[a-zA-Z0-9]+)") { address: String, balance: String ->
             val value = toBigInteger(balance)
             val evmState = executionContext.evmState.updateBalance(Address(address), value)
 
             executionContext = executionContext.copy(evmState = evmState)
         }
 
-        When("transaction origin is (0x[a-zA-Z0-9]+)") { address: String ->
+        Given("transaction origin is (0x[a-zA-Z0-9]+)") { address: String ->
             val currentTransaction = executionContext.currentTransaction.copy(origin = Address(address))
             executionContext = executionContext.copy(currentTransaction = currentTransaction)
         }
 
-        When("the current caller address is (0x[a-zA-Z0-9]+)") { address: String ->
+        Given("the current caller address is (0x[a-zA-Z0-9]+)") { address: String ->
             replaceLastCallContext {
                 it.copy(caller = Address(address))
             }
         }
 
-        When("the current call type is ([A-Z]+)") { callType: CallType ->
+        Given("the current call type is ([A-Z]+)") { callType: CallType ->
             replaceLastCallContext {
                 it.copy(type = callType)
             }
         }
 
-        When("the current call type is any of") { dataTable: DataTable ->
+        Given("the current call type is any of") { dataTable: DataTable ->
             val originalContext = executionContext
 
             dataTable.asLists().forEach {
@@ -93,13 +93,13 @@ class StepDefs : En {
             }
         }
 
-        When("the current call value is (0x[a-zA-Z0-9]+)") { value: String ->
+        Given("the current call value is (0x[a-zA-Z0-9]+)") { value: String ->
             replaceLastCallContext {
                 it.copy(value = BigInteger(value.replaceFirst("0x", ""), 16))
             }
         }
 
-        When("the previous caller address is (0x[a-zA-Z0-9]+)") { address: String ->
+        Given("the previous caller address is (0x[a-zA-Z0-9]+)") { address: String ->
             val callStack =
                 if (executionContext.callStack.size > 1) executionContext.callStack
                 else listOf(executionContext.callStack.last()) + executionContext.callStack
@@ -110,17 +110,17 @@ class StepDefs : En {
             executionContext = executionContext.copy(callStack = newCallStackList)
         }
 
-        When("the previous call type is ([A-Z]+)") { callType: CallType ->
+        Given("the previous call type is ([A-Z]+)") { callType: CallType ->
             setPreviousCallType(callType)
         }
 
-        When("the previous call type is any of") { dataTable: DataTable ->
+        Given("the previous call type is any of") { dataTable: DataTable ->
             val callType = CallType.valueOf(dataTable.asList()[0])
 
             setPreviousCallType(callType)
         }
 
-        Then("call data is (empty|0x[a-zA-Z0-9]+)") { value: String ->
+        Given("call data is (empty|0x[a-zA-Z0-9]+)") { value: String ->
             val callData = toByteList(value.replace("empty", "0x"))
 
             replaceLastCallContext { callContext ->
@@ -128,7 +128,7 @@ class StepDefs : En {
             }
         }
 
-        Then("(\\d+) bytes? of memory from position (\\d+) is (empty|0x[a-zA-Z0-9]+)") { length: Int, start: Int, bytes: String ->
+        Given("(\\d+) bytes? of memory from position (\\d+) is (empty|0x[a-zA-Z0-9]+)") { length: Int, start: Int, bytes: String ->
             val expected =
                 if (bytes == "empty") Byte.Zero.repeat(length)
                 else toByteList(bytes)
@@ -292,6 +292,25 @@ class StepDefs : En {
 
                 assertThat(result!!.stack.peekWord(indexOfAA)).isEqualTo(Word.coerceFrom("0xAA"))
             }
+        }
+
+        Then("a log has been generated with data (0x[a-zA-Z0-9]+)") { data: String ->
+            val logs = result!!.logs
+
+            assertThat(logs).hasSize(1)
+            assertThat(logs[0].data).isEqualTo(toByteList(data))
+        }
+
+        Then("the log has no topics") {
+            val log = result!!.logs[0]
+            assertThat(log.topics).isEmpty()
+        }
+
+        Then("the log has topic data") { dataTable: DataTable ->
+            val log = result!!.logs[0]
+
+            val expectedTopics = dataTable.asList().map { Word.coerceFrom(it) }
+            assertThat(log.topics).isEqualTo(expectedTopics)
         }
     }
 
