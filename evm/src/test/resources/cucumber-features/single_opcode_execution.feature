@@ -431,9 +431,10 @@ Feature: Single Opcode Execution
     And 0x3 is pushed onto the stack
     And 0xA is pushed onto the stack
     And 0x123456 is stored in memory at location 0x100
+    And any new account gets created with 0xFFFFFF
     When opcode CREATE is executed
-    Then the balance of account 0xEE is foo
-    And the balance of account 0xNEW_ACCOUNT is bar
-    And the code at address 0xNEW_ACCOUNT is 0x123456
+    Then the balance of account 0xEE is 100
+    And the balance of account 0xFFFFFF is 100
+    And the code at address 0xFFFFFF is 0x123456
     And the stack contains 0x123456
 
