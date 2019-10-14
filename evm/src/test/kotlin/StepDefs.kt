@@ -348,6 +348,29 @@ class StepDefs : En {
                 assertThat(result.logs[0].topics).isEqualTo(expectedTopics)
             }
         }
+
+        Given("any new account gets created with address (0x[a-zA-Z0-9]+)") { address: String ->
+            updateExecutionContext {
+                it.copy(addressGenerator = object : AddressGenerator {
+                    override fun nextAddress(): Address = Address(address)
+                })
+            }
+        }
+
+        Then("the balance of account (0x[a-zA-Z0-9]+) is (\\d+)") { address: String, amount: Int ->
+            checkResult {
+                val balance = it.evmState.balanceOf(Address(address))
+                assertThat(amount).isEqualTo(balance.toInt())
+            }
+        }
+
+        Then("the code at address (0x[a-zA-Z0-9]+) is (0x[a-zA-Z0-9]+)") { address: String, expectedCode: String ->
+            checkResult {
+                val code = it.evmState.codeAt(Address(address))
+                assertThat(code).isEqualTo(toByteList(expectedCode))
+            }
+        }
+
     }
 
     private fun updateExecutionContext(updateFunc: (ExecutionContext) -> ExecutionContext) {

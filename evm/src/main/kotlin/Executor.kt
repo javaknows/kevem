@@ -668,8 +668,8 @@ class Executor {
                     val newStack2 = newStack.pushWord(newContractAddress.toWord())
 
                     currentContext
-                        .updateCurrentCallContext(stack = newStack2)
                         .copy(evmState = newEvmState)
+                        .updateCurrentCallContext(stack = newStack2)
                 }
                 Opcode.CALL -> {
                     val (elements, newStack) = stack.popWords(7)
