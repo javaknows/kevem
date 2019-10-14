@@ -12,3 +12,7 @@ fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))
 
 fun bytesToBigInteger(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16)
 
+
+fun stripHexPrefix(num: String) = num.replaceFirst("0x", "")
+
+fun hexPrefix(num: String) = "0x$num"

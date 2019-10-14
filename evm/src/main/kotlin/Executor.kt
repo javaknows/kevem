@@ -7,10 +7,6 @@ operator fun <T> List<T>.component6(): T = get(5)
 
 operator fun <T> List<T>.component7(): T = get(6)
 
-fun stripHexPrefix(num: String) = num.replaceFirst("0x", "")
-
-fun hexPrefix(num: String) = "0x$num"
-
 data class Byte(val value: Int) {
     constructor(v: String) : this(Integer.parseInt(stripHexPrefix(v), 16))
 
@@ -104,6 +100,8 @@ data class Address(val value: BigInteger) {
     constructor(v: String) : this(BigInteger(stripHexPrefix(v), 16))
 
     fun toWord() = Word.coerceFrom(value)
+
+    override fun toString() = Word.coerceFrom(value, 20).toString()
 }
 
 data class Contract(val code: List<Byte>, val address: Address) {
@@ -255,7 +253,8 @@ data class ExecutionContext(
     val completed: Boolean = false,
     val lastReturnData: List<Byte> = emptyList(),
     val clock: Clock = Clock.systemUTC(),
-    val previousBlocks: Map<BigInteger, Word> = emptyMap()
+    val previousBlocks: Map<BigInteger, Word> = emptyMap(),
+    val addressGenerator: AddressGenerator = DefaultAddressGenerator() // TODO - make a dependency rather than in ctx
 ) {
     val currentCallContext: CallContext
         get() = callStack.last()
@@ -330,6 +329,7 @@ class Executor {
 
             // TODO increment contract pointer
             // TODO deduct gas
+            // TODO - maximum stack size
 
             when (opcode) {
                 Opcode.STOP -> currentContext.copy(completed = true)
@@ -650,15 +650,26 @@ class Executor {
                 Opcode.LOG3 -> log(currentContext, 3)
                 Opcode.LOG4 -> log(currentContext, 4)
                 Opcode.CREATE -> {
+                    // TODO - what if current contract doesn't have enough wei to send
+                    // TODO - what if the generated address already exists
+                    // TODO - subtract gas
                     val (elements, newStack) = stack.popWords(3)
-                    val (v, p, s) = elements.map { it.toInt() }
+                    val (v, p, s) = elements
 
-                    val data = memory.get(p, s)
+                    val newContractCode = memory.get(p.toInt(), s.toInt())
+                    val newContractAddress = addressGenerator.nextAddress()
+                    val contract = Contract(newContractCode, newContractAddress)
+                    val balance = v.toBigInt()
+                    val currentAddress = currentCallContext.contract.address
+                    val newEvmState = evmState
+                        .updateBalanceAndContract(newContractAddress, balance, contract)
+                        .updateBalance(currentAddress, evmState.balanceOf(currentAddress).subtract(balance))
 
-                    //val newStack = stack.pushWord(Word.coerceFrom(currentLocation))
-                    currentContext.updateCurrentCallContext(stack = newStack)
+                    val newStack2 = newStack.pushWord(newContractAddress.toWord())
 
-                    TODO()
+                    currentContext
+                        .updateCurrentCallContext(stack = newStack2)
+                        .copy(evmState = newEvmState)
                 }
                 Opcode.CALL -> {
                     val (elements, newStack) = stack.popWords(7)
