@@ -60,7 +60,7 @@ class StepDefs : En {
             }
         }
 
-        Given("an account with address (0x[a-zA-Z0-9]+) has balance (0x[a-zA-Z0-9]+)") { address: String, balance: String ->
+        Given(".* account with address (0x[a-zA-Z0-9]+) has balance (0x[a-zA-Z0-9]+)") { address: String, balance: String ->
             val value = toBigInteger(balance)
 
             updateExecutionContext {

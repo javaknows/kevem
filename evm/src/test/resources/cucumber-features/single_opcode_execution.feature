@@ -423,3 +423,17 @@ Feature: Single Opcode Execution
       | 0xB |
       | 0xC |
       | 0xD |
+
+  Scenario: a contract is created and deployed with CREATE
+    Given the contract address is 0xEE
+    And the account with address 0xEE has balance 0x123
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0x123456 is stored in memory at location 0x100
+    When opcode CREATE is executed
+    Then the balance of account 0xEE is foo
+    And the balance of account 0xNEW_ACCOUNT is bar
+    And the code at address 0xNEW_ACCOUNT is 0x123456
+    And the stack contains 0x123456
+
