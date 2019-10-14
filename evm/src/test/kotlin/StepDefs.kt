@@ -7,6 +7,7 @@ import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
+import com.gammadex.kevin.util.*
 
 class StepDefs : En {
 
@@ -375,18 +376,6 @@ class StepDefs : En {
         }
     }
 
-    private fun toInt(number: String) = toBigInteger(number).toInt()
-
-    private fun toBigInteger(number: String) =
-        if (number.startsWith("0x")) BigInteger(number.replaceFirst("0x", ""), 16)
-        else BigInteger(number)
-
-    private fun byteCodeFromNames(byteCodeNames: String): List<Byte> =
-        byteCodeNames.split(",")
-            .map { it.trim() }
-            .mapNotNull { Opcode.fromString(it) }
-            .map { it.code }
-
     private fun updateLastCallContext(updateContext: (ctx: CallContext) -> CallContext) {
         updateExecutionContext { executionContext ->
             val lastCallContext: CallContext = executionContext.callStack.last()
@@ -395,13 +384,6 @@ class StepDefs : En {
 
             executionContext.copy(callStack = newCallStackList)
         }
-    }
-
-    private fun toByteList(bytes: String): List<Byte> {
-        val noPrefixStack = bytes.replaceFirst("0x", "")
-        val cleanStack = if (noPrefixStack.length % 2 == 0) noPrefixStack else "0$noPrefixStack"
-
-        return cleanStack.chunked(2).map { Byte(it) }
     }
 
     private fun setPreviousCallType(callType: CallType) {
@@ -417,35 +399,32 @@ class StepDefs : En {
         }
     }
 
-    private fun createBaseExecutionContext(): ExecutionContext {
-        val call = CallContext(
-            caller = Address("0x0"),
-            callData = emptyList(),
-            contract = Contract(listOf(Opcode.INVALID.code), Address("0x0")),
-            type = CallType.INITIAL,
-            value = BigInteger.ZERO,
-            valueRemaining = BigInteger.ZERO,
-            stack = Stack(),
-            memory = Memory(),
-            storage = Storage()
+    private fun createBaseExecutionContext(): ExecutionContext = ExecutionContext(
+        currentBlock = Block(
+            number = BigInteger.ONE,
+            difficulty = BigInteger.TEN,
+            gasLimit = BigInteger("100")
+        ),
+        currentTransaction = Transaction(
+            origin = Address("0xFFEEDD"),
+            gasPrice = BigInteger.ONE
+        ),
+        coinBase = Address("0xFFEEDD"),
+        logs = emptyList(),
+        completed = false,
+        clock = Clock.systemUTC(),
+        callStack = listOf(
+            CallContext(
+                caller = Address("0x0"),
+                callData = emptyList(),
+                contract = Contract(listOf(Opcode.INVALID.code), Address("0x0")),
+                type = CallType.INITIAL,
+                value = BigInteger.ZERO,
+                valueRemaining = BigInteger.ZERO,
+                stack = Stack(),
+                memory = Memory(),
+                storage = Storage()
+            )
         )
-
-
-        return ExecutionContext(
-            currentBlock = Block(
-                number = BigInteger.ONE,
-                difficulty = BigInteger.TEN,
-                gasLimit = BigInteger("100")
-            ),
-            currentTransaction = Transaction(
-                origin = Address("0xFFEEDD"),
-                gasPrice = BigInteger.ONE
-            ),
-            coinBase = Address("0xFFEEDD"),
-            logs = emptyList(),
-            completed = false,
-            clock = Clock.systemUTC(),
-            callStack = listOf(call)
-        )
-    }
+    )
 }
