@@ -1,5 +1,9 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.Byte
+import com.gammadex.kevin.model.Memory
+import com.gammadex.kevin.model.Stack
+import com.gammadex.kevin.model.Word
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
@@ -12,6 +16,8 @@ class ExecutorTestPackTest {
     @ParameterizedTest
     @CsvFileSource(resources = ["/numeric_test_pack.tsv"], delimiter='\t')
     fun pack(function: String, expectedResult: String, arg0: String, arg1: String?, arg2: String?) {
+        if (function.startsWith("#")) return
+
         val opcode = Opcode.fromString(function) ?: fail("no matching opcode for '${function}'")
 
         val args = listOf(arg0, arg1, arg2)
@@ -37,7 +43,12 @@ class ExecutorTestPackTest {
         val data = Word.coerceFrom(input).data
 
         val context = baseExecutionContext(
-            stack = Stack(listOf(listOf(Byte(0)), listOf(Byte(0x20)))),
+            stack = Stack(
+                listOf(
+                    listOf(Byte(0)),
+                    listOf(Byte(0x20))
+                )
+            ),
             contractCode = listOf(Opcode.SHA3.code),
             memory = Memory().set(0, data)
         )

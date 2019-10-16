@@ -1,5 +1,7 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.*
+import com.gammadex.kevin.model.Byte
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
@@ -352,7 +354,8 @@ class StepDefs : En {
         Given("any new account gets created with address (0x[a-zA-Z0-9]+)") { address: String ->
             updateExecutionContext {
                 it.copy(addressGenerator = object : AddressGenerator {
-                    override fun nextAddress(): Address = Address(address)
+                    override fun nextAddress(): Address =
+                        Address(address)
                 })
             }
         }
@@ -422,32 +425,36 @@ class StepDefs : En {
         }
     }
 
-    private fun createBaseExecutionContext(): ExecutionContext = ExecutionContext(
-        currentBlock = Block(
-            number = BigInteger.ONE,
-            difficulty = BigInteger.TEN,
-            gasLimit = BigInteger("100")
-        ),
-        currentTransaction = Transaction(
-            origin = Address("0xFFEEDD"),
-            gasPrice = BigInteger.ONE
-        ),
-        coinBase = Address("0xFFEEDD"),
-        logs = emptyList(),
-        completed = false,
-        clock = Clock.systemUTC(),
-        callStack = listOf(
-            CallContext(
-                caller = Address("0x0"),
-                callData = emptyList(),
-                contract = Contract(listOf(Opcode.INVALID.code), Address("0x0")),
-                type = CallType.INITIAL,
-                value = BigInteger.ZERO,
-                valueRemaining = BigInteger.ZERO,
-                stack = Stack(),
-                memory = Memory(),
-                storage = Storage()
+    private fun createBaseExecutionContext(): ExecutionContext =
+        ExecutionContext(
+            currentBlock = Block(
+                number = BigInteger.ONE,
+                difficulty = BigInteger.TEN,
+                gasLimit = BigInteger("100")
+            ),
+            currentTransaction = Transaction(
+                origin = Address("0xFFEEDD"),
+                gasPrice = BigInteger.ONE
+            ),
+            coinBase = Address("0xFFEEDD"),
+            logs = emptyList(),
+            completed = false,
+            clock = Clock.systemUTC(),
+            callStack = listOf(
+                CallContext(
+                    caller = Address("0x0"),
+                    callData = emptyList(),
+                    contract = Contract(
+                        listOf(Opcode.INVALID.code),
+                        Address("0x0")
+                    ),
+                    type = CallType.INITIAL,
+                    value = BigInteger.ZERO,
+                    valueRemaining = BigInteger.ZERO,
+                    stack = Stack(),
+                    memory = Memory(),
+                    storage = Storage()
+                )
             )
         )
-    )
 }

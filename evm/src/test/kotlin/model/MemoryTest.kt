@@ -1,5 +1,7 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.Byte
+import com.gammadex.kevin.model.Memory
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
@@ -10,17 +12,29 @@ class MemoryTest {
     internal fun `check list of bytes can be set and retrieved`() {
         val memory = Memory()
 
-        val updated = memory.set(0, listOf(Byte(0), Byte(1), Byte(2)))
+        val updated = memory.set(0, listOf(
+            Byte(0),
+            Byte(1),
+            Byte(2)
+        ))
         val bytes = updated.get(0, 3)
 
-        assertThat(bytes).isEqualTo(listOf(Byte(0), Byte(1), Byte(2)))
+        assertThat(bytes).isEqualTo(listOf(
+            Byte(0),
+            Byte(1),
+            Byte(2)
+        ))
     }
 
     @Test
     internal fun `check retrieving 0 bytes returns empty list`() {
         val memory = Memory()
 
-        val updated = memory.set(0, listOf(Byte(0), Byte(1), Byte(2)))
+        val updated = memory.set(0, listOf(
+            Byte(0),
+            Byte(1),
+            Byte(2)
+        ))
         val bytes = updated.get(0, 0)
 
         assertThat(bytes).isEmpty()

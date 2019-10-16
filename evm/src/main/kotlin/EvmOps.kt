@@ -1,5 +1,8 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.ExecutionContext
+import com.gammadex.kevin.model.Log
+
 
 fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {
     val call = context.callStack.last()

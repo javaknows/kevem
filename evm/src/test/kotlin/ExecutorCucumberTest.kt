@@ -10,4 +10,4 @@ import org.junit.runner.RunWith
     features = ["src/test/resources/cucumber-features"],
     tags = ["not @Ignore"]
 )
-class RunCucumberTest
+class ExecutorCucumberTest

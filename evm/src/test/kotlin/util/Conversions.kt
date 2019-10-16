@@ -1,6 +1,6 @@
 package com.gammadex.kevin.util
 
-import com.gammadex.kevin.Byte
+import com.gammadex.kevin.model.Byte
 import com.gammadex.kevin.Opcode
 import java.math.BigInteger
 

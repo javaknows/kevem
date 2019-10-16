@@ -1,5 +1,6 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.Byte
 import java.math.BigInteger
 
 fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))
@@ -11,7 +12,6 @@ fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))
     .map { Byte(it) }
 
 fun bytesToBigInteger(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16)
-
 
 fun stripHexPrefix(num: String) = num.replaceFirst("0x", "")
 

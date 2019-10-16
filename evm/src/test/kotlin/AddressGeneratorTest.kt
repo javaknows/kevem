@@ -7,7 +7,7 @@ internal class AddressGeneratorTest {
     private val underTest = DefaultAddressGenerator()
 
     @Test
-    fun nextAddressIsGenerated() {
+    fun `next address is generated`() {
         val generated = underTest.nextAddress()
 
         val addressString = generated.toString()
@@ -16,7 +16,7 @@ internal class AddressGeneratorTest {
     }
 
     @Test
-    fun twoSequentialAddressesAreDifferent() {
+    fun `two sequential addresses are different`() {
         val generated = underTest.nextAddress()
         val generated2 = underTest.nextAddress()
 

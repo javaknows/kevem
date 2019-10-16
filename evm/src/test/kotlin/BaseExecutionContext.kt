@@ -1,5 +1,7 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.*
+import com.gammadex.kevin.model.Byte
 import java.math.BigInteger
 import java.time.Clock
 
@@ -15,7 +17,10 @@ internal fun baseExecutionContext(
     memory: Memory = Memory(),
     storage: Storage = Storage(),
     contractCode: List<Byte> = emptyList(),
-    evmState: EvmState = EvmState().updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT),
+    evmState: EvmState = EvmState().updateBalance(
+        Address(
+            BALANCE_ADDRESS
+        ), BALANCE_AMOUNT),
     callData: List<Byte> = emptyList(),
     lastReturnData: List<Byte> = emptyList(),
     previousBlocks: Map<BigInteger, Word> = emptyMap()

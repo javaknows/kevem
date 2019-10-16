@@ -1,5 +1,6 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.Byte
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat

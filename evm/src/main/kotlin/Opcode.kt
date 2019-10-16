@@ -1,5 +1,7 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.Byte
+
 enum class GasPriceTier(val cost: Int) {
     Zero(0),
     Base(2),

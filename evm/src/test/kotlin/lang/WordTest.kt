@@ -1,5 +1,7 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.lang
 
+import com.gammadex.kevin.model.Byte
+import com.gammadex.kevin.model.Word
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
@@ -30,7 +32,7 @@ class WordTest {
 
         val word = Word.coerceFrom(data)
 
-        assertThat(word).isEqualTo(Word( (2..33).map{ Byte(it) } ))
+        assertThat(word).isEqualTo(Word((2..33).map { Byte(it) }))
     }
 
     @Test
@@ -39,7 +41,13 @@ class WordTest {
 
         val word = Word.coerceFrom(data)
 
-        assertThat(word).isEqualTo( Word( Byte.Zero.repeat(30) + Byte(0x01).repeat(2) ) )
+        assertThat(word).isEqualTo(
+            Word(
+                Byte.Zero.repeat(30) + Byte(
+                    0x01
+                ).repeat(2)
+            )
+        )
     }
 
     @Test

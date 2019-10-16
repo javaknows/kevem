@@ -1,5 +1,7 @@
 package com.gammadex.kevin
 
+import com.gammadex.kevin.model.Address
+import com.gammadex.kevin.model.Byte
 import kotlin.random.Random
 
 interface AddressGenerator {

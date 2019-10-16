@@ -1,6 +1,6 @@
 package numbers
 
-import com.gammadex.kevin.Word
+import com.gammadex.kevin.model.Word
 import com.gammadex.kevin.numbers.fromTwosComplement
 import com.gammadex.kevin.numbers.toTwosComplement
 import org.assertj.core.api.Assertions.assertThat

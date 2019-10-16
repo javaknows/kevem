@@ -1,7 +1,7 @@
 package com.gammadex.kevin.numbers
 
-import com.gammadex.kevin.Byte
-import com.gammadex.kevin.Word
+import com.gammadex.kevin.model.Byte
+import com.gammadex.kevin.model.Word
 import java.math.BigInteger
 
 
