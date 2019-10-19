@@ -1,6 +1,6 @@
-package com.gammadex.kevin.model
+package com.gammadex.kevin.evm.model
 
-import com.gammadex.kevin.*
+import com.gammadex.kevin.evm.*
 import java.math.BigInteger
 import java.time.Clock
 

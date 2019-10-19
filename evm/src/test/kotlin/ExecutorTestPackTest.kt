@@ -1,12 +1,14 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
-import com.gammadex.kevin.model.Byte
-import com.gammadex.kevin.model.Memory
-import com.gammadex.kevin.model.Stack
-import com.gammadex.kevin.model.Word
+import com.gammadex.kevin.evm.model.Byte
+import com.gammadex.kevin.evm.model.Memory
+import com.gammadex.kevin.evm.model.Stack
+import com.gammadex.kevin.evm.model.Word
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import org.junit.runner.RunWith
 import kotlin.test.junit5.JUnit5Asserter.fail
 
 class ExecutorTestPackTest {

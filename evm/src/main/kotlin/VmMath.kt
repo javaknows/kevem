@@ -1,10 +1,10 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
-import com.gammadex.kevin.model.Byte
-import com.gammadex.kevin.model.Word
-import com.gammadex.kevin.model.Word.Companion.coerceFrom
-import com.gammadex.kevin.numbers.fromTwosComplement
-import com.gammadex.kevin.numbers.toTwosComplement
+import com.gammadex.kevin.evm.model.Byte
+import com.gammadex.kevin.evm.model.Word
+import com.gammadex.kevin.evm.model.Word.Companion.coerceFrom
+import com.gammadex.kevin.evm.numbers.fromTwosComplement
+import com.gammadex.kevin.evm.numbers.toTwosComplement
 import java.math.BigInteger
 
 object VmMath {

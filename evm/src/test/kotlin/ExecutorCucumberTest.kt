@@ -1,4 +1,4 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
 import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions

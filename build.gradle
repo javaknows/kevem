@@ -22,7 +22,7 @@ allprojects {
     }
 }
 
-task codeCoverageReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+task codeCoverageReport(type: JacocoReport) {
     dependsOn = subprojects.test
     executionData = fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 

@@ -1,7 +1,7 @@
-package com.gammadex.kevin.lang
+package com.gammadex.kevin.evm.lang
 
-import com.gammadex.kevin.model.Byte
-import com.gammadex.kevin.model.Word
+import com.gammadex.kevin.evm.model.Byte
+import com.gammadex.kevin.evm.model.Word
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat

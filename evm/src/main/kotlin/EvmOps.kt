@@ -1,7 +1,7 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
-import com.gammadex.kevin.model.ExecutionContext
-import com.gammadex.kevin.model.Log
+import com.gammadex.kevin.evm.model.ExecutionContext
+import com.gammadex.kevin.evm.model.Log
 
 
 fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {

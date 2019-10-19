@@ -1,4 +1,5 @@
-import com.gammadex.kevin.DefaultAddressGenerator
+package com.gammadex.kevin.evm
+
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

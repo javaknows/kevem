@@ -1,7 +1,7 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
-import com.gammadex.kevin.model.*
-import com.gammadex.kevin.model.Byte
+import com.gammadex.kevin.evm.model.*
+import com.gammadex.kevin.evm.model.Byte
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
@@ -9,7 +9,7 @@ import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
-import com.gammadex.kevin.util.*
+import com.gammadex.kevin.evm.util.*
 
 class StepDefs : En {
 

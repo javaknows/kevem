@@ -1,7 +1,7 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
-import com.gammadex.kevin.model.*
-import com.gammadex.kevin.lang.*
+import com.gammadex.kevin.evm.model.*
+import com.gammadex.kevin.evm.lang.*
 
 fun uniStackOp(executionContext: ExecutionContext, op: (w1: Word) -> Word): ExecutionContext {
     val (a, newStack) = executionContext.stack.popWord()

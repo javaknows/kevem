@@ -1,6 +1,6 @@
-package com.gammadex.kevin
+package com.gammadex.kevin.evm
 
-import com.gammadex.kevin.model.Byte
+import com.gammadex.kevin.evm.model.Byte
 
 enum class GasPriceTier(val cost: Int) {
     Zero(0),
