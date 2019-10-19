@@ -27,7 +27,9 @@ task codeCoverageReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
     executionData = fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
     subprojects.each {
-        sourceSets it.sourceSets.main
+        if (! it.path.contains("compat")) {
+            sourceSets(it.sourceSets.main)
+        }
     }
 
     reports {
