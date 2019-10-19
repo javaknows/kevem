@@ -10,12 +10,30 @@ ext {
     cucumberVersion = '4.7.2'
 }
 
-repositories {
-    mavenCentral()
-}
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
 
-subprojects {
+    sourceCompatibility = 1.10
+    targetCompatibility = 1.10
+
     repositories {
         mavenCentral()
+    }
+}
+
+task codeCoverageReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+    dependsOn = subprojects.test
+    executionData = fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled = true
+        html.enabled = false
+        csv.enabled = false
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
 }
