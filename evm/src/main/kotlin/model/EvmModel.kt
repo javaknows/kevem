@@ -120,13 +120,18 @@ data class Address(val value: BigInteger) {
     override fun toString() = Word.coerceFrom(value, 20).toString()
 }
 
-data class Contract(val code: List<Byte>, val address: Address) {
+open class Contract(val code: List<Byte>, val address: Address) {
     operator fun get(index: Int): Byte {
         require(index in code.indices) { "out of range" }
 
         return code[index]
     }
+
+    fun copy(code: List<Byte>? = null, address: Address? = null) =
+        Contract(code ?: this.code, address ?: this.address)
 }
+
+class EmptyContract(address: Address): Contract(emptyList(), address)
 
 data class AddressLocation(val address: Address, val balance: BigInteger, val contract: Contract?)
 
@@ -136,6 +141,10 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
+
+    fun balanceAndContractAt(address: Address): Pair<BigInteger, Contract?> = Pair(
+        balanceOf(address), contractAt(address)
+    )
 
     fun updateBalance(address: Address, balance: BigInteger): EvmState {
         val location = addresses[address]?.copy(balance = balance) ?: AddressLocation(
@@ -182,6 +191,7 @@ class Memory(private val data: Map<Int, Byte> = emptyMap()) {
     fun maxIndex() = data.keys.max()
 }
 
+// TODO - move Storage inside Contract rather than being part of context
 class Storage(private val data: Map<Int, Word> = emptyMap()) {
     operator fun get(index: Int): Word = data.getOrDefault(index,
         Word.Zero
@@ -250,7 +260,6 @@ data class CallContext(
     val contract: Contract,
     val type: CallType,
     val value: BigInteger,
-    val valueRemaining: BigInteger,
     val gasRemaining: BigInteger = BigInteger.ZERO,
     val returnLocation: Int = 0,
     val returnSize: Int = 0,

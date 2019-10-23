@@ -1,6 +1,7 @@
 package com.gammadex.kevin.evm
 
 import com.gammadex.kevin.evm.model.*
+import com.gammadex.kevin.evm.lang.*
 import com.gammadex.kevin.evm.model.Byte
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
@@ -257,9 +258,9 @@ class StepDefs : En {
             }
         }
 
-        Given("there is (\\d+) gas remaining") { gas: Int ->
+        Given("there is (.*) gas remaining") { gas: String ->
             updateLastCallContext {
-                it.copy(gasRemaining = BigInteger.valueOf(gas.toLong()))
+                it.copy(gasRemaining = toBigInteger(gas))
             }
         }
 
@@ -360,10 +361,10 @@ class StepDefs : En {
             }
         }
 
-        Then("the balance of account (0x[a-zA-Z0-9]+) is (\\d+)") { address: String, amount: Int ->
+        Then("the balance of account (0x[a-zA-Z0-9]+) is now (.*)") { address: String, amount: String ->
             checkResult {
                 val balance = it.evmState.balanceOf(Address(address))
-                assertThat(amount).isEqualTo(balance.toInt())
+                assertThat(toBigInteger(amount)).isEqualTo(balance)
             }
         }
 
@@ -374,6 +375,35 @@ class StepDefs : En {
             }
         }
 
+        Then("the call stack is now ([0-9]+) deep") { depth: Int ->
+            checkResult {
+                assertThat(it.callStack.size).isEqualTo(depth)
+            }
+        }
+
+        Then("the current call now has the following:") { dataTable: DataTable ->
+            val (type, callerAddress, callData, contractAddress, value, gas, outLocation, outSize) = dataTable.asLists()[1]
+
+            checkResult {
+                val currentCall = it.currentCallContext
+
+                assertThat(currentCall.type).isEqualTo(CallType.valueOf(type))
+                assertThat(currentCall.caller).isEqualTo(Address(callerAddress))
+                assertThat(currentCall.callData).isEqualTo(toByteList(callData))
+                assertThat(currentCall.contract.address).isEqualTo(Address(contractAddress))
+                assertThat(currentCall.value).isEqualTo(toBigInteger(value))
+                assertThat(currentCall.gasRemaining).isEqualTo(toBigInteger(gas))
+                assertThat(currentCall.returnLocation).isEqualTo(toInt(outLocation))
+                assertThat(currentCall.returnSize).isEqualTo(toInt(outSize))
+            }
+        }
+
+        Then("the previous call gas remaining is now (.*)") { gas: String ->
+            checkResult {
+                val prevCallContext = it.callStack.takeLast(2).first()
+                assertThat(prevCallContext.gasRemaining).isEqualTo(toBigInteger(gas))
+            }
+        }
     }
 
     private fun updateExecutionContext(updateFunc: (ExecutionContext) -> ExecutionContext) {
@@ -450,7 +480,6 @@ class StepDefs : En {
                     ),
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,
-                    valueRemaining = BigInteger.ZERO,
                     stack = Stack(),
                     memory = Memory(),
                     storage = Storage()

@@ -29,6 +29,7 @@ fun triStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word, w3: 
 class Executor {
     fun execute(currentContext: ExecutionContext, startContext: ExecutionContext): ExecutionContext =
         with(currentContext) {
+            // TODO - handle end of contract
             val opcode = Opcode.byCode[currentCallContext.contract[currentLocation]]
 
             // TODO increment contract pointer
@@ -379,29 +380,46 @@ class Executor {
                     val (elements, newStack) = stack.popWords(7)
                     val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
 
-                    // TODO - update contract value in updated address list
-
+                    val value = v.toBigInt()
+                    val gas = g.toBigInt()
                     val address = a.toAddress()
-                    val newContract = evmState.contractAt(address) ?: TODO()
+
+                    val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
+                    if (callerBalance < value) {
+                        TODO("handle case where contract doesn't have enough funds")
+                    }
+
+                    if (currentCallContext.gasRemaining < gas) {
+                        TODO("handle case where not enugh gas remaining")
+                    }
+
+                    val (destBalance, destContract) = evmState.balanceAndContractAt(address)
+                    val newEvmState = evmState
+                        .updateBalance(address, destBalance + value)
+
+                    val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
+                    val newEvmState2 = newEvmState
+                        .updateBalance(currentCallContext.contract.address, startBalance - value)
 
                     val newCall = CallContext(
                         currentCallContext.contract.address,
                         memory.get(inLocation.toInt(), inSize.toInt()),
-                        newContract,
+                        destContract ?: EmptyContract(address),
                         CallType.CALL,
-                        v.toBigInt(),
-                        v.toBigInt(),
-                        g.toBigInt(),
+                        value,
+                        gas,
                         outLocation.toInt(),
                         outSize.toInt()
                     )
 
-                    currentContext
+                    val updatedCtx = currentContext
                         .updateCurrentCallContext(
                             stack = newStack,
-                            gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
+                            gasRemaining = currentCallContext.gasRemaining - gas
                         )
-                        .copy(callStack = callStack + newCall)
+
+                    updatedCtx.copy(callStack = updatedCtx.callStack + newCall,
+                            evmState = newEvmState2)
                 }
                 Opcode.CALLCODE -> {
                     val (elements, newStack) = stack.popWords(7)
@@ -415,7 +433,6 @@ class Executor {
                         memory.get(inLocation.toInt(), inSize.toInt()),
                         nextContract,
                         CallType.CALLCODE,
-                        v.toBigInt(),
                         v.toBigInt(),
                         g.toBigInt(),
                         outLocation.toInt(),
@@ -461,7 +478,6 @@ class Executor {
                         newContract,
                         CallType.DELEGATECALL,
                         currentCallContext.value,
-                        currentCallContext.value,
                         g.toBigInt(),
                         outLocation.toInt(),
                         outSize.toInt(),
@@ -487,7 +503,6 @@ class Executor {
                         memory.get(inLocation.toInt(), inSize.toInt()),
                         newContract,
                         CallType.STATICCALL,
-                        v.toBigInt(),
                         v.toBigInt(),
                         g.toBigInt(),
                         outLocation.toInt(),
