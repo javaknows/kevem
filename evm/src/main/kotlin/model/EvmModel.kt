@@ -260,6 +260,7 @@ data class CallContext(
     val contract: Contract,
     val type: CallType,
     val value: BigInteger,
+    val code: List<Byte>,
     val gasRemaining: BigInteger = BigInteger.ZERO,
     val returnLocation: Int = 0,
     val returnSize: Int = 0,

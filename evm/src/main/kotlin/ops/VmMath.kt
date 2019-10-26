@@ -1,4 +1,4 @@
-package com.gammadex.kevin.evm
+package com.gammadex.kevin.evm.ops
 
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.model.Word

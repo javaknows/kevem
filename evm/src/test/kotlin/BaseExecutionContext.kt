@@ -31,6 +31,7 @@ internal fun baseExecutionContext(
         contract = Contract(contractCode, Address(CONTRACT_ADDRESS)),
         type = CallType.INITIAL,
         value = CALL_VALUE,
+        code = contractCode,
         stack = stack,
         memory = memory,
         storage = storage

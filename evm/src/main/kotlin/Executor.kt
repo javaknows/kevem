@@ -1,7 +1,7 @@
 package com.gammadex.kevin.evm
 
 import com.gammadex.kevin.evm.model.*
-import com.gammadex.kevin.evm.lang.*
+import com.gammadex.kevin.evm.ops.*
 
 fun uniStackOp(executionContext: ExecutionContext, op: (w1: Word) -> Word): ExecutionContext {
     val (a, newStack) = executionContext.stack.popWord()
@@ -30,7 +30,7 @@ class Executor {
     fun execute(currentContext: ExecutionContext, startContext: ExecutionContext): ExecutionContext =
         with(currentContext) {
             // TODO - handle end of contract
-            val opcode = Opcode.byCode[currentCallContext.contract[currentLocation]]
+            val opcode = Opcode.byCode[currentCallContext.code[currentLocation]]
 
             // TODO increment contract pointer
             // TODO deduct gas
@@ -376,77 +376,8 @@ class Executor {
                         .copy(evmState = newEvmState)
                         .updateCurrentCallContext(stack = newStack2)
                 }
-                Opcode.CALL -> {
-                    val (elements, newStack) = stack.popWords(7)
-                    val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
-
-                    val value = v.toBigInt()
-                    val gas = g.toBigInt()
-                    val address = a.toAddress()
-
-                    val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
-                    if (callerBalance < value) {
-                        TODO("handle case where contract doesn't have enough funds")
-                    }
-
-                    if (currentCallContext.gasRemaining < gas) {
-                        TODO("handle case where not enugh gas remaining")
-                    }
-
-                    val (destBalance, destContract) = evmState.balanceAndContractAt(address)
-                    val newEvmState = evmState
-                        .updateBalance(address, destBalance + value)
-
-                    val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
-                    val newEvmState2 = newEvmState
-                        .updateBalance(currentCallContext.contract.address, startBalance - value)
-
-                    val newCall = CallContext(
-                        currentCallContext.contract.address,
-                        memory.get(inLocation.toInt(), inSize.toInt()),
-                        destContract ?: EmptyContract(address),
-                        CallType.CALL,
-                        value,
-                        gas,
-                        outLocation.toInt(),
-                        outSize.toInt()
-                    )
-
-                    val updatedCtx = currentContext
-                        .updateCurrentCallContext(
-                            stack = newStack,
-                            gasRemaining = currentCallContext.gasRemaining - gas
-                        )
-
-                    updatedCtx.copy(callStack = updatedCtx.callStack + newCall,
-                            evmState = newEvmState2)
-                }
-                Opcode.CALLCODE -> {
-                    val (elements, newStack) = stack.popWords(7)
-                    val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
-
-                    val address = a.toAddress()
-                    val nextContract = evmState.contractAt(address) ?: TODO()
-
-                    val newCall = CallContext(
-                        currentCallContext.contract.address,
-                        memory.get(inLocation.toInt(), inSize.toInt()),
-                        nextContract,
-                        CallType.CALLCODE,
-                        v.toBigInt(),
-                        g.toBigInt(),
-                        outLocation.toInt(),
-                        outSize.toInt(),
-                        storage = currentCallContext.storage
-                    )
-
-                    currentContext
-                        .updateCurrentCallContext(
-                            stack = newStack,
-                            gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
-                        )
-                        .copy(callStack = callStack + newCall)
-                }
+                Opcode.CALL -> CallOps.call(currentContext)
+                Opcode.CALLCODE -> CallOps.callCode(currentContext)
                 Opcode.RETURN -> {
                     val (elements, _) = stack.popWords(2)
                     val (p, s) = elements.map { it.toInt() }
@@ -465,57 +396,8 @@ class Executor {
                         .copy(lastReturnData = returnData, callStack = remainingCalls)
                         .updateCurrentCallContext(memory = newMemory, storage = newStorage)
                 }
-                Opcode.DELEGATECALL -> {
-                    val (elements, newStack) = stack.popWords(7)
-                    val (g, a, inLocation, inSize, outLocation, outSize) = elements
-
-                    val address = a.toAddress()
-                    val newContract = evmState.contractAt(address) ?: TODO()
-
-                    val newCall = CallContext(
-                        currentCallContext.caller,
-                        memory.get(inLocation.toInt(), inSize.toInt()),
-                        newContract,
-                        CallType.DELEGATECALL,
-                        currentCallContext.value,
-                        g.toBigInt(),
-                        outLocation.toInt(),
-                        outSize.toInt(),
-                        storage = currentCallContext.storage
-                    )
-
-                    currentContext
-                        .updateCurrentCallContext(
-                            stack = newStack,
-                            gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
-                        )
-                        .copy(callStack = callStack + newCall)
-                }
-                Opcode.STATICCALL -> {
-                    val (elements, newStack) = stack.popWords(7)
-                    val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
-
-                    val address = a.toAddress()
-                    val newContract = evmState.contractAt(address) ?: TODO()
-
-                    val newCall = CallContext(
-                        currentCallContext.caller,
-                        memory.get(inLocation.toInt(), inSize.toInt()),
-                        newContract,
-                        CallType.STATICCALL,
-                        v.toBigInt(),
-                        g.toBigInt(),
-                        outLocation.toInt(),
-                        outSize.toInt()
-                    )
-
-                    currentContext
-                        .updateCurrentCallContext(
-                            stack = newStack,
-                            gasRemaining = currentCallContext.gasRemaining - g.toBigInt()
-                        )
-                        .copy(callStack = callStack + newCall)
-                }
+                Opcode.DELEGATECALL -> CallOps.delegateCall(currentContext)
+                Opcode.STATICCALL -> CallOps.staticCall(currentContext)
                 Opcode.CREATE2 -> TODO()
                 Opcode.REVERT -> {
                     val (elements, _) = stack.popWords(2)

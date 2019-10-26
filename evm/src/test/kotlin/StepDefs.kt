@@ -34,8 +34,9 @@ class StepDefs : En {
 
         When("opcode ([A-Z0-9]+) is executed") { opcode: String ->
             updateLastCallContext {
-                val newContract = it.contract.copy(code = listOf(Opcode.valueOf(opcode).code))
-                it.copy(contract = newContract)
+                val code = listOf(Opcode.valueOf(opcode).code)
+                val newContract = it.contract.copy(code = code)
+                it.copy(contract = newContract, code = code)
             }
 
             executeContext()
@@ -158,7 +159,7 @@ class StepDefs : En {
 
             updateLastCallContext { callContext ->
                 val newContract = callContext.contract.copy(code = byteCode)
-                callContext.copy(contract = newContract)
+                callContext.copy(contract = newContract, code = byteCode)
             }
         }
 
@@ -266,8 +267,9 @@ class StepDefs : En {
 
         Given("contract code ends with (0x[a-zA-Z0-9]+)") { data: String ->
             updateLastCallContext {
-                val newContract = it.contract.copy(code = toByteList(data))
-                it.copy(contract = newContract)
+                val code = toByteList(data)
+                val newContract = it.contract.copy(code = code)
+                it.copy(contract = newContract, code = code)
             }
         }
 
@@ -277,9 +279,9 @@ class StepDefs : En {
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
-                    val newContractCode = listOf(opcode!!.code) + ctx.contract.code
-                    val newContract = ctx.contract.copy(code = newContractCode)
-                    ctx.copy(contract = newContract)
+                    val code = listOf(opcode!!.code) + ctx.code
+                    val newContract = ctx.contract.copy(code = code)
+                    ctx.copy(contract = newContract, code = code)
                 }
 
                 executeContext()
@@ -297,8 +299,9 @@ class StepDefs : En {
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
-                    val newContract = ctx.contract.copy(code = listOf(opcode!!.code))
-                    ctx.copy(contract = newContract)
+                    val code = listOf(opcode!!.code) + ctx.code
+                    val newContract = ctx.contract.copy(code = code)
+                    ctx.copy(contract = newContract, code = code)
                 }
 
                 executeContext()
@@ -317,8 +320,9 @@ class StepDefs : En {
                 val indexOfAA = toInt(it[2])
 
                 updateLastCallContext { ctx ->
-                    val newContract = ctx.contract.copy(code = listOf(opcode!!.code))
-                    ctx.copy(contract = newContract)
+                    val code = listOf(opcode!!.code) + ctx.code
+                    val newContract = ctx.contract.copy(code = code)
+                    ctx.copy(contract = newContract, code = code)
                 }
 
                 executeContext()
@@ -478,6 +482,7 @@ class StepDefs : En {
                         listOf(Opcode.INVALID.code),
                         Address("0x0")
                     ),
+                    code = listOf(Opcode.INVALID.code),
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,
                     stack = Stack(),
