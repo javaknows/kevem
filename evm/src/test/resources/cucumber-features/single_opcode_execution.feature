@@ -528,7 +528,21 @@ Feature: Single Opcode Execution
     Then the call stack is now 2 deep
     And the current call now has the following:
       | type         | caller address | calldata | contract address | value | gas   | out location | out size |
-      | STATICCALL   | 0xEEEEEE        | 0x123456 | 0xADD8E55         | 0x0 | 0x6A5 | 0x200        | 0x2      |
+      | STATICCALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x200        | 0x2      |
     And the balance of account 0xADD8E55 is now 0x0
     And the balance of account 0xEEEEEE is now 0x1234
     And the previous call gas remaining is now 1
+
+  Scenario: a contract is created and deployed with CREATE2
+    Given the contract address is 0xEE
+    And the account with address 0xEE has balance 0x9
+    And 0x123456 is stored in memory at location 0x100
+    And 0x4 is pushed onto the stack
+    And 0x1 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    When opcode CREATE2 is executed
+    Then the balance of account 0xEE is now 5
+    And the balance of account 0xb42ef6d8789aa191d5c6f948a528f40153745664 is now 4
+    And the code at address 0xb42ef6d8789aa191d5c6f948a528f40153745664 is 0x123456
+    And the stack contains 0xb42ef6d8789aa191d5c6f948a528f40153745664

@@ -355,28 +355,7 @@ class Executor {
                 Opcode.LOG2 -> log(currentContext, 2)
                 Opcode.LOG3 -> log(currentContext, 3)
                 Opcode.LOG4 -> log(currentContext, 4)
-                Opcode.CREATE -> {
-                    // TODO - what if current contract doesn't have enough wei to send
-                    // TODO - what if the generated address already exists
-                    // TODO - subtract gas
-                    val (elements, newStack) = stack.popWords(3)
-                    val (v, p, s) = elements
-
-                    val newContractCode = memory.get(p.toInt(), s.toInt())
-                    val newContractAddress = addressGenerator.nextAddress()
-                    val contract = Contract(newContractCode, newContractAddress)
-                    val balance = v.toBigInt()
-                    val currentAddress = currentCallContext.contract.address
-                    val newEvmState = evmState
-                        .updateBalanceAndContract(newContractAddress, balance, contract)
-                        .updateBalance(currentAddress, evmState.balanceOf(currentAddress).subtract(balance))
-
-                    val newStack2 = newStack.pushWord(newContractAddress.toWord())
-
-                    currentContext
-                        .copy(evmState = newEvmState)
-                        .updateCurrentCallContext(stack = newStack2)
-                }
+                Opcode.CREATE -> CreateContractOps.create(currentContext)
                 Opcode.CALL -> CallOps.call(currentContext)
                 Opcode.CALLCODE -> CallOps.callCode(currentContext)
                 Opcode.RETURN -> {
@@ -399,7 +378,7 @@ class Executor {
                 }
                 Opcode.DELEGATECALL -> CallOps.delegateCall(currentContext)
                 Opcode.STATICCALL -> CallOps.staticCall(currentContext)
-                Opcode.CREATE2 -> TODO()
+                Opcode.CREATE2 -> CreateContractOps.create2(currentContext)
                 Opcode.REVERT -> {
                     val (elements, _) = stack.popWords(2)
                     val (p, s) = elements.map { it.toInt() }

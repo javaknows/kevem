@@ -39,7 +39,7 @@ data class Word(val data: List<Byte>, private val numBytes: Int = 32) {
 
     fun toInt() = toBigInt().toInt()
 
-    fun toAddress() = Address(toBigInt())
+    fun toAddress() = Address(Word(data.takeLast(20), 20).toBigInt())
 
     fun toBoolean() = data.last() != Byte.Zero
 
