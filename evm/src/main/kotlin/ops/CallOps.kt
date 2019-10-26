@@ -1,147 +1,181 @@
 package com.gammadex.kevin.evm.ops
 
-import com.gammadex.kevin.evm.lang.component6
-import com.gammadex.kevin.evm.lang.component7
-import com.gammadex.kevin.evm.model.CallContext
-import com.gammadex.kevin.evm.model.CallType
-import com.gammadex.kevin.evm.model.EmptyContract
-import com.gammadex.kevin.evm.model.ExecutionContext
+import com.gammadex.kevin.evm.model.*
+import java.math.BigInteger
+
+private data class CallArguments(
+    val gas: BigInteger,
+    val address: Address,
+    val inLocation: Int,
+    val inSize: Int,
+    val outLocation: Int,
+    val outSize: Int,
+    val value: BigInteger = BigInteger.ZERO
+)
 
 object CallOps {
     fun call(context: ExecutionContext): ExecutionContext = with(context) {
-        val (elements, newStack) = stack.popWords(7)
-        val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
+        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
 
-        val value = v.toBigInt()
-        val gas = g.toBigInt()
-        val address = a.toAddress()
+        val newCtx = updateCurrentCallContext(stack = newStack)
 
-        val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
-        if (callerBalance < value) {
-            TODO("handle case where contract doesn't have enough funds")
-        }
+        return doCall(newCtx, callArguments, CallType.CALL)
+    }
 
-        if (currentCallContext.gasRemaining < gas) {
-            TODO("handle case where not enugh gas remaining")
-        }
+    fun staticCall(context: ExecutionContext): ExecutionContext = with(context) {
+        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = false)
 
-        val (destBalance, destContract) = evmState.balanceAndContractAt(address)
-        val newEvmState = evmState
-            .updateBalance(address, destBalance + value)
+        val newCtx = updateCurrentCallContext(stack = newStack)
 
-        val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
-        val newEvmState2 = newEvmState
-            .updateBalance(currentCallContext.contract.address, startBalance - value)
-
-        val xDestContract  = destContract ?: EmptyContract(address)
-        val newCall = CallContext(
-            currentCallContext.contract.address,
-            memory.get(inLocation.toInt(), inSize.toInt()),
-            xDestContract,
-            CallType.CALL,
-            value,
-            xDestContract.code,
-            gas,
-            outLocation.toInt(),
-            outSize.toInt()
-        )
-
-        val updatedCtx = updateCurrentCallContext(
-            stack = newStack,
-            gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
-        )
-
-        updatedCtx.copy(
-            callStack = updatedCtx.callStack + newCall,
-            evmState = newEvmState2
-        )
+        return doCall(newCtx, callArguments, CallType.STATICCALL)
     }
 
     fun callCode(context: ExecutionContext): ExecutionContext = with(context) {
-        val (elements, newStack) = stack.popWords(7)
-        val (g, a, v, inLocation, inSize, outLocation, outSize) = elements
+        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
 
-        val value = v.toBigInt()
-        val gas = g.toBigInt()
-        val address = a.toAddress()
+        with(callArguments) {
+            val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
+            if (callerBalance < value) {
+                TODO("handle case where contract doesn't have enough funds")
+            }
 
-        val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
-        if (callerBalance < value) {
-            TODO("handle case where contract doesn't have enough funds")
+            if (currentCallContext.gasRemaining < gas) {
+                TODO("handle case where not enugh gas remaining")
+            }
+
+            val (destBalance, _) = evmState.balanceAndContractAt(address)
+            val newEvmState = evmState
+                .updateBalance(address, destBalance + value)
+
+            val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
+            val newEvmState2 = newEvmState
+                .updateBalance(currentCallContext.contract.address, startBalance - value)
+
+            val newCall = CallContext(
+                currentCallContext.contract.address,
+                memory.get(inLocation, inSize),
+                currentCallContext.contract,
+                CallType.CALLCODE,
+                value,
+                currentCallContext.contract.code,
+                gas,
+                outLocation,
+                outSize
+            )
+
+            val updatedCtx = updateCurrentCallContext(
+                stack = newStack,
+                gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
+            )
+
+            updatedCtx.copy(
+                callStack = updatedCtx.callStack + newCall,
+                evmState = newEvmState2
+            )
         }
-
-        if (currentCallContext.gasRemaining < gas) {
-            TODO("handle case where not enugh gas remaining")
-        }
-
-        val (destBalance, _) = evmState.balanceAndContractAt(address)
-        val newEvmState = evmState
-            .updateBalance(address, destBalance + value)
-
-        val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
-        val newEvmState2 = newEvmState
-            .updateBalance(currentCallContext.contract.address, startBalance - value)
-
-        val newCall = CallContext(
-            currentCallContext.contract.address,
-            memory.get(inLocation.toInt(), inSize.toInt()),
-            currentCallContext.contract, // TODO - check that this is correct
-            CallType.CALLCODE,
-            value,
-            currentCallContext.contract.code,
-            gas,
-            outLocation.toInt(),
-            outSize.toInt()
-        )
-
-        val updatedCtx = updateCurrentCallContext(
-            stack = newStack,
-            gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
-        )
-
-        updatedCtx.copy(
-            callStack = updatedCtx.callStack + newCall,
-            evmState = newEvmState2
-        )
     }
 
     fun delegateCall(context: ExecutionContext): ExecutionContext = with(context) {
-        val (elements, newStack) = stack.popWords(7)
-        val (g, a, inLocation, inSize, outLocation, outSize) = elements
+        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = false)
 
-        val gas = g.toBigInt()
-        val address = a.toAddress()
+        with(callArguments) {
+            if (currentCallContext.gasRemaining < gas) {
+                TODO("handle case where not enugh gas remaining")
+            }
 
-        if (currentCallContext.gasRemaining < gas) {
-            TODO("handle case where not enugh gas remaining")
+            val code = evmState.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
+
+            val newCall = CallContext(
+                currentCallContext.caller,
+                memory.get(inLocation, inSize),
+                currentCallContext.contract,
+                CallType.DELEGATECALL,
+                currentCallContext.value,
+                code,
+                gas,
+                outLocation,
+                outSize
+            )
+
+            val updatedCtx = updateCurrentCallContext(
+                stack = newStack,
+                gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
+            )
+
+            updatedCtx.copy(
+                callStack = updatedCtx.callStack + newCall
+            )
         }
-
-        val code = evmState.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
-
-        val newCall = CallContext(
-            currentCallContext.caller,
-            memory.get(inLocation.toInt(), inSize.toInt()),
-            currentCallContext.contract, // TODO - check that this is correct
-            CallType.DELEGATECALL,
-            currentCallContext.value,
-            code,
-            gas,
-            outLocation.toInt(),
-            outSize.toInt()
-        )
-
-        val updatedCtx = updateCurrentCallContext(
-            stack = newStack,
-            gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
-        )
-
-        updatedCtx.copy(
-            callStack = updatedCtx.callStack + newCall
-        )
     }
 
-    fun staticCall(context: ExecutionContext): ExecutionContext  {
-        TODO()
+    private fun doCall(context: ExecutionContext, args: CallArguments, callType: CallType): ExecutionContext =
+        with(context) {
+            with(args) {
+                val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
+                if (callerBalance < value) {
+                    TODO("handle case where contract doesn't have enough funds")
+                }
+
+                if (currentCallContext.gasRemaining < gas) {
+                    TODO("handle case where not enugh gas remaining")
+                }
+
+                val (destBalance, destContract) = evmState.balanceAndContractAt(address)
+                val newEvmState = evmState
+                    .updateBalance(address, destBalance + value)
+
+                val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
+                val newEvmState2 = newEvmState
+                    .updateBalance(currentCallContext.contract.address, startBalance - value)
+
+                val callContract = destContract ?: EmptyContract(address)
+                val newCall = CallContext(
+                    currentCallContext.contract.address,
+                    memory.get(inLocation, inSize),
+                    callContract,
+                    callType,
+                    value,
+                    callContract.code,
+                    gas,
+                    outLocation,
+                    outSize
+                )
+
+                val updatedCtx = updateCurrentCallContext(
+                    gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
+                )
+
+                updatedCtx.copy(
+                    callStack = updatedCtx.callStack + newCall,
+                    evmState = newEvmState2
+                )
+            }
+        }
+
+    private fun popCallArgsFromStack(context: ExecutionContext, withValue: Boolean): Pair<CallArguments, Stack> {
+        val (elements, newStack) = context.stack.popWords(4)
+        val (inLocation, inSize, outLocation, outSize) = elements
+
+        val (value, newStack2) =
+            if (withValue) {
+                val (value, newStack2) = newStack.popWord()
+                Pair(value.toBigInt(), newStack2)
+            } else Pair(BigInteger.ZERO, newStack)
+
+        val (elements2, newStack3) = newStack2.popWords(2)
+        val (g, a) = elements2
+
+        val callArguments = CallArguments(
+            g.toBigInt(),
+            a.toAddress(),
+            inLocation.toInt(),
+            inSize.toInt(),
+            outLocation.toInt(),
+            outSize.toInt(),
+            value
+        )
+
+        return Pair(callArguments, newStack3)
     }
 }
 

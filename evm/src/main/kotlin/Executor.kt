@@ -35,6 +35,7 @@ class Executor {
             // TODO increment contract pointer
             // TODO deduct gas
             // TODO - maximum stack size
+            // TODO - don't allow modifications if STATICCALL context
 
             when (opcode) {
                 Opcode.STOP -> currentContext.copy(completed = true)
