@@ -132,7 +132,7 @@ open class Contract(val code: List<Byte>, val address: Address) {
         Contract(code ?: this.code, address ?: this.address)
 }
 
-class EmptyContract(address: Address): Contract(emptyList(), address)
+class EmptyContract(address: Address) : Contract(emptyList(), address)
 
 data class AddressLocation(val address: Address, val balance: BigInteger, val contract: Contract?)
 
@@ -176,7 +176,8 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
 }
 
 class Memory(private val data: Map<Int, Byte> = emptyMap()) {
-    operator fun get(index: Int): Byte = data.getOrDefault(index,
+    operator fun get(index: Int): Byte = data.getOrDefault(
+        index,
         Byte.Zero
     )
 
@@ -194,7 +195,8 @@ class Memory(private val data: Map<Int, Byte> = emptyMap()) {
 
 // TODO - move Storage inside Contract rather than being part of context
 class Storage(private val data: Map<Int, Word> = emptyMap()) {
-    operator fun get(index: Int): Word = data.getOrDefault(index,
+    operator fun get(index: Int): Word = data.getOrDefault(
+        index,
         Word.Zero
     )
 
@@ -253,7 +255,14 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     fun size() = backing.size
 }
 
-enum class ErrorCode { None, INVALID_INSTRUCTION, OUT_OF_GAS }
+// TODO - align errors and error codes consistent with geth / eth / ganahche
+enum class ErrorCode {
+    None,
+    INVALID_INSTRUCTION,
+    OUT_OF_GAS,
+    STACK_DEPTH,
+    STATE_CHANGE_STATIC_CALL
+}
 
 data class EvmError(val code: ErrorCode, val message: String?) {
     companion object {
