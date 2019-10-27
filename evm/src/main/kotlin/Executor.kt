@@ -3,29 +3,6 @@ package com.gammadex.kevin.evm
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.ops.*
 
-fun uniStackOp(executionContext: ExecutionContext, op: (w1: Word) -> Word): ExecutionContext {
-    val (a, newStack) = executionContext.stack.popWord()
-    val finalStack = newStack.pushWord(op(a))
-
-    return executionContext.updateCurrentCallContext(stack = finalStack)
-}
-
-fun biStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word) -> Word): ExecutionContext {
-    val (elements, newStack) = executionContext.stack.popWords(2)
-    val (a, b) = elements
-    val finalStack = newStack.pushWord(op(a, b))
-
-    return executionContext.updateCurrentCallContext(stack = finalStack)
-}
-
-fun triStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word, w3: Word) -> Word): ExecutionContext {
-    val (elements, newStack) = executionContext.stack.popWords(3)
-    val (a, b, c) = elements
-    val finalStack = newStack.pushWord(op(a, b, c))
-
-    return executionContext.updateCurrentCallContext(stack = finalStack)
-}
-
 class Executor {
     fun execute(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
         val byteCode = currentCallContext.code[currentLocation]
@@ -390,5 +367,28 @@ class Executor {
             Opcode.SUICIDE -> HaltOps.suicide(currentContext)
             else -> HaltOps.invalid(currentContext, "Invalid instruction - unknown opcode $byteCode")
         }
+    }
+
+    private fun uniStackOp(executionContext: ExecutionContext, op: (w1: Word) -> Word): ExecutionContext {
+        val (a, newStack) = executionContext.stack.popWord()
+        val finalStack = newStack.pushWord(op(a))
+
+        return executionContext.updateCurrentCallContext(stack = finalStack)
+    }
+
+    private fun biStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word) -> Word): ExecutionContext {
+        val (elements, newStack) = executionContext.stack.popWords(2)
+        val (a, b) = elements
+        val finalStack = newStack.pushWord(op(a, b))
+
+        return executionContext.updateCurrentCallContext(stack = finalStack)
+    }
+
+    private fun triStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word, w3: Word) -> Word): ExecutionContext {
+        val (elements, newStack) = executionContext.stack.popWords(3)
+        val (a, b, c) = elements
+        val finalStack = newStack.pushWord(op(a, b, c))
+
+        return executionContext.updateCurrentCallContext(stack = finalStack)
     }
 }
