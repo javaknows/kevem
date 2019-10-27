@@ -27,9 +27,10 @@ fun triStackOp(executionContext: ExecutionContext, op: (w1: Word, w2: Word, w3: 
 }
 
 class Executor {
-    fun execute(currentContext: ExecutionContext, startContext: ExecutionContext): ExecutionContext =
-        with(currentContext) {
-            // TODO - handle end of contract
+    fun execute(incomingContext: ExecutionContext): ExecutionContext {
+        val currentContext = incomingContext
+
+        return with(currentContext) {
             val opcode = Opcode.byCode[currentCallContext.code[currentLocation]]
 
             // TODO increment contract pointer
@@ -38,7 +39,7 @@ class Executor {
             // TODO - don't allow modifications if STATICCALL context
 
             when (opcode) {
-                Opcode.STOP -> currentContext.copy(completed = true)
+                Opcode.STOP -> HaltOps.stop(currentContext)
                 Opcode.ADD -> biStackOp(currentContext, VmMath::add)
                 Opcode.MUL -> biStackOp(currentContext, VmMath::mul)
                 Opcode.SUB -> biStackOp(currentContext, VmMath::sub)
@@ -358,62 +359,16 @@ class Executor {
                 Opcode.CREATE -> CreateContractOps.create(currentContext)
                 Opcode.CALL -> CallOps.call(currentContext)
                 Opcode.CALLCODE -> CallOps.callCode(currentContext)
-                Opcode.RETURN -> {
-                    val (elements, _) = stack.popWords(2)
-                    val (p, s) = elements.map { it.toInt() }
-
-                    val remainingCalls = callStack.dropLast(1)
-
-                    val returnData = memory.get(p, s)
-
-                    val (newMemory, newStorage) =
-                        if (currentCallContext.type == CallType.DELEGATECALL) // TODO
-                            Pair(currentCallContext.memory, currentCallContext.storage)
-                        else
-                            Pair(remainingCalls.last().memory, remainingCalls.last().storage)
-
-                    currentContext
-                        .copy(lastReturnData = returnData, callStack = remainingCalls)
-                        .updateCurrentCallContext(memory = newMemory, storage = newStorage)
-                }
+                Opcode.RETURN -> HaltOps.doReturn(currentContext)
                 Opcode.DELEGATECALL -> CallOps.delegateCall(currentContext)
                 Opcode.STATICCALL -> CallOps.staticCall(currentContext)
                 Opcode.CREATE2 -> CreateContractOps.create2(currentContext)
-                Opcode.REVERT -> {
-                    val (elements, _) = stack.popWords(2)
-                    val (p, s) = elements.map { it.toInt() }
-                    val returnData = memory.get(p, s)
-
-                    // TODO - caller balance loses used gas
-
-                    startContext.copy(
-                        lastReturnData = returnData,
-                        completed = true,
-                        logs = emptyList(),
-                        callStack = callStack.take(1)
-                    )
-                }
-                Opcode.INVALID -> {
-                    // TODO - caller balance loses gas limit
-
-                    startContext.copy(
-                        lastReturnData = emptyList(),
-                        completed = true,
-                        logs = emptyList(),
-                        callStack = callStack.take(1)
-                    )
-                }
-                Opcode.SUICIDE -> TODO()
-
-
-                /*
-                lastReturnData
-
-                evmState
-                 */
-
+                Opcode.REVERT -> HaltOps.revert(currentContext)
+                Opcode.INVALID -> HaltOps.invalid(currentContext)
+                Opcode.SUICIDE -> HaltOps.suicide(currentContext)
 
                 else -> TODO("$opcode is not implemented")
             }
         }
+    }
 }

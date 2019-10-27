@@ -16,3 +16,5 @@ fun bytesToBigInteger(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { i
 fun stripHexPrefix(num: String) = num.replaceFirst("0x", "")
 
 fun hexPrefix(num: String) = "0x$num"
+
+fun coerceByteListToSize(data: List<Byte>, size: Int) = data.take(size) + Byte.Zero.repeat(size - data.size)

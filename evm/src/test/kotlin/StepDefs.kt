@@ -143,13 +143,13 @@ class StepDefs : En {
             }
         }
 
-        Given("(\\d+) bytes? of memory from position (\\d+) is (empty|0x[a-zA-Z0-9]+)") { length: Int, start: Int, bytes: String ->
+        Given("([a-zA-Z0-9]+) bytes? of memory from position ([a-zA-Z0-9]+) is (empty|0x[a-zA-Z0-9]+)") { length: String, start: String, bytes: String ->
             val expected =
-                if (bytes == "empty") Byte.Zero.repeat(length)
+                if (bytes == "empty") Byte.Zero.repeat(toInt(length))
                 else toByteList(bytes)
 
             checkResult {
-                val actual = it.memory.get(start, length)
+                val actual = it.memory.get(toInt(start), toInt(length))
                 assertThat(actual).isEqualTo(expected)
             }
         }
@@ -372,10 +372,12 @@ class StepDefs : En {
             }
         }
 
-        Then("the code at address (0x[a-zA-Z0-9]+) is (0x[a-zA-Z0-9]+)") { address: String, expectedCode: String ->
+        Then("the code at address (0x[a-zA-Z0-9]+) is (.*)") { address: String, expectedCode: String ->
+            val code = if (expectedCode == "empty") emptyList() else toByteList(expectedCode)
+
             checkResult {
                 val code = it.evmState.codeAt(Address(address))
-                assertThat(code).isEqualTo(toByteList(expectedCode))
+                assertThat(code).isEqualTo(code)
             }
         }
 
@@ -408,6 +410,84 @@ class StepDefs : En {
                 assertThat(prevCallContext.gasRemaining).isEqualTo(toBigInteger(gas))
             }
         }
+
+        When("the current call is:") { dataTable: DataTable ->
+            val currentCallContext = executionContext.currentCallContext
+
+            val newCallCtx = copyContextWithTableData(dataTable, currentCallContext)
+
+            executionContext = executionContext.copy(
+                callStack = executionContext.callStack.dropLast(1) + newCallCtx
+            )
+        }
+
+        When("the previous call is:") { dataTable: DataTable ->
+            val (prevCallContext, lastCallContext) = with(executionContext) {
+                if (callStack.size > 1) Pair(callStack[callStack.size - 2], callStack.last())
+                else Pair(callStack[0].copy(), callStack[0])
+            }
+
+            val newCallCtx = copyContextWithTableData(dataTable, prevCallContext)
+
+            executionContext = executionContext.copy(
+                callStack = executionContext.callStack.dropLast(2) + newCallCtx + lastCallContext
+            )
+        }
+
+        When("there is only one call on the stack") {
+            executionContext = executionContext.copy(
+                callStack = executionContext.callStack.takeLast(1)
+            )
+        }
+
+        Then("the execution context is now marked as complete") {
+            checkResult {
+                assertThat(it.completed).isTrue()
+            }
+        }
+
+        Then("the execution context is now marked as not complete") {
+            checkResult {
+                assertThat(it.completed).isFalse()
+            }
+        }
+
+        Then("return data is now (empty|0x[a-zA-Z0-9]+)") { value: String ->
+            val data = toByteList(value.replace("empty", "0x"))
+
+            checkResult {
+                assertThat(it.lastReturnData).isEqualTo(data)
+            }
+        }
+
+        Then("the last error is now ([A-Z0-9_]+) with message \"(.*)\"") { code: String, message: String ->
+            val errorCode = ErrorCode.valueOf(code)
+            val expectedError = EvmError(errorCode, message)
+
+            checkResult {
+                assertThat(it.lastCallError).isEqualTo(expectedError)
+            }
+        }
+    }
+
+    private fun copyContextWithTableData(
+        dataTable: DataTable,
+        currentCallContext: CallContext
+    ): CallContext {
+        val (type, callerAddress, callData, contractAddress, value, gas, outLocation, outSize) = dataTable.asLists()[1]
+        val newCallContract = currentCallContext.contract.copy(address = Address(contractAddress))
+
+        val newCallCtx = currentCallContext.copy(
+            type = CallType.valueOf(type),
+            caller = Address(callerAddress),
+            callData = toByteList(callData),
+            contract = newCallContract,
+            value = toBigInteger(value),
+            gasRemaining = toBigInteger(gas),
+            returnLocation = toInt(outLocation),
+            returnSize = toInt(outSize)
+        )
+        return newCallCtx
     }
 
     private fun updateExecutionContext(updateFunc: (ExecutionContext) -> ExecutionContext) {
@@ -427,7 +507,7 @@ class StepDefs : En {
     }
 
     private fun executeContext() {
-        result = executor.execute(executionContext, executionContext)
+        result = executor.execute(executionContext)
     }
 
     private fun updateCurrentBlock(updateBlock: (ctx: Block) -> Block) {

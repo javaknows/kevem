@@ -1,0 +1,8 @@
+b49b8c4e: doInvalid()
+1253f7aa: doReturn()
+afc874d2: doRevert()
+c19166cd: doSelfDestruct()
+624f011d: doStop()
+fdbacfd9: setCallType(uint256)
+0c166a61: setChildAddress(address)
+eee9c708: setGasToUse(uint256)

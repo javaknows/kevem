@@ -13,6 +13,8 @@ private data class CallArguments(
     val value: BigInteger = BigInteger.ZERO
 )
 
+// TODO - add return value sto stack - 0 or 1
+
 object CallOps {
     fun call(context: ExecutionContext): ExecutionContext = with(context) {
         val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
@@ -58,6 +60,7 @@ object CallOps {
                 CallType.CALLCODE,
                 value,
                 currentCallContext.contract.code,
+                context,
                 gas,
                 outLocation,
                 outSize
@@ -92,6 +95,7 @@ object CallOps {
                 CallType.DELEGATECALL,
                 currentCallContext.value,
                 code,
+                context,
                 gas,
                 outLocation,
                 outSize
@@ -136,6 +140,7 @@ object CallOps {
                     callType,
                     value,
                     callContract.code,
+                    context,
                     gas,
                     outLocation,
                     outSize

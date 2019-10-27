@@ -31,7 +31,7 @@ class ExecutorTestPackTest {
             contractCode = listOf(opcode.code)
         )
 
-        val result = underTest.execute(context, context)
+        val result = underTest.execute(context)
 
         Assertions.assertThat(result.stack.size()).isEqualTo(1)
         val output = Word.coerceFrom(result.stack.peek(0)).toString()
@@ -55,7 +55,7 @@ class ExecutorTestPackTest {
             memory = Memory().set(0, data)
         )
 
-        val result = underTest.execute(context, context)
+        val result = underTest.execute(context)
 
         Assertions.assertThat(result.stack.size()).isEqualTo(1)
         val output = Word.coerceFrom(result.stack.peek(0)).toString()

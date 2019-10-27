@@ -546,3 +546,126 @@ Feature: Single Opcode Execution
     And the balance of account 0xb42ef6d8789aa191d5c6f948a528f40153745664 is now 4
     And the code at address 0xb42ef6d8789aa191d5c6f948a528f40153745664 is 0x123456
     And the stack contains 0xb42ef6d8789aa191d5c6f948a528f40153745664
+
+  Scenario: Execution is halted with STOP in main contract
+    Given the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x200        | 0x2      |
+    And there is only one call on the stack
+    When opcode STOP is executed
+    Then the call stack is now 0 deep
+    And the execution context is now marked as complete
+    And return data is now empty
+
+  Scenario: Execution is halted with STOP in child contract
+    Given the previous call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+    And the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x2      |
+    When opcode STOP is executed
+    Then the call stack is now 1 deep
+    And the execution context is now marked as not complete
+    And return data is now empty
+    And the stack contains 0x1
+
+  Scenario: Execution is halted with RETURN in child contract
+    Given the previous call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+    And the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And 0x123456 is stored in memory at location 0x100
+    And 0x100 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    When opcode RETURN is executed
+    Then the call stack is now 1 deep
+    And the execution context is now marked as not complete
+    And return data is now 0x123456
+    And 3 bytes of memory from position 0x200 is 0x123456
+    And the stack contains 0x1
+
+  Scenario: Execution is halted with INVALID in main contract
+    Given the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And there is only one call on the stack
+    When opcode INVALID is executed
+    Then the call stack is now 0 deep
+    And the execution context is now marked as complete
+
+  Scenario: Execution is halted with INVALID in child contract
+    Given the previous call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+    And the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    When opcode INVALID is executed
+    Then the call stack is now 1 deep
+    And the execution context is now marked as not complete
+    And return data is now empty
+    And the last error is now INVALID_INSTRUCTION with message "Invalid instruction"
+    And the stack contains 0x0
+
+  Scenario: Execution is halted with REVERT in main contract
+    Given the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And there is only one call on the stack
+    And 0x123456 is stored in memory at location 0x100
+    And 0x100 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    When opcode REVERT is executed
+    Then the call stack is now 0 deep
+    And the execution context is now marked as complete
+
+  Scenario: Execution is halted with REVERT in child contract
+    Given the previous call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+    And the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And 0x123456 is stored in memory at location 0x100
+    And 0x100 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    When opcode REVERT is executed
+    Then the call stack is now 1 deep
+    And the execution context is now marked as not complete
+    And return data is now 0x123456
+    And 3 bytes of memory from position 0x200 is 0x123456
+    And the stack contains 0x0
+
+  Scenario: Execution is halted with SUICIDE in main contract
+    Given the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And there is only one call on the stack
+    And the account with address 0xFFFFFFF has balance 0x1234
+    And 0xAAAAAAA is pushed onto the stack
+    When opcode SUICIDE is executed
+    Then the call stack is now 0 deep
+    And the execution context is now marked as complete
+    And the balance of account 0xAAAAAAA is now 0x1234
+    And the balance of account 0xFFFFFFF is now 0
+    And the code at address 0xFFFFFFF is empty
+
+  Scenario: Execution is halted with SUICIDE in child contract
+    Given the previous call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+    And the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And the account with address 0xFFFFFFF has balance 0x1234
+    And 0xAAAAAAA is pushed onto the stack
+    When opcode SUICIDE is executed
+    Then the call stack is now 1 deep
+    And the execution context is now marked as not complete
+    And the balance of account 0xAAAAAAA is now 0x1234
+    And the balance of account 0xFFFFFFF is now 0
+    And the code at address 0xFFFFFFF is empty
+    And the stack contains 0x1

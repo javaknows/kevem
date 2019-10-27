@@ -67,6 +67,7 @@ data class Word(val data: List<Byte>, private val numBytes: Int = 32) {
 
     companion object {
         val Zero = Word(Byte.Zero.repeat(32))
+        val One = Word(Byte.Zero.repeat(31) + listOf(Byte.One))
 
         fun coerceFrom(data: List<Byte>, numBytes: Int = 32): Word {
             val size = data.size.coerceAtMost(numBytes)
@@ -252,6 +253,14 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     fun size() = backing.size
 }
 
+enum class ErrorCode { None, INVALID_INSTRUCTION, OUT_OF_GAS }
+
+data class EvmError(val code: ErrorCode, val message: String?) {
+    companion object {
+        val None = EvmError(ErrorCode.None, null)
+    }
+}
+
 enum class CallType { INITIAL, CALL, CALLCODE, STATICCALL, DELEGATECALL }
 
 data class CallContext(
@@ -261,6 +270,7 @@ data class CallContext(
     val type: CallType,
     val value: BigInteger,
     val code: List<Byte>,
+    val callingContext: ExecutionContext? = null,
     val gasRemaining: BigInteger = BigInteger.ZERO,
     val returnLocation: Int = 0,
     val returnSize: Int = 0,
@@ -297,7 +307,8 @@ data class ExecutionContext(
     val lastReturnData: List<Byte> = emptyList(),
     val clock: Clock = Clock.systemUTC(),
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
-    val addressGenerator: AddressGenerator = DefaultAddressGenerator() // TODO - make a dependency rather than in ctx
+    val addressGenerator: AddressGenerator = DefaultAddressGenerator(), // TODO - make a dependency rather than in ctx
+    val lastCallError: EvmError = EvmError.None
 ) {
     val currentCallContext: CallContext
         get() = callStack.last()

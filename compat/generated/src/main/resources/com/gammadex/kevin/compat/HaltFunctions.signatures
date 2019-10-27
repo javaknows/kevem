@@ -1,0 +1,5 @@
+b49b8c4e: doInvalid()
+1253f7aa: doReturn()
+afc874d2: doRevert()
+c19166cd: doSelfDestruct()
+624f011d: doStop()
