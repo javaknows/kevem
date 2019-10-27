@@ -33,10 +33,12 @@ class Executor {
         return with(currentContext) {
             val opcode = Opcode.byCode[currentCallContext.code[currentLocation]]
 
-            // TODO increment contract pointer
-            // TODO deduct gas
-            // TODO - maximum stack size
+            // TODO increment contract pointer - terminate like STOP if at end of code of last call context
+            // TODO - deduct gas. Deduct base gas here and computed gas in the opcode handling
             // TODO - don't allow modifications if STATICCALL context
+            // TODO - ensure has enough elements for OPCODE
+            // TODO - ensure max stack depth won't be reached
+            // TODO - in HaltOps when halting in DELEGATECALL or CALLCODE check if context values need to be copied down the stack
 
             when (opcode) {
                 Opcode.STOP -> HaltOps.stop(currentContext)
