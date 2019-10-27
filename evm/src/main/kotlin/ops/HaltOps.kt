@@ -38,7 +38,7 @@ object HaltOps {
         )
     }
 
-    fun invalid(context: ExecutionContext): ExecutionContext = with(context) {
+    fun invalid(context: ExecutionContext, message: String? = null): ExecutionContext = with(context) {
         val callingContext = currentCallContext.callingContext ?: context.copy(
             callStack = context.callStack.dropLast(1)
         )
@@ -53,7 +53,7 @@ object HaltOps {
             callStack = callStack,
             completed = completed,
             lastReturnData = emptyList(),
-            lastCallError = EvmError(ErrorCode.INVALID_INSTRUCTION, "Invalid instruction")
+            lastCallError = EvmError(ErrorCode.INVALID_INSTRUCTION, message ?: "Invalid instruction")
         )
     }
 

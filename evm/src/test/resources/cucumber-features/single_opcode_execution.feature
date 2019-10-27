@@ -669,3 +669,13 @@ Feature: Single Opcode Execution
     And the balance of account 0xFFFFFFF is now 0
     And the code at address 0xFFFFFFF is empty
     And the stack contains 0x1
+
+  Scenario: Execution is halted with unknown opcode in main contract
+    Given the current call is:
+      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+    And there is only one call on the stack
+    When opcode 0xBB is executed
+    Then the call stack is now 0 deep
+    And the execution context is now marked as complete
+    And the last error is now INVALID_INSTRUCTION with message "Invalid instruction - unknown opcode 0xBB"

@@ -33,9 +33,12 @@ class StepDefs : En {
         }
 
         When("opcode ([A-Z0-9]+) is executed") { opcode: String ->
+            val code =
+                if(opcode.contains("0x")) toByteList(opcode).take(1)
+                else listOf(Opcode.valueOf(opcode).code)
+
             updateLastCallContext {
-                val code = listOf(Opcode.valueOf(opcode).code)
-                val newContract = it.contract.copy(code = code)
+                  val newContract = it.contract.copy(code = code)
                 it.copy(contract = newContract, code = code)
             }
 

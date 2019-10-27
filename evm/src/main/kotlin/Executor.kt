@@ -31,7 +31,8 @@ class Executor {
         val currentContext = incomingContext
 
         return with(currentContext) {
-            val opcode = Opcode.byCode[currentCallContext.code[currentLocation]]
+            val byteCode = currentCallContext.code[currentLocation]
+            val opcode = Opcode.byCode[byteCode]
 
             // TODO increment contract pointer - terminate like STOP if at end of code of last call context
             // TODO - deduct gas. Deduct base gas here and computed gas in the opcode handling
@@ -39,6 +40,7 @@ class Executor {
             // TODO - ensure has enough elements for OPCODE
             // TODO - ensure max stack depth won't be reached
             // TODO - in HaltOps when halting in DELEGATECALL or CALLCODE check if context values need to be copied down the stack
+            // TODO - don't accept certain operations depending on fork version configured
 
             when (opcode) {
                 Opcode.STOP -> HaltOps.stop(currentContext)
@@ -368,8 +370,7 @@ class Executor {
                 Opcode.REVERT -> HaltOps.revert(currentContext)
                 Opcode.INVALID -> HaltOps.invalid(currentContext)
                 Opcode.SUICIDE -> HaltOps.suicide(currentContext)
-
-                else -> TODO("$opcode is not implemented")
+                else -> HaltOps.invalid(currentContext, "Invalid instruction - unknown opcode $byteCode")
             }
         }
     }
