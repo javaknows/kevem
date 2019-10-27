@@ -376,11 +376,11 @@ class StepDefs : En {
         }
 
         Then("the code at address (0x[a-zA-Z0-9]+) is (.*)") { address: String, expectedCode: String ->
-            val code = if (expectedCode == "empty") emptyList() else toByteList(expectedCode)
+            val parsedExpectedCode = if (expectedCode == "empty") emptyList() else toByteList(expectedCode)
 
             checkResult {
                 val code = it.evmState.codeAt(Address(address))
-                assertThat(code).isEqualTo(code)
+                assertThat(code).isEqualTo(parsedExpectedCode)
             }
         }
 
