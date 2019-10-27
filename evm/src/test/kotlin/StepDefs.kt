@@ -32,7 +32,7 @@ class StepDefs : En {
             executeContext()
         }
 
-        When("opcode ([A-Z0-9]+) is executed") { opcode: String ->
+        When("opcode (.*) is executed") { opcode: String ->
             val code =
                 if(opcode.contains("0x")) toByteList(opcode).take(1)
                 else listOf(Opcode.valueOf(opcode).code)

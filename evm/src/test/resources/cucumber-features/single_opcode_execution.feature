@@ -678,4 +678,4 @@ Feature: Single Opcode Execution
     When opcode 0xBB is executed
     Then the call stack is now 0 deep
     And the execution context is now marked as complete
-    And the last error is now INVALID_INSTRUCTION with message "Invalid instruction - unknown opcode 0xBB"
+    And the last error is now INVALID_INSTRUCTION with message "Invalid instruction - unknown opcode 0xbb"
