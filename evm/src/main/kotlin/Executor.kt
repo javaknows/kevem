@@ -205,56 +205,19 @@ class Executor {
                     val newStack = stack.pushWord(Word.coerceFrom(currentBlock.gasLimit))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.POP -> {
-                    val (_, newStack) = stack.pop()
-                    currentContext.updateCurrentCallCtx(stack = newStack)
-                }
-                Opcode.MLOAD -> {
-                    val (word, newStack) = stack.popWord()
-                    val data = memory.get(word.toInt(), 32)
-                    val finalStack = newStack.pushWord(Word(data))
-
-                    currentContext.updateCurrentCallCtx(stack = finalStack)
-                }
-                Opcode.MSTORE -> {
-                    val (elements, newStack) = stack.popWords(2)
-                    val (p, v) = elements
-                    val newMemory = memory.set(p.toInt(), v.data)
-
-                    currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
-                }
-                Opcode.MSTORE8 -> {
-                    val (v, newStack) = stack.pop()
-                    val (p, newStack2) = newStack.popWord()
-                    val newMemory = memory.set(p.toInt(), v.take(1))
-
-                    currentContext.updateCurrentCallCtx(stack = newStack2, memory = newMemory)
-                }
-                Opcode.SLOAD -> {
-                    val (word, newStack) = stack.popWord()
-                    val index = word.toInt()
-                    val finalStack = newStack.pushWord(storage[index])
-
-                    currentContext.updateCurrentCallCtx(stack = finalStack)
-                }
-                Opcode.SSTORE -> {
-                    val (elements, newStack) = stack.popWords(2)
-                    val (a, v) = elements
-                    val newStorage = storage.set(a.toInt(), v)
-
-                    currentContext.updateCurrentCallCtx(stack = newStack, storage = newStorage)
-                }
+                Opcode.POP -> pop(currentContext)
+                Opcode.MLOAD -> MemoryOps.mload(currentContext)
+                Opcode.MSTORE -> MemoryOps.mstore(currentContext)
+                Opcode.MSTORE8 -> MemoryOps.mstore8(currentContext)
+                Opcode.SLOAD -> StorageOps.sLoad(currentContext)
+                Opcode.SSTORE ->StorageOps.sStore(currentContext)
                 Opcode.JUMP -> JumpOps.jump(currentContext)
                 Opcode.JUMPI -> JumpOps.jumpi(currentContext)
                 Opcode.PC -> {
                     val newStack = stack.pushWord(Word.coerceFrom(currentLocation))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.MSIZE -> {
-                    val size = memory.maxIndex()?.plus(1) ?: 0
-                    val newStack = stack.pushWord(Word.coerceFrom(size))
-                    currentContext.updateCurrentCallCtx(stack = newStack)
-                }
+                Opcode.MSIZE -> MemoryOps.msize(currentContext)
                 Opcode.GAS -> {
                     val newStack = stack.pushWord(Word.coerceFrom(currentCallContext.gasRemaining))
                     currentContext.updateCurrentCallCtx(stack = newStack)

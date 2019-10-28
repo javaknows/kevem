@@ -40,3 +40,9 @@ fun log(context: ExecutionContext, num: Int): ExecutionContext = with(context) {
         .updateCurrentCallCtx(stack = newStack2)
         .copy(logs = context.logs + newLog)
 }
+
+fun pop(context: ExecutionContext): ExecutionContext = with(context) {
+    val (_, newStack) = stack.pop()
+
+    context.updateCurrentCallCtx(stack = newStack)
+}
