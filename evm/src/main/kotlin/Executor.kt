@@ -11,8 +11,11 @@ import com.gammadex.kevin.evm.ops.*
 // TODO - don't accept certain operations depending on fork version configured
 
 class Executor {
-    fun execute(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
+    tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
+        if (executionCtx.completed) executionCtx
+        else executeAll(executeNextOpcode(executionCtx))
 
+    fun executeNextOpcode(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
         if (isEndOfContract(currentCallContextOrNull))
             HaltOps.stop(executionCtx)
         else {
@@ -210,7 +213,7 @@ class Executor {
                 Opcode.MSTORE -> MemoryOps.mstore(currentContext)
                 Opcode.MSTORE8 -> MemoryOps.mstore8(currentContext)
                 Opcode.SLOAD -> StorageOps.sLoad(currentContext)
-                Opcode.SSTORE ->StorageOps.sStore(currentContext)
+                Opcode.SSTORE -> StorageOps.sStore(currentContext)
                 Opcode.JUMP -> JumpOps.jump(currentContext)
                 Opcode.JUMPI -> JumpOps.jumpi(currentContext)
                 Opcode.PC -> {

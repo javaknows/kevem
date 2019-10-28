@@ -85,7 +85,7 @@ Feature: Single Opcode Execution
 
   Scenario: Contract code length can be retrieved with CODESIZE
     Given contract code is [CODESIZE, DUP1, DUP1, BLOCKHASH]
-    When the context is executed
+    When the next opcode in the context is executed
     Then the stack contains 0x4
 
   Scenario: Contract code can be coped into memory with CODECOPY
@@ -93,7 +93,7 @@ Feature: Single Opcode Execution
     And 0x3 is pushed onto the stack
     And 0x0 is pushed onto the stack
     And 0x4 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then 4 bytes of memory from position 3 is 0x39808040
     And 3 bytes of memory from position 0 is empty
     And 100 bytes of memory from position 7 is empty
@@ -216,60 +216,60 @@ Feature: Single Opcode Execution
   Scenario: can jump to a location in code with JUMP
     Given contract code is [JUMP, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x3 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the next position in code is now 3
 
   Scenario: fail when jumping with JUMP to a location without a JUMPDEST
     Given contract code is [JUMP, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x4 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
 
   Scenario: fail when jumping with JUMP to a location outside the contract code
     Given contract code is [JUMP, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x400 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
 
   Scenario: can jump to a location in code with JUMPI when condition is 1
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x3 is pushed onto the stack
     And 0x1 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the next position in code is now 3
 
   Scenario: can jump to a location in code with JUMPI when condition is 2
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x3 is pushed onto the stack
     And 0x2 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the next position in code is now 3
 
   Scenario: fail when jumping with JUMPI to a location without a JUMPDEST
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x4 is pushed onto the stack
     And 0x1 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
 
   Scenario: fail when jumping with JUMPI to a location outside the contract code
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x5 is pushed onto the stack
     And 0x1 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
 
   Scenario: won't jump to a location in code with JUMPI when condition is 0
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x3 is pushed onto the stack
     And 0x0 is pushed onto the stack
-    When the context is executed
+    When the next opcode in the context is executed
     Then the next position in code is now 1
 
   Scenario: contract position is retrieved with PC
     Given contract code is [JUMPDEST, DUP1, DUP1, PC, SSTORE, GAS]
     And the code location is 3
-    When the context is executed
+    When the next opcode in the context is executed
     Then the stack contains 0x3
 
   Scenario: max byte address in memory is returned by MSIZE
@@ -719,7 +719,7 @@ Feature: Single Opcode Execution
     # TODO - add a bunch of opcodes here
     And the opcode is any of
       | ADD |
-    When the context is executed
+    When the next opcode in the context is executed
     Then there is no last error
 
   Scenario: fail if trying to execute non-read only opcodes in static context
@@ -731,13 +731,13 @@ Feature: Single Opcode Execution
     # TODO - add a bunch of opcodes here
     And the opcode is any of
       | LOG0 |
-    When the context is executed
+    When the next opcode in the context is executed
     Then the last error is now STATE_CHANGE_STATIC_CALL with message "LOG0 not allowed in static call"
 
   Scenario: Execution is halted at end of main contract
     Given contract code is [DUP1, DUP1, GAS]
     And the code location is 3
-    When the context is executed
+    When the next opcode in the context is executed
     Then the execution context is now marked as complete
     And return data is now empty
 

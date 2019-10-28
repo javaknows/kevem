@@ -28,8 +28,12 @@ class StepDefs : En {
             }
         }
 
-        When("the context is executed") {
+        When("the next opcode in the context is executed") {
             executeContext()
+        }
+
+        When("the context is executed to completion") {
+            executeAllContext()
         }
 
         When("opcode (.*) is executed") { opcode: String ->
@@ -159,8 +163,8 @@ class StepDefs : En {
             }
         }
 
-        Given("contract code is \\[([A-Z0-9, ]+)\\]") { byteCodeNames: String ->
-            val byteCode = byteCodeFromNames(byteCodeNames)
+        Given("contract code is \\[([xA-Z0-9, ]+)\\]") { byteCodeNames: String ->
+            val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
 
             updateLastCallContext { callContext ->
                 val newContract = callContext.contract.copy(code = byteCode)
@@ -169,7 +173,7 @@ class StepDefs : En {
         }
 
         Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([A-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
-            val byteCode = byteCodeFromNames(byteCodeNames)
+            val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
             val newAddress = Address(address)
             val newContract = Contract(byteCode, newAddress)
 
@@ -280,7 +284,7 @@ class StepDefs : En {
 
         Given("the push opcode is executed it will have data on stack") { dataTable: DataTable ->
             processRows(dataTable) {
-                val opcode = Opcode.fromString(it[0])
+                val opcode = Opcode.fromName(it[0])
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
@@ -300,7 +304,7 @@ class StepDefs : En {
 
         Given("the DUP opcode is executed it will have data on stack") { dataTable: DataTable ->
             processRows(dataTable) {
-                val opcode = Opcode.fromString(it[0])
+                val opcode = Opcode.fromName(it[0])
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
@@ -320,7 +324,7 @@ class StepDefs : En {
 
         Given("the SWAP opcode is executed it will have data on top of stack and 0xAA at index") { dataTable: DataTable ->
             processRows(dataTable) {
-                val opcode = Opcode.fromString(it[0])
+                val opcode = Opcode.fromName(it[0])
                 val expected = Word.coerceFrom(it[1])
                 val indexOfAA = toInt(it[2])
 
@@ -345,6 +349,13 @@ class StepDefs : En {
             checkResult {
                 assertThat(it.logs).hasSize(1)
                 assertThat(it.logs[0].data).isEqualTo(toByteList(data))
+            }
+        }
+
+        Then("a log has been generated with no data") { ->
+            checkResult {
+                assertThat(it.logs).hasSize(1)
+                assertThat(it.logs[0].data).isEmpty()
             }
         }
 
@@ -483,7 +494,7 @@ class StepDefs : En {
         // TODO - multi-dimensional
         Given("the opcode is any of") { dataTable: DataTable ->
             dataTable.asLists().forEach {
-                val opcode = Opcode.fromString(it[0])
+                val opcode = Opcode.fromName(it[0])
 
                 updateLastCallContext { ctx ->
                     val code = listOf(opcode!!.code) + ctx.code
@@ -531,7 +542,11 @@ class StepDefs : En {
     }
 
     private fun executeContext() {
-        result = executor.execute(executionContext)
+        result = executor.executeNextOpcode(executionContext)
+    }
+
+    private fun executeAllContext() {
+        result = executor.executeAll(executionContext)
     }
 
     private fun updateCurrentBlock(updateBlock: (ctx: Block) -> Block) {

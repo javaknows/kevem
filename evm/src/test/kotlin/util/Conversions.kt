@@ -10,11 +10,14 @@ internal fun toBigInteger(number: String) =
     if (number.startsWith("0x")) BigInteger(number.replaceFirst("0x", ""), 16)
     else BigInteger(number)
 
-internal fun byteCodeFromNames(byteCodeNames: String): List<Byte> =
+internal fun byteCodeOrDataFromNamesOrHex(byteCodeNames: String): List<Byte> =
     byteCodeNames.split(",")
         .map { it.trim() }
-        .mapNotNull { Opcode.fromString(it) }
-        .map { it.code }
+        .map {
+            if (it.startsWith("0x")) Byte(it)
+            else Opcode.fromName(it)?.code
+        }
+        .filterNotNull()
 
 internal fun toByteList(bytes: String): List<Byte> {
     val noPrefixStack = bytes.replaceFirst("0x", "")

@@ -229,7 +229,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
 
         private val jumpOpcodes = setOf(JUMP, JUMPI)
 
-        fun isAllowedInStatic(opcode: Opcode?) = ! nonStaticOpcodes.contains(opcode)
+        fun isAllowedInStatic(opcode: Opcode?) = !nonStaticOpcodes.contains(opcode)
 
         fun isHaltingOpcode(opcode: Opcode?) = haltingOpcodes.contains(opcode)
 
@@ -241,6 +241,8 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
 
         fun numArgs(opcode: Opcode?) = opcode?.numArgs ?: 0
 
-        fun fromString(name: String): Opcode? = values().find { it.name == name.toUpperCase() }
+        fun fromName(name: String): Opcode? = values().find { it.name == name.toUpperCase() }
+
+        fun fromCode(code: Byte): Opcode? = values().find { it.code == code }
     }
 }
