@@ -9,14 +9,14 @@ fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {
     val data = call.contract.code.subList(context.currentLocation + 1, context.currentLocation + 1 + numBytes)
     val newStack = context.stack.push(data)
 
-    return context.updateCurrentCallContext(stack = newStack)
+    return context.updateCurrentCallCtx(stack = newStack)
 }
 
 fun dup(context: ExecutionContext, offset: Int): ExecutionContext {
     val data = context.stack.peek(offset)
     val newStack = context.stack.push(data)
 
-    return context.updateCurrentCallContext(stack = newStack)
+    return context.updateCurrentCallCtx(stack = newStack)
 }
 
 fun swap(context: ExecutionContext, offset: Int): ExecutionContext {
@@ -26,7 +26,7 @@ fun swap(context: ExecutionContext, offset: Int): ExecutionContext {
         .set(offset + 1, b.data)
         .set(0, a.data)
 
-    return context.updateCurrentCallContext(stack = newStack)
+    return context.updateCurrentCallCtx(stack = newStack)
 }
 
 fun log(context: ExecutionContext, num: Int): ExecutionContext = with(context) {
@@ -37,6 +37,6 @@ fun log(context: ExecutionContext, num: Int): ExecutionContext = with(context) {
     val newLog = Log(data, topics)
 
     return context
-        .updateCurrentCallContext(stack = newStack2)
+        .updateCurrentCallCtx(stack = newStack2)
         .copy(logs = context.logs + newLog)
 }

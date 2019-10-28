@@ -95,6 +95,7 @@ class StepDefs : En {
             }
         }
 
+        // TODO - multi-dimensional
         Given("the current call type is any of") { dataTable: DataTable ->
             val originalContext = executionContext
 
@@ -132,6 +133,7 @@ class StepDefs : En {
             setPreviousCallType(callType)
         }
 
+        // TODO - multi-dimensional
         Given("the previous call type is any of") { dataTable: DataTable ->
             val callType = CallType.valueOf(dataTable.asList()[0])
 
@@ -250,13 +252,13 @@ class StepDefs : En {
             }
         }
 
-        Then("the position in code is (\\d+)") { position: Int ->
+        Then("the next position in code is now (\\d+)") { position: Int ->
             checkResult {
                 assertThat(it.currentCallContext.currentLocation).isEqualTo(position)
             }
         }
 
-        Given("contract position is (\\d+)") { position: Int ->
+        Given("the code location is (\\d+)") { position: Int ->
             updateLastCallContext {
                 it.copy(currentLocation = position)
             }
@@ -469,6 +471,25 @@ class StepDefs : En {
 
             checkResult {
                 assertThat(it.lastCallError).isEqualTo(expectedError)
+            }
+        }
+
+        Then("there is no last error") {
+            checkResult {
+                assertThat(it.lastCallError).isEqualTo(EvmError.None)
+            }
+        }
+
+        // TODO - multi-dimensional
+        Given("the opcode is any of") { dataTable: DataTable ->
+            dataTable.asLists().forEach {
+                val opcode = Opcode.fromString(it[0])
+
+                updateLastCallContext { ctx ->
+                    val code = listOf(opcode!!.code) + ctx.code
+                    val newContract = ctx.contract.copy(code = code)
+                    ctx.copy(contract = newContract, code = code)
+                }
             }
         }
     }

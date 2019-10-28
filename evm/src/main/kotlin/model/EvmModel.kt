@@ -261,7 +261,8 @@ enum class ErrorCode {
     INVALID_INSTRUCTION,
     OUT_OF_GAS,
     STACK_DEPTH,
-    STATE_CHANGE_STATIC_CALL
+    STATE_CHANGE_STATIC_CALL,
+    INVALID_JUMP_DESTINATION
 }
 
 data class EvmError(val code: ErrorCode, val message: String?) {
@@ -322,6 +323,9 @@ data class ExecutionContext(
     val currentCallContext: CallContext
         get() = callStack.last()
 
+    val currentCallContextOrNull: CallContext?
+        get() = callStack.lastOrNull()
+
     val stack: Stack
         get() = currentCallContext.stack
 
@@ -334,7 +338,7 @@ data class ExecutionContext(
     val currentLocation: Int
         get() = currentCallContext.currentLocation
 
-    fun updateCurrentCallContext(
+    fun updateCurrentCallCtx(
         stack: Stack? = null,
         memory: Memory? = null,
         storage: Storage? = null,
@@ -350,12 +354,27 @@ data class ExecutionContext(
             gasRemaining = gasRemaining ?: call.gasRemaining
         )
 
-        return replaceCurrentCallContext(newCall)
+        return replaceCurrentCallCtx(newCall)
     }
 
-    fun replaceCurrentCallContext(callContext: CallContext): ExecutionContext {
+    private fun replaceCurrentCallCtx(callContext: CallContext): ExecutionContext {
         val calls = callStack.dropLast(1) + callContext
 
         return copy(callStack = calls)
     }
+
+    fun updateCurrentCallCtxIfPresent(updateOperation: (CallContext) -> CallContext): ExecutionContext =
+        if (callStack.isNotEmpty()) {
+            val newCall = updateOperation(callStack.last())
+            val newCallStack = callStack.dropLast(1) + newCall
+            copy(callStack = newCallStack)
+        } else this
+
+    fun updatePreviousCallCtxIfPresent(updateOperation: (CallContext) -> CallContext): ExecutionContext =
+        if (callStack.size >= 2) {
+            val call = callStack[callStack.size - 2]
+            val newCall = updateOperation(call)
+            val newCallStack = callStack.dropLast(2) + newCall + callStack.last()
+            copy(callStack = newCallStack)
+        } else this
 }

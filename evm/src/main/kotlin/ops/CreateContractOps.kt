@@ -50,7 +50,7 @@ object CreateContractOps {
 
         return context
             .copy(evmState = newEvmState)
-            .updateCurrentCallContext(stack = newStack2)
+            .updateCurrentCallCtx(stack = newStack2)
     }
 
     // TODO - create a compatibility pack around this

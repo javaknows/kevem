@@ -1,6 +1,7 @@
 package com.gammadex.kevin.evm
 
 import com.gammadex.kevin.evm.model.Byte
+import java.lang.RuntimeException
 
 enum class GasPriceTier(val cost: Int) {
     Zero(0),
@@ -215,13 +216,30 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
             CALL,
             CALLCODE,
             DELEGATECALL,
+            LOG0,
             LOG1,
             LOG2,
             LOG3,
             LOG4
         )
 
+        private val haltingOpcodes = setOf(STOP, RETURN, REVERT, SUICIDE, INVALID)
+
+        private val callOpcodes = setOf(CALL, CALLCODE, STATICCALL, DELEGATECALL)
+
+        private val jumpOpcodes = setOf(JUMP, JUMPI)
+
         fun isAllowedInStatic(opcode: Opcode?) = ! nonStaticOpcodes.contains(opcode)
+
+        fun isHaltingOpcode(opcode: Opcode?) = haltingOpcodes.contains(opcode)
+
+        fun isCallOpcode(opcode: Opcode?) = callOpcodes.contains(opcode)
+
+        fun isJumpOpcode(opcode: Opcode?) = jumpOpcodes.contains(opcode)
+
+        fun numBytes(opcode: Opcode?) = opcode?.numBytes ?: 1
+
+        fun numArgs(opcode: Opcode?) = opcode?.numArgs ?: 0
 
         fun fromString(name: String): Opcode? = values().find { it.name == name.toUpperCase() }
     }

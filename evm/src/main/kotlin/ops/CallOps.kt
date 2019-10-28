@@ -19,7 +19,7 @@ object CallOps {
     fun call(context: ExecutionContext): ExecutionContext = with(context) {
         val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
 
-        val newCtx = updateCurrentCallContext(stack = newStack)
+        val newCtx = updateCurrentCallCtx(stack = newStack)
 
         return doCall(newCtx, callArguments, CallType.CALL)
     }
@@ -27,7 +27,7 @@ object CallOps {
     fun staticCall(context: ExecutionContext): ExecutionContext = with(context) {
         val (callArguments, newStack) = popCallArgsFromStack(context, withValue = false)
 
-        val newCtx = updateCurrentCallContext(stack = newStack)
+        val newCtx = updateCurrentCallCtx(stack = newStack)
 
         return doCall(newCtx, callArguments, CallType.STATICCALL)
     }
@@ -66,7 +66,7 @@ object CallOps {
                 outSize
             )
 
-            val updatedCtx = updateCurrentCallContext(
+            val updatedCtx = updateCurrentCallCtx(
                 stack = newStack,
                 gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
             )
@@ -101,7 +101,7 @@ object CallOps {
                 outSize
             )
 
-            val updatedCtx = updateCurrentCallContext(
+            val updatedCtx = updateCurrentCallCtx(
                 stack = newStack,
                 gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
             )
@@ -146,7 +146,7 @@ object CallOps {
                     outSize
                 )
 
-                val updatedCtx = updateCurrentCallContext(
+                val updatedCtx = updateCurrentCallCtx(
                     gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
                 )
 
