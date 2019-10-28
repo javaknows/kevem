@@ -12,25 +12,33 @@ import com.gammadex.kevin.evm.ops.*
 
 class Executor {
     fun execute(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
-        val byteCode = currentCallContext.code[currentLocation]
-        val opcode = Opcode.byCode[byteCode]
 
-        when {
-            isStackUnderflow(opcode, currentCallContext) -> HaltOps.fail(
-                executionCtx, EvmError(ErrorCode.STACK_DEPTH, "Stack not deep enough for $opcode")
-            )
-            isModifyInStaticCall(opcode, currentCallContext) -> HaltOps.fail(
-                executionCtx,
-                EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "state change by $opcode not allowed in static call")
-            )
-            else -> processOpcode(executionCtx, opcode, byteCode)
+        if (isEndOfContract(currentCallContextOrNull))
+            HaltOps.stop(executionCtx)
+        else {
+            val byteCode = currentCallContext.code[currentLocation]
+            val opcode = Opcode.byCode[byteCode]
+
+            when {
+                isStackUnderflow(opcode, currentCallContext) -> HaltOps.fail(
+                    executionCtx, EvmError(ErrorCode.STACK_DEPTH, "Stack not deep enough for $opcode")
+                )
+                isModifyInStaticCall(opcode, currentCallContext) -> HaltOps.fail(
+                    executionCtx, EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "$opcode not allowed in static call")
+                )
+                else -> processOpcode(executionCtx, opcode, byteCode)
+            }
         }
     }
 
     private fun isModifyInStaticCall(opcode: Opcode?, currentCallCtx: CallContext) =
         currentCallCtx.type == CallType.STATICCALL && !Opcode.isAllowedInStatic(opcode)
 
-    private fun isStackUnderflow(opcode: Opcode?, callCtx: CallContext) = Opcode.numArgs(opcode) > callCtx.stack.size()
+    private fun isStackUnderflow(opcode: Opcode?, callCtx: CallContext) =
+        Opcode.numArgs(opcode) > callCtx.stack.size()
+
+    private fun isEndOfContract(callCtx: CallContext?) =
+        callCtx != null && callCtx.currentLocation !in callCtx.code.indices
 
     private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode?, byteCode: Byte): ExecutionContext {
         val updatedContext = with(currentContext) {
@@ -335,19 +343,11 @@ class Executor {
             }
         }
 
-        /*
-        val ctxWithIncrementedLocation = incrementLocation(updatedContext, opcode)
-
-        return if (isEndOfContract(ctxWithIncrementedLocation.currentCallContextOrNull)) HaltOps.stop(ctxWithIncrementedLocation)
-        else ctxWithIncrementedLocation
-
-         */
-
         return incrementLocation(updatedContext, opcode)
     }
 
-    private fun incrementLocation(executionCtx: ExecutionContext, opcode: Opcode?): ExecutionContext {
-        return when {
+    private fun incrementLocation(executionCtx: ExecutionContext, opcode: Opcode?): ExecutionContext =
+        when {
             Opcode.isHaltingOpcode(opcode) || Opcode.isJumpOpcode(opcode) || executionCtx.completed -> executionCtx
             Opcode.isCallOpcode(opcode) -> executionCtx.updatePreviousCallCtxIfPresent { ctx ->
                 ctx.copy(currentLocation = ctx.currentLocation + Opcode.numBytes(opcode))
@@ -356,9 +356,6 @@ class Executor {
                 ctx.copy(currentLocation = ctx.currentLocation + Opcode.numBytes(opcode))
             }
         }
-    }
-
-    private fun isEndOfContract(callCtx: CallContext?) = (callCtx?.currentLocation ?: -1) !in (callCtx?.code ?: emptyList()).indices
 
     private fun uniStackOp(executionContext: ExecutionContext, op: (w1: Word) -> Word): ExecutionContext {
         val (a, newStack) = executionContext.stack.popWord()
@@ -375,14 +372,11 @@ class Executor {
         return executionContext.updateCurrentCallCtx(stack = finalStack)
     }
 
-    private fun triStackOp(
-        executionContext: ExecutionContext,
-        op: (w1: Word, w2: Word, w3: Word) -> Word
-    ): ExecutionContext {
-        val (elements, newStack) = executionContext.stack.popWords(3)
+    private fun triStackOp(execCtx: ExecutionContext, op: (w1: Word, w2: Word, w3: Word) -> Word): ExecutionContext {
+        val (elements, newStack) = execCtx.stack.popWords(3)
         val (a, b, c) = elements
         val finalStack = newStack.pushWord(op(a, b, c))
 
-        return executionContext.updateCurrentCallCtx(stack = finalStack)
+        return execCtx.updateCurrentCallCtx(stack = finalStack)
     }
 }

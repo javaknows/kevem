@@ -732,9 +732,8 @@ Feature: Single Opcode Execution
     And the opcode is any of
       | LOG0 |
     When the context is executed
-    Then the last error is now STATE_CHANGE_STATIC_CALL with message "state change by LOG0 not allowed in static call"
+    Then the last error is now STATE_CHANGE_STATIC_CALL with message "LOG0 not allowed in static call"
 
-  @Ignore
   Scenario: Execution is halted at end of main contract
     Given contract code is [DUP1, DUP1, GAS]
     And the code location is 3
