@@ -25,7 +25,7 @@ class ExecutorTestPackTest {
             .map {  Word.coerceFrom(it).data }
 
         val context = baseExecutionContext(
-            stack = Stack(args),
+            stack = Stack(args.reversed()),
             contractCode = listOf(opcode.code)
         )
 
@@ -45,8 +45,8 @@ class ExecutorTestPackTest {
         val context = baseExecutionContext(
             stack = Stack(
                 listOf(
-                    listOf(Byte(0)),
-                    listOf(Byte(0x20))
+                    listOf(Byte(0x20)),
+                    listOf(Byte(0))
                 )
             ),
             contractCode = listOf(Opcode.SHA3.code),

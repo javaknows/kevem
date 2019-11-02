@@ -61,7 +61,7 @@ Feature: Single Opcode Execution
     Given call data is 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
     And 0x2 is pushed onto the stack
     When opcode CALLDATALOAD is executed
-    Then the stack contains 0x0000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+    Then the stack contains 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0000
 
   Scenario: Call data length can be retrieved with CALLDATASIZE
     Given call data is 0x1234
@@ -75,9 +75,9 @@ Feature: Single Opcode Execution
 
   Scenario: Call data can be copied into memory
     Given call data is 0x12345678
-    And 0x3 is pushed onto the stack
-    And 0x0 is pushed onto the stack
     And 0x2 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
     When opcode CALLDATACOPY is executed
     Then 2 bytes of memory from position 3 is 0x1234
     And 3 bytes of memory from position 0 is empty
@@ -90,9 +90,9 @@ Feature: Single Opcode Execution
 
   Scenario: Contract code can be coped into memory with CODECOPY
     Given contract code is [CODECOPY, DUP1, DUP1, BLOCKHASH]
-    And 0x3 is pushed onto the stack
-    And 0x0 is pushed onto the stack
     And 0x4 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
     When the next opcode in the context is executed
     Then 4 bytes of memory from position 3 is 0x39808040
     And 3 bytes of memory from position 0 is empty
@@ -100,10 +100,10 @@ Feature: Single Opcode Execution
 
   Scenario: External contract code can be copied into memory with EXTCODECOPY
     Given contract at address 0x12345 has code [BLOCKHASH, DUP1, DUP1, BLOCKHASH]
-    And 0x12345 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0x0 is pushed onto the stack
     And 0x4 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x12345 is pushed onto the stack
     When opcode EXTCODECOPY is executed
     Then 4 bytes of memory from position 3 is 0x40808040
     And 3 bytes of memory from position 0 is empty
@@ -122,9 +122,9 @@ Feature: Single Opcode Execution
 
   Scenario: Return data is copied into memory with RETURNDATACOPY
     Given return data is 0x10203040
-    And 0x3 is pushed onto the stack
-    And 0x0 is pushed onto the stack
     And 0x4 is pushed onto the stack
+    And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
     When opcode RETURNDATACOPY is executed
     Then 4 bytes of memory from position 3 is 0x10203040
     And 3 bytes of memory from position 0 is empty
@@ -179,8 +179,8 @@ Feature: Single Opcode Execution
     Then the stack contains 0x1234560000000000000000000000000000000000000000000000000000000000
 
   Scenario: memory is stored from stack with MSTORE
-    Given 0x9 is pushed onto the stack
-    And 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    Given 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    And 0x9 is pushed onto the stack
     When opcode MSTORE is executed
     Then 32 bytes of memory from position 9 is 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
     And 9 bytes of memory from position 0 is empty
@@ -200,15 +200,15 @@ Feature: Single Opcode Execution
     Then the stack contains 0x123456
 
   Scenario: data is stored in storage from stack with SSTORE
-    Given 0x9 is pushed onto the stack
-    And 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    Given 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    And 0x9 is pushed onto the stack
     When opcode SSTORE is executed
     Then data in storage at location 9 of current contract is now 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
     And 9 bytes of memory from position 0 is empty
 
   Scenario: data is stored in storage from stack with SSTORE
-    Given 0x9 is pushed onto the stack
-    And 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    Given 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    And 0x9 is pushed onto the stack
     When opcode SSTORE is executed
     Then data in storage at location 9 of current contract is now 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
     And 9 bytes of memory from position 0 is empty
@@ -223,46 +223,46 @@ Feature: Single Opcode Execution
     Given contract code is [JUMP, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x4 is pushed onto the stack
     When the next opcode in the context is executed
-    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
+    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination 0x4"
 
   Scenario: fail when jumping with JUMP to a location outside the contract code
     Given contract code is [JUMP, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x400 is pushed onto the stack
     When the next opcode in the context is executed
-    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
+    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination 0x400"
 
   Scenario: can jump to a location in code with JUMPI when condition is 1
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
-    And 0x3 is pushed onto the stack
     And 0x1 is pushed onto the stack
+    And 0x3 is pushed onto the stack
     When the next opcode in the context is executed
     Then the next position in code is now 3
 
   Scenario: can jump to a location in code with JUMPI when condition is 2
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
-    And 0x3 is pushed onto the stack
     And 0x2 is pushed onto the stack
+    And 0x3 is pushed onto the stack
     When the next opcode in the context is executed
     Then the next position in code is now 3
 
   Scenario: fail when jumping with JUMPI to a location without a JUMPDEST
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
-    And 0x4 is pushed onto the stack
     And 0x1 is pushed onto the stack
+    And 0x4 is pushed onto the stack
     When the next opcode in the context is executed
-    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
+    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination 0x4"
 
   Scenario: fail when jumping with JUMPI to a location outside the contract code
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
-    And 0x5 is pushed onto the stack
     And 0x1 is pushed onto the stack
+    And 0x5 is pushed onto the stack
     When the next opcode in the context is executed
-    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination"
+    Then the last error is now INVALID_JUMP_DESTINATION with message "Invalid jump destination 0x5"
 
   Scenario: won't jump to a location in code with JUMPI when condition is 0
     Given contract code is [JUMPI, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
-    And 0x3 is pushed onto the stack
     And 0x0 is pushed onto the stack
+    And 0x3 is pushed onto the stack
     When the next opcode in the context is executed
     Then the next position in code is now 1
 
@@ -391,17 +391,17 @@ Feature: Single Opcode Execution
 
   Scenario: transaction logs are raised with the LOG0 opcode
     Given 0x123456 is stored in memory at location 0x0
-    And 0x0 is pushed onto the stack
     And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
     When opcode LOG0 is executed
     Then a log has been generated with data 0x123456
     And the log has no topics
 
   Scenario: transaction logs are raised with the LOG1 opcode
     Given 0x123456 is stored in memory at location 0x0
-    And 0x0 is pushed onto the stack
-    And 0x3 is pushed onto the stack
     And 0xA is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
     When opcode LOG1 is executed
     Then a log has been generated with data 0x123456
     And the log has topic data
@@ -409,10 +409,10 @@ Feature: Single Opcode Execution
 
   Scenario: transaction logs are raised with the LOG2 opcode
     Given 0x123456 is stored in memory at location 0x0
-    And 0x0 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0xA is pushed onto the stack
     And 0xB is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
     When opcode LOG2 is executed
     Then a log has been generated with data 0x123456
     And the log has topic data
@@ -421,11 +421,11 @@ Feature: Single Opcode Execution
 
   Scenario: transaction logs are raised with the LOG3 opcode
     Given 0x123456 is stored in memory at location 0x0
-    And 0x0 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0xA is pushed onto the stack
-    And 0xB is pushed onto the stack
     And 0xC is pushed onto the stack
+    And 0xB is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
     When opcode LOG3 is executed
     Then a log has been generated with data 0x123456
     And the log has topic data
@@ -435,12 +435,12 @@ Feature: Single Opcode Execution
 
   Scenario: transaction logs are raised with the LOG4 opcode
     Given 0x123456 is stored in memory at location 0x0
-    And 0x0 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0xA is pushed onto the stack
-    And 0xB is pushed onto the stack
-    And 0xC is pushed onto the stack
     And 0xD is pushed onto the stack
+    And 0xC is pushed onto the stack
+    And 0xB is pushed onto the stack
+    And 0xA is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x0 is pushed onto the stack
     When opcode LOG4 is executed
     Then a log has been generated with data 0x123456
     And the log has topic data
@@ -453,9 +453,9 @@ Feature: Single Opcode Execution
     Given the contract address is 0xEE
     And the account with address 0xEE has balance 0x9
     And 0x123456 is stored in memory at location 0x100
-    And 0x4 is pushed onto the stack
-    And 0x100 is pushed onto the stack
     And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0x4 is pushed onto the stack
     And any new account gets created with address 0xFFFFFF
     When opcode CREATE is executed
     Then the balance of account 0xEE is now 5
@@ -467,10 +467,10 @@ Feature: Single Opcode Execution
     Given the contract address is 0xEE
     And the account with address 0xEE has balance 0x9
     And 0x123456 is stored in memory at location 0x100
-    And 0x4 is pushed onto the stack
-    And 0x1 is pushed onto the stack
-    And 0x100 is pushed onto the stack
     And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0x1 is pushed onto the stack
+    And 0x4 is pushed onto the stack
     When opcode CREATE2 is executed
     Then the balance of account 0xEE is now 5
     And the balance of account 0xb42ef6d8789aa191d5c6f948a528f40153745664 is now 4
@@ -508,8 +508,8 @@ Feature: Single Opcode Execution
       | type   | caller address | calldata | contract address | value | gas   | out location | out size |
       | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And 0x123456 is stored in memory at location 0x100
-    And 0x100 is pushed onto the stack
     And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
     When opcode RETURN is executed
     Then the call stack is now 1 deep
     And the execution context is now marked as not complete
@@ -546,8 +546,8 @@ Feature: Single Opcode Execution
       | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And there is only one call on the stack
     And 0x123456 is stored in memory at location 0x100
-    And 0x100 is pushed onto the stack
     And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
     When opcode REVERT is executed
     Then the call stack is now 0 deep
     And the execution context is now marked as complete
@@ -560,8 +560,8 @@ Feature: Single Opcode Execution
       | type   | caller address | calldata | contract address | value | gas   | out location | out size |
       | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And 0x123456 is stored in memory at location 0x100
-    And 0x100 is pushed onto the stack
     And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
     When opcode REVERT is executed
     Then the call stack is now 1 deep
     And the execution context is now marked as not complete

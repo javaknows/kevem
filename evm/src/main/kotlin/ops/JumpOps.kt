@@ -5,8 +5,6 @@ import com.gammadex.kevin.evm.model.*
 
 object JumpOps {
 
-    private val invalidJumpError = EvmError(ErrorCode.INVALID_JUMP_DESTINATION, "Invalid jump destination")
-
     fun jump(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
         val (destination, newStack) = stack.popWord()
 
@@ -30,13 +28,15 @@ object JumpOps {
         with(executionCtx) {
             val call = callStack.last()
 
-            if (dest !in call.code.indices) HaltOps.fail(executionCtx, invalidJumpError)
+            if (dest !in call.code.indices) HaltOps.fail(executionCtx, error(dest))
             else {
                 val nextOpCode = Opcode.byCode[call.code[dest]]
 
                 if (nextOpCode == Opcode.JUMPDEST)
                     executionCtx.updateCurrentCallCtx(stack = newStack, currentLocation = dest)
-                else HaltOps.fail(executionCtx, invalidJumpError)
+                else HaltOps.fail(executionCtx, error(dest))
             }
         }
+
+    private fun error(dest: Int) = EvmError(ErrorCode.INVALID_JUMP_DESTINATION, "Invalid jump destination 0x${dest.toString(16)}")
 }

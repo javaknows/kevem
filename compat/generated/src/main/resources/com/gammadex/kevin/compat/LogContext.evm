@@ -1,0 +1,228 @@
+    /* "./src/main/solidity/LogContext.sol":27:858  contract LogContext {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/LogContext.sol":27:858  contract LogContext {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/LogContext.sol":27:858  contract LogContext {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/LogContext.sol":27:858  contract LogContext {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0x8f3242ca
+      eq
+      tag_3
+      jumpi
+      dup1
+      0xfdbacfd9
+      eq
+      tag_4
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/LogContext.sol":161:799  function createContextLogs() public {... */
+    tag_3:
+      tag_5
+      tag_6
+      jump	// in
+    tag_5:
+      stop
+        /* "./src/main/solidity/LogContext.sol":74:155  function setCallType(uint _callType) public {... */
+    tag_4:
+      tag_7
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_8
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_8:
+        /* "./src/main/solidity/LogContext.sol":74:155  function setCallType(uint _callType) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_9
+      jump	// in
+    tag_7:
+      stop
+        /* "./src/main/solidity/LogContext.sol":161:799  function createContextLogs() public {... */
+    tag_6:
+        /* "./src/main/solidity/LogContext.sol":207:213  uint c */
+      0x00
+        /* "./src/main/solidity/LogContext.sol":216:224  callType */
+      dup1
+      sload
+        /* "./src/main/solidity/LogContext.sol":207:224  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/LogContext.sol":282:286  0x40 */
+      0x40
+        /* "./src/main/solidity/LogContext.sol":276:287  mload(0x40) */
+      mload
+        /* "./src/main/solidity/LogContext.sol":316:326  memPointer */
+      dup1
+        /* "./src/main/solidity/LogContext.sol":359:369  memPointer */
+      dup2
+        /* "./src/main/solidity/LogContext.sol":347:357  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":340:370  mstore(memPointer, memPointer) */
+      mstore
+        /* "./src/main/solidity/LogContext.sol":413:417  0x20 */
+      0x20
+        /* "./src/main/solidity/LogContext.sol":401:411  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":397:418  add(memPointer, 0x20) */
+      add
+        /* "./src/main/solidity/LogContext.sol":383:418  memPointer := add(memPointer, 0x20) */
+      swap2
+      pop
+        /* "./src/main/solidity/LogContext.sol":457:458  1 */
+      0x01
+        /* "./src/main/solidity/LogContext.sol":451:459  sload(1) */
+      sload
+        /* "./src/main/solidity/LogContext.sol":439:449  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":432:460  mstore(memPointer, sload(1)) */
+      mstore
+        /* "./src/main/solidity/LogContext.sol":503:507  0x20 */
+      0x20
+        /* "./src/main/solidity/LogContext.sol":491:501  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":487:508  add(memPointer, 0x20) */
+      add
+        /* "./src/main/solidity/LogContext.sol":473:508  memPointer := add(memPointer, 0x20) */
+      swap2
+      pop
+        /* "./src/main/solidity/LogContext.sol":541:550  address() */
+      address
+        /* "./src/main/solidity/LogContext.sol":529:539  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":522:551  mstore(memPointer, address()) */
+      mstore
+        /* "./src/main/solidity/LogContext.sol":594:598  0x20 */
+      0x20
+        /* "./src/main/solidity/LogContext.sol":582:592  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":578:599  add(memPointer, 0x20) */
+      add
+        /* "./src/main/solidity/LogContext.sol":564:599  memPointer := add(memPointer, 0x20) */
+      swap2
+      pop
+        /* "./src/main/solidity/LogContext.sol":632:640  caller() */
+      caller
+        /* "./src/main/solidity/LogContext.sol":620:630  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":613:641  mstore(memPointer, caller()) */
+      mstore
+        /* "./src/main/solidity/LogContext.sol":684:688  0x20 */
+      0x20
+        /* "./src/main/solidity/LogContext.sol":672:682  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":668:689  add(memPointer, 0x20) */
+      add
+        /* "./src/main/solidity/LogContext.sol":654:689  memPointer := add(memPointer, 0x20) */
+      swap2
+      pop
+        /* "./src/main/solidity/LogContext.sol":722:730  origin() */
+      origin
+        /* "./src/main/solidity/LogContext.sol":710:720  memPointer */
+      dup3
+        /* "./src/main/solidity/LogContext.sol":703:731  mstore(memPointer, origin()) */
+      mstore
+        /* "./src/main/solidity/LogContext.sol":776:781  0x200 */
+      0x0200
+        /* "./src/main/solidity/LogContext.sol":766:774  memStart */
+      dup2
+        /* "./src/main/solidity/LogContext.sol":762:782  add(memStart, 0x200) */
+      add
+        /* "./src/main/solidity/LogContext.sol":752:760  memStart */
+      dup2
+        /* "./src/main/solidity/LogContext.sol":745:783  return(memStart, add(memStart, 0x200)) */
+      return
+        /* "./src/main/solidity/LogContext.sol":74:155  function setCallType(uint _callType) public {... */
+    tag_9:
+        /* "./src/main/solidity/LogContext.sol":139:148  _callType */
+      dup1
+        /* "./src/main/solidity/LogContext.sol":128:136  callType */
+      0x00
+        /* "./src/main/solidity/LogContext.sol":128:148  callType = _callType */
+      dup2
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/LogContext.sol":74:155  function setCallType(uint _callType) public {... */
+      pop
+      jump	// out
+
+    auxdata: 0xa265627a7a723058208397a4c09823bbd2c7818bc2715ea521217980b8a22943d754e687c1834ec1b364736f6c634300050a0032
+}

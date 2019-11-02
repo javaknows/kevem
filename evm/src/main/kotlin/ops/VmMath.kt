@@ -114,9 +114,9 @@ object VmMath {
         else coerceFrom(b.data[location.toInt()])
     }
 
-    fun shl(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() shl w2.toBigInt().toInt())
+    fun shl(w1: Word, w2: Word) = coerceFrom(w2.toBigInt() shl w1.toBigInt().toInt())
 
-    fun shr(w1: Word, w2: Word) = coerceFrom(w1.toBigInt() shr w2.toBigInt().toInt())
+    fun shr(w1: Word, w2: Word) = coerceFrom(w2.toBigInt() shr w1.toBigInt().toInt())
 
     fun sar(w1: Word, w2: Word): Word {
         val shift = w1.toBigInt()

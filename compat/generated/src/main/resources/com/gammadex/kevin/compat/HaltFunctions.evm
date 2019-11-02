@@ -1,0 +1,197 @@
+    /* "./src/main/solidity/HaltFunctions.sol":27:847  contract HaltFunctions  {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/HaltFunctions.sol":27:847  contract HaltFunctions  {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/HaltFunctions.sol":27:847  contract HaltFunctions  {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/HaltFunctions.sol":27:847  contract HaltFunctions  {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0x1253f7aa
+      eq
+      tag_3
+      jumpi
+      dup1
+      0x624f011d
+      eq
+      tag_4
+      jumpi
+      dup1
+      0xafc874d2
+      eq
+      tag_5
+      jumpi
+      dup1
+      0xb49b8c4e
+      eq
+      tag_6
+      jumpi
+      dup1
+      0xc19166cd
+      eq
+      tag_7
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/HaltFunctions.sol":167:369  function doReturn() public {... */
+    tag_3:
+      tag_8
+      tag_9
+      jump	// in
+    tag_8:
+      stop
+        /* "./src/main/solidity/HaltFunctions.sol":58:161  function doStop() public {... */
+    tag_4:
+      tag_10
+      tag_11
+      jump	// in
+    tag_10:
+      stop
+        /* "./src/main/solidity/HaltFunctions.sol":375:577  function doRevert() public {... */
+    tag_5:
+      tag_12
+      tag_13
+      jump	// in
+    tag_12:
+      stop
+        /* "./src/main/solidity/HaltFunctions.sol":583:692  function doInvalid() public {... */
+    tag_6:
+      tag_14
+      tag_15
+      jump	// in
+    tag_14:
+      stop
+        /* "./src/main/solidity/HaltFunctions.sol":698:845  function doSelfDestruct() public {... */
+    tag_7:
+      tag_16
+      tag_17
+      jump	// in
+    tag_16:
+      stop
+        /* "./src/main/solidity/HaltFunctions.sol":167:369  function doReturn() public {... */
+    tag_9:
+        /* "./src/main/solidity/HaltFunctions.sol":251:255  0x40 */
+      0x40
+        /* "./src/main/solidity/HaltFunctions.sol":245:256  mload(0x40) */
+      mload
+        /* "./src/main/solidity/HaltFunctions.sol":288:291  0x1 */
+      0x01
+        /* "./src/main/solidity/HaltFunctions.sol":276:286  memPointer */
+      dup2
+        /* "./src/main/solidity/HaltFunctions.sol":269:292  mstore(memPointer, 0x1) */
+      mstore
+        /* "./src/main/solidity/HaltFunctions.sol":314:315  0 */
+      0x00
+        /* "./src/main/solidity/HaltFunctions.sol":311:312  0 */
+      dup1
+        /* "./src/main/solidity/HaltFunctions.sol":306:316  log0(0, 0) */
+      log0
+        /* "./src/main/solidity/HaltFunctions.sol":348:352  0x20 */
+      0x20
+        /* "./src/main/solidity/HaltFunctions.sol":336:346  memPointer */
+      dup2
+        /* "./src/main/solidity/HaltFunctions.sol":329:353  return(memPointer, 0x20) */
+      return
+        /* "./src/main/solidity/HaltFunctions.sol":58:161  function doStop() public {... */
+    tag_11:
+        /* "./src/main/solidity/HaltFunctions.sol":124:125  0 */
+      0x00
+        /* "./src/main/solidity/HaltFunctions.sol":121:122  0 */
+      dup1
+        /* "./src/main/solidity/HaltFunctions.sol":116:126  log0(0, 0) */
+      log0
+        /* "./src/main/solidity/HaltFunctions.sol":139:145  stop() */
+      stop
+        /* "./src/main/solidity/HaltFunctions.sol":375:577  function doRevert() public {... */
+    tag_13:
+        /* "./src/main/solidity/HaltFunctions.sol":459:463  0x40 */
+      0x40
+        /* "./src/main/solidity/HaltFunctions.sol":453:464  mload(0x40) */
+      mload
+        /* "./src/main/solidity/HaltFunctions.sol":496:499  0x1 */
+      0x01
+        /* "./src/main/solidity/HaltFunctions.sol":484:494  memPointer */
+      dup2
+        /* "./src/main/solidity/HaltFunctions.sol":477:500  mstore(memPointer, 0x1) */
+      mstore
+        /* "./src/main/solidity/HaltFunctions.sol":522:523  0 */
+      0x00
+        /* "./src/main/solidity/HaltFunctions.sol":519:520  0 */
+      dup1
+        /* "./src/main/solidity/HaltFunctions.sol":514:524  log0(0, 0) */
+      log0
+        /* "./src/main/solidity/HaltFunctions.sol":556:560  0x20 */
+      0x20
+        /* "./src/main/solidity/HaltFunctions.sol":544:554  memPointer */
+      dup2
+        /* "./src/main/solidity/HaltFunctions.sol":537:561  revert(memPointer, 0x20) */
+      revert
+        /* "./src/main/solidity/HaltFunctions.sol":583:692  function doInvalid() public {... */
+    tag_15:
+        /* "./src/main/solidity/HaltFunctions.sol":652:653  0 */
+      0x00
+        /* "./src/main/solidity/HaltFunctions.sol":649:650  0 */
+      dup1
+        /* "./src/main/solidity/HaltFunctions.sol":644:654  log0(0, 0) */
+      log0
+        /* "./src/main/solidity/HaltFunctions.sol":667:676  invalid() */
+      invalid
+        /* "./src/main/solidity/HaltFunctions.sol":698:845  function doSelfDestruct() public {... */
+    tag_17:
+        /* "./src/main/solidity/HaltFunctions.sol":772:773  0 */
+      0x00
+        /* "./src/main/solidity/HaltFunctions.sol":769:770  0 */
+      dup1
+        /* "./src/main/solidity/HaltFunctions.sol":764:774  log0(0, 0) */
+      log0
+        /* "./src/main/solidity/HaltFunctions.sol":800:803  0x0 */
+      0x00
+        /* "./src/main/solidity/HaltFunctions.sol":787:804  selfdestruct(0x0) */
+      selfdestruct
+
+    auxdata: 0xa265627a7a72305820552789a6db4a6b90587e8898158cc3854fa05639356312e7f0b3ce7c7db3193264736f6c634300050a0032
+}

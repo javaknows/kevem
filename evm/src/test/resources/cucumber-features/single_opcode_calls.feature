@@ -5,13 +5,13 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
   # CALL(gas, address, value, inLocation, inSize, outLocation, outSize)
   Scenario: a call stack element is created with CALL
     Given 0x123456 is stored in memory at location 0x100
-    And 0x6A5 is pushed onto the stack
-    And 0xADD8E55 is pushed onto the stack
-    And 0x999 is pushed onto the stack
-    And 0x100 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0x200 is pushed onto the stack
     And 0x2 is pushed onto the stack
+    And 0x200 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0x999 is pushed onto the stack
+    And 0xADD8E55 is pushed onto the stack
+    And 0x6A5 is pushed onto the stack
     And the contract address is 0xEEEEEE
     And the account with address 0xEEEEEE has balance 0x1234
     And there is 0x6A6 gas remaining
@@ -28,13 +28,13 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
   # CALLCODE(gas, address, value, inLocation, inSize, outLocation, outSize)
   Scenario: a call stack element is created with CALLCODE
     Given 0x123456 is stored in memory at location 0x100
-    And 0x6A5 is pushed onto the stack
-    And 0xADD8E55 is pushed onto the stack
-    And 0x999 is pushed onto the stack
-    And 0x100 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0x200 is pushed onto the stack
     And 0x2 is pushed onto the stack
+    And 0x200 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0x999 is pushed onto the stack
+    And 0xADD8E55 is pushed onto the stack
+    And 0x6A5 is pushed onto the stack
     And the current caller address is 0xABCEF
     And the contract address is 0xEEEEEE
     And the account with address 0xEEEEEE has balance 0x1234
@@ -52,12 +52,12 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
   # DELEGATECALL(gas, address, inLocation, inSize, outLocation, outSize)
   Scenario: a call stack element is created with DELEGATECALL
     Given 0x123456 is stored in memory at location 0x100
-    And 0x6A5 is pushed onto the stack
-    And 0xADD8E55 is pushed onto the stack
-    And 0x100 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0x200 is pushed onto the stack
     And 0x2 is pushed onto the stack
+    And 0x200 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0xADD8E55 is pushed onto the stack
+    And 0x6A5 is pushed onto the stack
     And the current caller address is 0xABCEF
     And the current call value is 0x111
     And the contract address is 0xEEEEEE
@@ -76,12 +76,12 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
   # STATICCALL(gas, address, inLocation, inSize, outLocation, outSize)
   Scenario: a call stack element is created with STATICCALL
     Given 0x123456 is stored in memory at location 0x100
-    And 0x6A5 is pushed onto the stack
-    And 0xADD8E55 is pushed onto the stack
-    And 0x100 is pushed onto the stack
-    And 0x3 is pushed onto the stack
-    And 0x200 is pushed onto the stack
     And 0x2 is pushed onto the stack
+    And 0x200 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0xADD8E55 is pushed onto the stack
+    And 0x6A5 is pushed onto the stack
     And the current caller address is 0xABCEF
     And the current call value is 0x111
     And the contract address is 0xEEEEEE

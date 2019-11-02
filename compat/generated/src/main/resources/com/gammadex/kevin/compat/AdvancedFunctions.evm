@@ -1,0 +1,153 @@
+    /* "./src/main/solidity/AdvancedFunctions.sol":27:405  contract AdvancedFunctions  {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/AdvancedFunctions.sol":27:405  contract AdvancedFunctions  {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/AdvancedFunctions.sol":27:405  contract AdvancedFunctions  {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/AdvancedFunctions.sol":27:405  contract AdvancedFunctions  {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0x5a55c25a
+      eq
+      tag_3
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/AdvancedFunctions.sol":62:403  function callKeccak256(bytes32 a) public {... */
+    tag_3:
+      tag_4
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_5
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_5:
+        /* "./src/main/solidity/AdvancedFunctions.sol":62:403  function callKeccak256(bytes32 a) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_6
+      jump	// in
+    tag_4:
+      stop
+    tag_6:
+        /* "./src/main/solidity/AdvancedFunctions.sol":160:164  0x40 */
+      0x40
+        /* "./src/main/solidity/AdvancedFunctions.sol":154:165  mload(0x40) */
+      mload
+        /* "./src/main/solidity/AdvancedFunctions.sol":209:213  0x20 */
+      0x20
+        /* "./src/main/solidity/AdvancedFunctions.sol":204:207  0x4 */
+      0x04
+        /* "./src/main/solidity/AdvancedFunctions.sol":192:202  memPointer */
+      dup3
+        /* "./src/main/solidity/AdvancedFunctions.sol":179:214  calldatacopy(memPointer, 0x4, 0x20) */
+      calldatacopy
+        /* "./src/main/solidity/AdvancedFunctions.sol":261:265  0x20 */
+      0x20
+        /* "./src/main/solidity/AdvancedFunctions.sol":249:259  memPointer */
+      dup2
+        /* "./src/main/solidity/AdvancedFunctions.sol":239:266  keccak256(memPointer, 0x20) */
+      keccak256
+        /* "./src/main/solidity/AdvancedFunctions.sol":304:314  memPointer */
+      dup2
+        /* "./src/main/solidity/AdvancedFunctions.sol":298:302  0x20 */
+      0x20
+        /* "./src/main/solidity/AdvancedFunctions.sol":294:315  add(0x20, memPointer) */
+      add
+        /* "./src/main/solidity/AdvancedFunctions.sol":280:315  memPointer := add(0x20, memPointer) */
+      swap2
+      pop
+        /* "./src/main/solidity/AdvancedFunctions.sol":348:351  ret */
+      dup1
+        /* "./src/main/solidity/AdvancedFunctions.sol":336:346  memPointer */
+      dup3
+        /* "./src/main/solidity/AdvancedFunctions.sol":329:352  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/AdvancedFunctions.sol":382:386  0x20 */
+      0x20
+        /* "./src/main/solidity/AdvancedFunctions.sol":370:380  memPointer */
+      dup3
+        /* "./src/main/solidity/AdvancedFunctions.sol":365:387  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/AdvancedFunctions.sol":122:397  {... */
+      pop
+      pop
+      pop
+      jump	// out
+
+    auxdata: 0xa265627a7a72305820939d50708fd50adbcb9917faf1a1ffb959884b6f058427c91f751a6570a702f464736f6c634300050a0032
+}

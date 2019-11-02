@@ -1,0 +1,704 @@
+    /* "./src/main/solidity/DelegateToLogContext.sol":55:2040  contract DelegateToLogContext {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/DelegateToLogContext.sol":55:2040  contract DelegateToLogContext {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/DelegateToLogContext.sol":55:2040  contract DelegateToLogContext {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/DelegateToLogContext.sol":55:2040  contract DelegateToLogContext {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0x0c166a61
+      eq
+      tag_3
+      jumpi
+      dup1
+      0x57c7d23b
+      eq
+      tag_4
+      jumpi
+      dup1
+      0xeee9c708
+      eq
+      tag_5
+      jumpi
+      dup1
+      0xfdbacfd9
+      eq
+      tag_6
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/DelegateToLogContext.sol":157:257  function setChildAddress(address _childAddress) public {... */
+    tag_3:
+      tag_7
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_8
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_8:
+        /* "./src/main/solidity/DelegateToLogContext.sol":157:257  function setChildAddress(address _childAddress) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_9
+      jump	// in
+    tag_7:
+      stop
+        /* "./src/main/solidity/DelegateToLogContext.sol":494:2038  function callCreateContextLogs() public {... */
+    tag_4:
+      tag_10
+      tag_11
+      jump	// in
+    tag_10:
+      stop
+        /* "./src/main/solidity/DelegateToLogContext.sol":263:344  function setGasToUse(uint _gasToUse) public {... */
+    tag_5:
+      tag_12
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_13
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_13:
+        /* "./src/main/solidity/DelegateToLogContext.sol":263:344  function setGasToUse(uint _gasToUse) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_14
+      jump	// in
+    tag_12:
+      stop
+        /* "./src/main/solidity/DelegateToLogContext.sol":350:488  function setCallType(uint _callType) public {... */
+    tag_6:
+      tag_15
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_16
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_16:
+        /* "./src/main/solidity/DelegateToLogContext.sol":350:488  function setCallType(uint _callType) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_17
+      jump	// in
+    tag_15:
+      stop
+        /* "./src/main/solidity/DelegateToLogContext.sol":157:257  function setChildAddress(address _childAddress) public {... */
+    tag_9:
+        /* "./src/main/solidity/DelegateToLogContext.sol":237:250  _childAddress */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":222:234  childAddress */
+      0x00
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":222:250  childAddress = _childAddress */
+      0x0100
+      exp
+      dup2
+      sload
+      dup2
+      0xffffffffffffffffffffffffffffffffffffffff
+      mul
+      not
+      and
+      swap1
+      dup4
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+      mul
+      or
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":157:257  function setChildAddress(address _childAddress) public {... */
+      pop
+      jump	// out
+        /* "./src/main/solidity/DelegateToLogContext.sol":494:2038  function callCreateContextLogs() public {... */
+    tag_11:
+        /* "./src/main/solidity/DelegateToLogContext.sol":544:553  address a */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":556:568  childAddress */
+      dup1
+      0x00
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/DelegateToLogContext.sol":544:568  address a = childAddress */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":578:584  uint g */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":587:595  gasToUse */
+      sload(0x01)
+        /* "./src/main/solidity/DelegateToLogContext.sol":578:595  uint g = gasToUse */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":605:611  uint c */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":614:622  callType */
+      sload(0x02)
+        /* "./src/main/solidity/DelegateToLogContext.sol":605:622  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":686:691  0x200 */
+      0x0200
+        /* "./src/main/solidity/DelegateToLogContext.sol":679:683  0x40 */
+      0x40
+        /* "./src/main/solidity/DelegateToLogContext.sol":673:684  mload(0x40) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":669:692  add(mload(0x40), 0x200) */
+      add
+        /* "./src/main/solidity/DelegateToLogContext.sol":663:667  0x40 */
+      0x40
+        /* "./src/main/solidity/DelegateToLogContext.sol":656:693  mstore(0x40, add(mload(0x40), 0x200)) */
+      mstore
+        /* "./src/main/solidity/DelegateToLogContext.sol":771:781  0xCAFEBABE */
+      0xcafebabe
+        /* "./src/main/solidity/DelegateToLogContext.sol":768:769  1 */
+      0x01
+        /* "./src/main/solidity/DelegateToLogContext.sol":761:782  sstore(1, 0xCAFEBABE) */
+      sstore
+        /* "./src/main/solidity/DelegateToLogContext.sol":878:882  0x40 */
+      0x40
+        /* "./src/main/solidity/DelegateToLogContext.sol":872:883  mload(0x40) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":915:925  0x8f3242ca */
+      0x8f3242ca
+        /* "./src/main/solidity/DelegateToLogContext.sol":903:913  memPointer */
+      dup2
+        /* "./src/main/solidity/DelegateToLogContext.sol":896:926  mstore(memPointer, 0x8f3242ca) */
+      mstore
+        /* "./src/main/solidity/DelegateToLogContext.sol":976:979  0x4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":970:974  0x20 */
+      0x20
+        /* "./src/main/solidity/DelegateToLogContext.sol":966:980  sub(0x20, 0x4) */
+      sub
+        /* "./src/main/solidity/DelegateToLogContext.sol":954:964  memPointer */
+      dup2
+        /* "./src/main/solidity/DelegateToLogContext.sol":950:981  add(memPointer, sub(0x20, 0x4)) */
+      add
+        /* "./src/main/solidity/DelegateToLogContext.sol":1009:1014  0x101 */
+      0x0101
+        /* "./src/main/solidity/DelegateToLogContext.sol":1036:1037  1 */
+      0x01
+        /* "./src/main/solidity/DelegateToLogContext.sol":1033:1034  c */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1030:1038  eq(c, 1) */
+      eq
+        /* "./src/main/solidity/DelegateToLogContext.sol":1027:1029  if */
+      iszero
+      tag_20
+      jumpi
+        /* "./src/main/solidity/DelegateToLogContext.sol":1094:1095  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1091:1092  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1086:1089  0x4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":1081:1084  pos */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1078:1079  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1075:1076  a */
+      dup11
+        /* "./src/main/solidity/DelegateToLogContext.sol":1072:1073  g */
+      dup11
+        /* "./src/main/solidity/DelegateToLogContext.sol":1067:1096  call(g, a, 0, pos, 0x4, 0, 0) */
+      call
+        /* "./src/main/solidity/DelegateToLogContext.sol":1057:1096  result := call(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":1027:1029  if */
+    tag_20:
+        /* "./src/main/solidity/DelegateToLogContext.sol":1132:1133  2 */
+      0x02
+        /* "./src/main/solidity/DelegateToLogContext.sol":1129:1130  c */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1126:1134  eq(c, 2) */
+      eq
+        /* "./src/main/solidity/DelegateToLogContext.sol":1123:1125  if */
+      iszero
+      tag_21
+      jumpi
+        /* "./src/main/solidity/DelegateToLogContext.sol":1194:1195  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1191:1192  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1186:1189  0x4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":1181:1184  pos */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1178:1179  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1175:1176  a */
+      dup11
+        /* "./src/main/solidity/DelegateToLogContext.sol":1172:1173  g */
+      dup11
+        /* "./src/main/solidity/DelegateToLogContext.sol":1163:1196  callcode(g, a, 0, pos, 0x4, 0, 0) */
+      callcode
+        /* "./src/main/solidity/DelegateToLogContext.sol":1153:1196  result := callcode(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":1123:1125  if */
+    tag_21:
+        /* "./src/main/solidity/DelegateToLogContext.sol":1232:1233  3 */
+      0x03
+        /* "./src/main/solidity/DelegateToLogContext.sol":1229:1230  c */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1226:1234  eq(c, 3) */
+      eq
+        /* "./src/main/solidity/DelegateToLogContext.sol":1223:1225  if */
+      iszero
+      tag_22
+      jumpi
+        /* "./src/main/solidity/DelegateToLogContext.sol":1295:1296  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1292:1293  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1287:1290  0x4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":1282:1285  pos */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1279:1280  a */
+      dup10
+        /* "./src/main/solidity/DelegateToLogContext.sol":1276:1277  g */
+      dup10
+        /* "./src/main/solidity/DelegateToLogContext.sol":1263:1297  delegatecall(g, a, pos, 0x4, 0, 0) */
+      delegatecall
+        /* "./src/main/solidity/DelegateToLogContext.sol":1253:1297  result := delegatecall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":1223:1225  if */
+    tag_22:
+        /* "./src/main/solidity/DelegateToLogContext.sol":1333:1334  4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":1330:1331  c */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1327:1335  eq(c, 4) */
+      eq
+        /* "./src/main/solidity/DelegateToLogContext.sol":1324:1326  if */
+      iszero
+      tag_23
+      jumpi
+        /* "./src/main/solidity/DelegateToLogContext.sol":1394:1395  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1391:1392  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1386:1389  0x4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":1381:1384  pos */
+      dup5
+        /* "./src/main/solidity/DelegateToLogContext.sol":1378:1379  a */
+      dup10
+        /* "./src/main/solidity/DelegateToLogContext.sol":1375:1376  g */
+      dup10
+        /* "./src/main/solidity/DelegateToLogContext.sol":1364:1396  staticcall(g, a, pos, 0x4, 0, 0) */
+      staticcall
+        /* "./src/main/solidity/DelegateToLogContext.sol":1354:1396  result := staticcall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":1324:1326  if */
+    tag_23:
+        /* "./src/main/solidity/DelegateToLogContext.sol":1444:1448  0x40 */
+      0x40
+        /* "./src/main/solidity/DelegateToLogContext.sol":1438:1449  mload(0x40) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":1492:1496  0x20 */
+      0x20
+        /* "./src/main/solidity/DelegateToLogContext.sol":1486:1490  0x00 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1478:1484  memLoc */
+      dup3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1463:1497  returndatacopy(memLoc, 0x00, 0x20) */
+      returndatacopy
+        /* "./src/main/solidity/DelegateToLogContext.sol":1533:1539  memLoc */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1527:1540  mload(memLoc) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":1524:1525  1 */
+      0x01
+        /* "./src/main/solidity/DelegateToLogContext.sol":1521:1522  c */
+      dup7
+        /* "./src/main/solidity/DelegateToLogContext.sol":1518:1519  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1515:1516  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1510:1541  log3(0, 0, c, 1, mload(memLoc)) */
+      log3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1600:1604  0x20 */
+      0x20
+        /* "./src/main/solidity/DelegateToLogContext.sol":1594:1598  0x20 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1586:1592  memLoc */
+      dup3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1571:1605  returndatacopy(memLoc, 0x20, 0x20) */
+      returndatacopy
+        /* "./src/main/solidity/DelegateToLogContext.sol":1641:1647  memLoc */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1635:1648  mload(memLoc) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":1632:1633  2 */
+      0x02
+        /* "./src/main/solidity/DelegateToLogContext.sol":1629:1630  c */
+      dup7
+        /* "./src/main/solidity/DelegateToLogContext.sol":1626:1627  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1623:1624  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1618:1649  log3(0, 0, c, 2, mload(memLoc)) */
+      log3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1705:1709  0x20 */
+      0x20
+        /* "./src/main/solidity/DelegateToLogContext.sol":1699:1703  0x40 */
+      0x40
+        /* "./src/main/solidity/DelegateToLogContext.sol":1691:1697  memLoc */
+      dup3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1676:1710  returndatacopy(memLoc, 0x40, 0x20) */
+      returndatacopy
+        /* "./src/main/solidity/DelegateToLogContext.sol":1746:1752  memLoc */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1740:1753  mload(memLoc) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":1737:1738  3 */
+      0x03
+        /* "./src/main/solidity/DelegateToLogContext.sol":1734:1735  c */
+      dup7
+        /* "./src/main/solidity/DelegateToLogContext.sol":1731:1732  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1728:1729  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1723:1754  log3(0, 0, c, 3, mload(memLoc)) */
+      log3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1810:1814  0x20 */
+      0x20
+        /* "./src/main/solidity/DelegateToLogContext.sol":1804:1808  0x60 */
+      0x60
+        /* "./src/main/solidity/DelegateToLogContext.sol":1796:1802  memLoc */
+      dup3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1781:1815  returndatacopy(memLoc, 0x60, 0x20) */
+      returndatacopy
+        /* "./src/main/solidity/DelegateToLogContext.sol":1851:1857  memLoc */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1845:1858  mload(memLoc) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":1842:1843  4 */
+      0x04
+        /* "./src/main/solidity/DelegateToLogContext.sol":1839:1840  c */
+      dup7
+        /* "./src/main/solidity/DelegateToLogContext.sol":1836:1837  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1833:1834  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1828:1859  log3(0, 0, c, 4, mload(memLoc)) */
+      log3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1914:1918  0x20 */
+      0x20
+        /* "./src/main/solidity/DelegateToLogContext.sol":1908:1912  0x80 */
+      0x80
+        /* "./src/main/solidity/DelegateToLogContext.sol":1900:1906  memLoc */
+      dup3
+        /* "./src/main/solidity/DelegateToLogContext.sol":1885:1919  returndatacopy(memLoc, 0x80, 0x20) */
+      returndatacopy
+        /* "./src/main/solidity/DelegateToLogContext.sol":1955:1961  memLoc */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1949:1962  mload(memLoc) */
+      mload
+        /* "./src/main/solidity/DelegateToLogContext.sol":1946:1947  5 */
+      0x05
+        /* "./src/main/solidity/DelegateToLogContext.sol":1943:1944  c */
+      dup7
+        /* "./src/main/solidity/DelegateToLogContext.sol":1940:1941  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1937:1938  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1932:1963  log3(0, 0, c, 5, mload(memLoc)) */
+      log3
+        /* "./src/main/solidity/DelegateToLogContext.sol":2005:2011  result */
+      dup2
+        /* "./src/main/solidity/DelegateToLogContext.sol":2002:2003  9 */
+      0x09
+        /* "./src/main/solidity/DelegateToLogContext.sol":1999:2000  c */
+      dup7
+        /* "./src/main/solidity/DelegateToLogContext.sol":1996:1997  0 */
+      0x00
+        /* "./src/main/solidity/DelegateToLogContext.sol":1993:1994  0 */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":1988:2012  log3(0, 0, c, 9, result) */
+      log3
+        /* "./src/main/solidity/DelegateToLogContext.sol":642:2032  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/DelegateToLogContext.sol":263:344  function setGasToUse(uint _gasToUse) public {... */
+    tag_14:
+        /* "./src/main/solidity/DelegateToLogContext.sol":328:337  _gasToUse */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":317:325  gasToUse */
+      0x01
+        /* "./src/main/solidity/DelegateToLogContext.sol":317:337  gasToUse = _gasToUse */
+      dup2
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":263:344  function setGasToUse(uint _gasToUse) public {... */
+      pop
+      jump	// out
+        /* "./src/main/solidity/DelegateToLogContext.sol":350:488  function setCallType(uint _callType) public {... */
+    tag_17:
+        /* "./src/main/solidity/DelegateToLogContext.sol":415:427  childAddress */
+      0x00
+      dup1
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/DelegateToLogContext.sol":404:440  LogContext(childAddress).setCallType */
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+      0xfdbacfd9
+        /* "./src/main/solidity/DelegateToLogContext.sol":441:450  _callType */
+      dup3
+        /* "./src/main/solidity/DelegateToLogContext.sol":404:451  LogContext(childAddress).setCallType(_callType) */
+      mload(0x40)
+      dup3
+      0xffffffff
+      and
+      0xe0
+      shl
+      dup2
+      mstore
+      0x04
+      add
+      dup1
+      dup3
+      dup2
+      mstore
+      0x20
+      add
+      swap2
+      pop
+      pop
+      0x00
+      mload(0x40)
+      dup1
+      dup4
+      sub
+      dup2
+      0x00
+      dup8
+      dup1
+      extcodesize
+      iszero
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_26
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_26:
+        /* "./src/main/solidity/DelegateToLogContext.sol":404:451  LogContext(childAddress).setCallType(_callType) */
+      pop
+      gas
+      call
+      iszero
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_27
+      jumpi
+        /* "--CODEGEN--":45:61   */
+      returndatasize
+        /* "--CODEGEN--":42:43   */
+      0x00
+        /* "--CODEGEN--":39:40   */
+      dup1
+        /* "--CODEGEN--":24:62   */
+      returndatacopy
+        /* "--CODEGEN--":77:93   */
+      returndatasize
+        /* "--CODEGEN--":74:75   */
+      0x00
+        /* "--CODEGEN--":67:94   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_27:
+        /* "./src/main/solidity/DelegateToLogContext.sol":404:451  LogContext(childAddress).setCallType(_callType) */
+      pop
+      pop
+      pop
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":472:481  _callType */
+      dup1
+        /* "./src/main/solidity/DelegateToLogContext.sol":461:469  callType */
+      0x02
+        /* "./src/main/solidity/DelegateToLogContext.sol":461:481  callType = _callType */
+      dup2
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/DelegateToLogContext.sol":350:488  function setCallType(uint _callType) public {... */
+      pop
+      jump	// out
+
+    auxdata: 0xa265627a7a723058207aefd28c5c0704ef617bab54a3ba5466e4e6210f668d1198b821369c80230f7964736f6c634300050a0032
+}

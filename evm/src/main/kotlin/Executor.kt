@@ -112,9 +112,10 @@ class Executor {
 
                     val (position, newStack) = stack.popWord()
                     val start = position.toInt().coerceIn(0, call.callData.size)
-                    val end = (position.toInt() + 32).coerceIn(call.callData.size, 32)
+                    val end = (position.toInt() + 32).coerceIn(start, call.callData.size)
+                    val append = Byte.Zero.repeat(32 - end + start)
 
-                    val data = call.callData.subList(start, end)
+                    val data = call.callData.subList(start, end) + append
                     val finalStack = newStack.pushWord(Word.coerceFrom(data))
 
                     currentContext.updateCurrentCallCtx(stack = finalStack)

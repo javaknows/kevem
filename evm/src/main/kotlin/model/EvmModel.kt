@@ -222,6 +222,9 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     fun push(data: List<Byte>): Stack =
         Stack(backing.plusElement(data))
 
+    fun sneak(data: List<Byte>): Stack =
+        Stack(listOf(data) + backing)
+
     fun pop(): Pair<List<Byte>, Stack> {
         val last = backing.last()
         val remaining = backing.dropLast(1)
@@ -247,7 +250,7 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     fun popWords(num: Int): Pair<List<Word>, Stack> {
         val (datas, stack) = pop(num)
 
-        return Pair(datas.map { Word.coerceFrom(it) }, stack)
+        return Pair(datas.map { Word.coerceFrom(it) }.reversed(), stack)
     }
 
     fun peek(num: Int): List<Byte> = backing.reversed()[num]

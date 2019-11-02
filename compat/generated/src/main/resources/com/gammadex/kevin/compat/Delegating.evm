@@ -1,0 +1,1320 @@
+    /* "./src/main/solidity/Delegating.sol":27:4453  contract Delegating {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/Delegating.sol":27:4453  contract Delegating {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/Delegating.sol":27:4453  contract Delegating {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/Delegating.sol":27:4453  contract Delegating {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0xb49b8c4e
+      gt
+      tag_11
+      jumpi
+      dup1
+      0xb49b8c4e
+      eq
+      tag_7
+      jumpi
+      dup1
+      0xc19166cd
+      eq
+      tag_8
+      jumpi
+      dup1
+      0xeee9c708
+      eq
+      tag_9
+      jumpi
+      dup1
+      0xfdbacfd9
+      eq
+      tag_10
+      jumpi
+      jump(tag_2)
+    tag_11:
+      dup1
+      0x0c166a61
+      eq
+      tag_3
+      jumpi
+      dup1
+      0x1253f7aa
+      eq
+      tag_4
+      jumpi
+      dup1
+      0x624f011d
+      eq
+      tag_5
+      jumpi
+      dup1
+      0xafc874d2
+      eq
+      tag_6
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/Delegating.sol":119:219  function setChildAddress(address _childAddress) public {... */
+    tag_3:
+      tag_12
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_13
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_13:
+        /* "./src/main/solidity/Delegating.sol":119:219  function setChildAddress(address _childAddress) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_14
+      jump	// in
+    tag_12:
+      stop
+        /* "./src/main/solidity/Delegating.sol":1166:2082  function doReturn() public {... */
+    tag_4:
+      tag_15
+      tag_16
+      jump	// in
+    tag_15:
+      stop
+        /* "./src/main/solidity/Delegating.sol":399:1160  function doStop() public {... */
+    tag_5:
+      tag_17
+      tag_18
+      jump	// in
+    tag_17:
+      stop
+        /* "./src/main/solidity/Delegating.sol":2088:2906  function doRevert() public {... */
+    tag_6:
+      tag_19
+      tag_20
+      jump	// in
+    tag_19:
+      stop
+        /* "./src/main/solidity/Delegating.sol":2912:3676  function doInvalid() public {... */
+    tag_7:
+      tag_21
+      tag_22
+      jump	// in
+    tag_21:
+      stop
+        /* "./src/main/solidity/Delegating.sol":3682:4451  function doSelfDestruct() public {... */
+    tag_8:
+      tag_23
+      tag_24
+      jump	// in
+    tag_23:
+      stop
+        /* "./src/main/solidity/Delegating.sol":225:306  function setGasToUse(uint _gasToUse) public {... */
+    tag_9:
+      tag_25
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_26
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_26:
+        /* "./src/main/solidity/Delegating.sol":225:306  function setGasToUse(uint _gasToUse) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_27
+      jump	// in
+    tag_25:
+      stop
+        /* "./src/main/solidity/Delegating.sol":312:393  function setCallType(uint _callType) public {... */
+    tag_10:
+      tag_28
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_29
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_29:
+        /* "./src/main/solidity/Delegating.sol":312:393  function setCallType(uint _callType) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_30
+      jump	// in
+    tag_28:
+      stop
+        /* "./src/main/solidity/Delegating.sol":119:219  function setChildAddress(address _childAddress) public {... */
+    tag_14:
+        /* "./src/main/solidity/Delegating.sol":199:212  _childAddress */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":184:196  childAddress */
+      0x00
+      dup1
+        /* "./src/main/solidity/Delegating.sol":184:212  childAddress = _childAddress */
+      0x0100
+      exp
+      dup2
+      sload
+      dup2
+      0xffffffffffffffffffffffffffffffffffffffff
+      mul
+      not
+      and
+      swap1
+      dup4
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+      mul
+      or
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/Delegating.sol":119:219  function setChildAddress(address _childAddress) public {... */
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":1166:2082  function doReturn() public {... */
+    tag_16:
+        /* "./src/main/solidity/Delegating.sol":1203:1212  address a */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1215:1227  childAddress */
+      dup1
+      0x00
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/Delegating.sol":1203:1227  address a = childAddress */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1237:1243  uint g */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1246:1254  gasToUse */
+      sload(0x01)
+        /* "./src/main/solidity/Delegating.sol":1237:1254  uint g = gasToUse */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1264:1270  uint c */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1273:1281  callType */
+      sload(0x02)
+        /* "./src/main/solidity/Delegating.sol":1264:1281  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1339:1343  0x40 */
+      0x40
+        /* "./src/main/solidity/Delegating.sol":1333:1344  mload(0x40) */
+      mload
+        /* "./src/main/solidity/Delegating.sol":1376:1386  0x1253f7aa */
+      0x1253f7aa
+        /* "./src/main/solidity/Delegating.sol":1364:1374  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":1357:1387  mstore(memPointer, 0x1253f7aa) */
+      mstore
+        /* "./src/main/solidity/Delegating.sol":1437:1440  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1431:1435  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":1427:1441  sub(0x20, 0x4) */
+      sub
+        /* "./src/main/solidity/Delegating.sol":1415:1425  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":1411:1442  add(memPointer, sub(0x20, 0x4)) */
+      add
+        /* "./src/main/solidity/Delegating.sol":1485:1489  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":1473:1483  memPointer */
+      dup3
+        /* "./src/main/solidity/Delegating.sol":1469:1490  add(memPointer, 0x20) */
+      add
+        /* "./src/main/solidity/Delegating.sol":1455:1490  memPointer := add(memPointer, 0x20) */
+      swap2
+      pop
+        /* "./src/main/solidity/Delegating.sol":1519:1524  0x101 */
+      0x0101
+        /* "./src/main/solidity/Delegating.sol":1547:1548  1 */
+      0x01
+        /* "./src/main/solidity/Delegating.sol":1544:1545  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1541:1549  eq(c, 1) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":1538:1540  if */
+      iszero
+      tag_33
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":1614:1618  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":1602:1612  memPointer */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":1597:1600  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1592:1595  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1589:1590  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1586:1587  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":1583:1584  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":1578:1619  call(g, a, 0, pos, 0x4, memPointer, 0x20) */
+      call
+        /* "./src/main/solidity/Delegating.sol":1568:1619  result := call(g, a, 0, pos, 0x4, memPointer, 0x20) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1538:1540  if */
+    tag_33:
+        /* "./src/main/solidity/Delegating.sol":1655:1656  2 */
+      0x02
+        /* "./src/main/solidity/Delegating.sol":1652:1653  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1649:1657  eq(c, 2) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":1646:1648  if */
+      iszero
+      tag_34
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":1726:1730  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":1714:1724  memPointer */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":1709:1712  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1704:1707  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1701:1702  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1698:1699  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":1695:1696  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":1686:1731  callcode(g, a, 0, pos, 0x4, memPointer, 0x20) */
+      callcode
+        /* "./src/main/solidity/Delegating.sol":1676:1731  result := callcode(g, a, 0, pos, 0x4, memPointer, 0x20) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1646:1648  if */
+    tag_34:
+        /* "./src/main/solidity/Delegating.sol":1767:1768  3 */
+      0x03
+        /* "./src/main/solidity/Delegating.sol":1764:1765  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1761:1769  eq(c, 3) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":1758:1760  if */
+      iszero
+      tag_35
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":1839:1843  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":1827:1837  memPointer */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":1822:1825  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1817:1820  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1814:1815  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":1811:1812  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":1798:1844  delegatecall(g, a, pos, 0x4, memPointer, 0x20) */
+      delegatecall
+        /* "./src/main/solidity/Delegating.sol":1788:1844  result := delegatecall(g, a, pos, 0x4, memPointer, 0x20) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1758:1760  if */
+    tag_35:
+        /* "./src/main/solidity/Delegating.sol":1880:1881  4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1877:1878  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1874:1882  eq(c, 4) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":1871:1873  if */
+      iszero
+      tag_36
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":1950:1954  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":1938:1948  memPointer */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":1933:1936  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1928:1931  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1925:1926  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":1922:1923  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":1911:1955  staticcall(g, a, pos, 0x4, memPointer, 0x20) */
+      staticcall
+        /* "./src/main/solidity/Delegating.sol":1901:1955  result := staticcall(g, a, pos, 0x4, memPointer, 0x20) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1871:1873  if */
+    tag_36:
+        /* "./src/main/solidity/Delegating.sol":2064:2065  c */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":2057:2062  0x8E5 */
+      0x08e5
+        /* "./src/main/solidity/Delegating.sol":2049:2055  result */
+      dup3
+        /* "./src/main/solidity/Delegating.sol":2046:2047  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2043:2044  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":2038:2066  log3(0, 0, result, 0x8E5, c) */
+      log3
+        /* "./src/main/solidity/Delegating.sol":1301:2076  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":399:1160  function doStop() public {... */
+    tag_18:
+        /* "./src/main/solidity/Delegating.sol":434:443  address a */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":446:458  childAddress */
+      dup1
+      0x00
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/Delegating.sol":434:458  address a = childAddress */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":468:474  uint g */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":477:485  gasToUse */
+      sload(0x01)
+        /* "./src/main/solidity/Delegating.sol":468:485  uint g = gasToUse */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":495:501  uint c */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":504:512  callType */
+      sload(0x02)
+        /* "./src/main/solidity/Delegating.sol":495:512  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":570:574  0x40 */
+      0x40
+        /* "./src/main/solidity/Delegating.sol":564:575  mload(0x40) */
+      mload
+        /* "./src/main/solidity/Delegating.sol":607:617  0x624f011d */
+      0x624f011d
+        /* "./src/main/solidity/Delegating.sol":595:605  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":588:618  mstore(memPointer, 0x624f011d) */
+      mstore
+        /* "./src/main/solidity/Delegating.sol":668:671  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":662:666  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":658:672  sub(0x20, 0x4) */
+      sub
+        /* "./src/main/solidity/Delegating.sol":646:656  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":642:673  add(memPointer, sub(0x20, 0x4)) */
+      add
+        /* "./src/main/solidity/Delegating.sol":701:706  0x101 */
+      0x0101
+        /* "./src/main/solidity/Delegating.sol":728:729  1 */
+      0x01
+        /* "./src/main/solidity/Delegating.sol":725:726  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":722:730  eq(c, 1) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":719:721  if */
+      iszero
+      tag_38
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":786:787  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":783:784  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":778:781  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":773:776  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":770:771  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":767:768  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":764:765  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":759:788  call(g, a, 0, pos, 0x4, 0, 0) */
+      call
+        /* "./src/main/solidity/Delegating.sol":749:788  result := call(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":719:721  if */
+    tag_38:
+        /* "./src/main/solidity/Delegating.sol":824:825  2 */
+      0x02
+        /* "./src/main/solidity/Delegating.sol":821:822  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":818:826  eq(c, 2) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":815:817  if */
+      iszero
+      tag_39
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":886:887  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":883:884  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":878:881  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":873:876  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":870:871  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":867:868  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":864:865  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":855:888  callcode(g, a, 0, pos, 0x4, 0, 0) */
+      callcode
+        /* "./src/main/solidity/Delegating.sol":845:888  result := callcode(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":815:817  if */
+    tag_39:
+        /* "./src/main/solidity/Delegating.sol":924:925  3 */
+      0x03
+        /* "./src/main/solidity/Delegating.sol":921:922  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":918:926  eq(c, 3) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":915:917  if */
+      iszero
+      tag_40
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":987:988  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":984:985  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":979:982  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":974:977  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":971:972  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":968:969  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":955:989  delegatecall(g, a, pos, 0x4, 0, 0) */
+      delegatecall
+        /* "./src/main/solidity/Delegating.sol":945:989  result := delegatecall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":915:917  if */
+    tag_40:
+        /* "./src/main/solidity/Delegating.sol":1025:1026  4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1022:1023  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1019:1027  eq(c, 4) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":1016:1018  if */
+      iszero
+      tag_41
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":1086:1087  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1083:1084  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":1078:1081  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":1073:1076  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":1070:1071  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":1067:1068  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":1056:1088  staticcall(g, a, pos, 0x4, 0, 0) */
+      staticcall
+        /* "./src/main/solidity/Delegating.sol":1046:1088  result := staticcall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":1016:1018  if */
+    tag_41:
+        /* "./src/main/solidity/Delegating.sol":1142:1143  c */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":1135:1140  0x8E5 */
+      0x08e5
+        /* "./src/main/solidity/Delegating.sol":1127:1133  result */
+      dup3
+        /* "./src/main/solidity/Delegating.sol":1124:1125  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":1121:1122  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":1116:1144  log3(0, 0, result, 0x8E5, c) */
+      log3
+        /* "./src/main/solidity/Delegating.sol":532:1154  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":2088:2906  function doRevert() public {... */
+    tag_20:
+        /* "./src/main/solidity/Delegating.sol":2125:2134  address a */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2137:2149  childAddress */
+      dup1
+      0x00
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/Delegating.sol":2125:2149  address a = childAddress */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2159:2165  uint g */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2168:2176  gasToUse */
+      sload(0x01)
+        /* "./src/main/solidity/Delegating.sol":2159:2176  uint g = gasToUse */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2186:2192  uint c */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2195:2203  callType */
+      sload(0x02)
+        /* "./src/main/solidity/Delegating.sol":2186:2203  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2261:2265  0x40 */
+      0x40
+        /* "./src/main/solidity/Delegating.sol":2255:2266  mload(0x40) */
+      mload
+        /* "./src/main/solidity/Delegating.sol":2298:2308  0xafc874d2 */
+      0xafc874d2
+        /* "./src/main/solidity/Delegating.sol":2286:2296  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":2279:2309  mstore(memPointer, 0xafc874d2) */
+      mstore
+        /* "./src/main/solidity/Delegating.sol":2359:2362  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":2353:2357  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":2349:2363  sub(0x20, 0x4) */
+      sub
+        /* "./src/main/solidity/Delegating.sol":2337:2347  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":2333:2364  add(memPointer, sub(0x20, 0x4)) */
+      add
+        /* "./src/main/solidity/Delegating.sol":2392:2397  0x101 */
+      0x0101
+        /* "./src/main/solidity/Delegating.sol":2419:2420  1 */
+      0x01
+        /* "./src/main/solidity/Delegating.sol":2416:2417  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2413:2421  eq(c, 1) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":2410:2412  if */
+      iszero
+      tag_43
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":2477:2478  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2474:2475  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":2469:2472  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":2464:2467  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2461:2462  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2458:2459  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":2455:2456  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":2450:2479  call(g, a, 0, pos, 0x4, 0, 0) */
+      call
+        /* "./src/main/solidity/Delegating.sol":2440:2479  result := call(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2410:2412  if */
+    tag_43:
+        /* "./src/main/solidity/Delegating.sol":2515:2516  2 */
+      0x02
+        /* "./src/main/solidity/Delegating.sol":2512:2513  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2509:2517  eq(c, 2) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":2506:2508  if */
+      iszero
+      tag_44
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":2577:2578  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2574:2575  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":2569:2572  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":2564:2567  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2561:2562  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2558:2559  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":2555:2556  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":2546:2579  callcode(g, a, 0, pos, 0x4, 0, 0) */
+      callcode
+        /* "./src/main/solidity/Delegating.sol":2536:2579  result := callcode(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2506:2508  if */
+    tag_44:
+        /* "./src/main/solidity/Delegating.sol":2615:2616  3 */
+      0x03
+        /* "./src/main/solidity/Delegating.sol":2612:2613  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2609:2617  eq(c, 3) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":2606:2608  if */
+      iszero
+      tag_45
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":2678:2679  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2675:2676  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":2670:2673  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":2665:2668  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2662:2663  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":2659:2660  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":2646:2680  delegatecall(g, a, pos, 0x4, 0, 0) */
+      delegatecall
+        /* "./src/main/solidity/Delegating.sol":2636:2680  result := delegatecall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2606:2608  if */
+    tag_45:
+        /* "./src/main/solidity/Delegating.sol":2716:2717  4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":2713:2714  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2710:2718  eq(c, 4) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":2707:2709  if */
+      iszero
+      tag_46
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":2777:2778  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2774:2775  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":2769:2772  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":2764:2767  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":2761:2762  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":2758:2759  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":2747:2779  staticcall(g, a, pos, 0x4, 0, 0) */
+      staticcall
+        /* "./src/main/solidity/Delegating.sol":2737:2779  result := staticcall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2707:2709  if */
+    tag_46:
+        /* "./src/main/solidity/Delegating.sol":2888:2889  c */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":2881:2886  0x8E5 */
+      0x08e5
+        /* "./src/main/solidity/Delegating.sol":2873:2879  result */
+      dup3
+        /* "./src/main/solidity/Delegating.sol":2870:2871  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2867:2868  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":2862:2890  log3(0, 0, result, 0x8E5, c) */
+      log3
+        /* "./src/main/solidity/Delegating.sol":2223:2900  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":2912:3676  function doInvalid() public {... */
+    tag_22:
+        /* "./src/main/solidity/Delegating.sol":2950:2959  address a */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2962:2974  childAddress */
+      dup1
+      0x00
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/Delegating.sol":2950:2974  address a = childAddress */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":2984:2990  uint g */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":2993:3001  gasToUse */
+      sload(0x01)
+        /* "./src/main/solidity/Delegating.sol":2984:3001  uint g = gasToUse */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3011:3017  uint c */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3020:3028  callType */
+      sload(0x02)
+        /* "./src/main/solidity/Delegating.sol":3011:3028  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3086:3090  0x40 */
+      0x40
+        /* "./src/main/solidity/Delegating.sol":3080:3091  mload(0x40) */
+      mload
+        /* "./src/main/solidity/Delegating.sol":3123:3133  0xb49b8c4e */
+      0xb49b8c4e
+        /* "./src/main/solidity/Delegating.sol":3111:3121  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":3104:3134  mstore(memPointer, 0xb49b8c4e) */
+      mstore
+        /* "./src/main/solidity/Delegating.sol":3184:3187  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3178:3182  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":3174:3188  sub(0x20, 0x4) */
+      sub
+        /* "./src/main/solidity/Delegating.sol":3162:3172  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":3158:3189  add(memPointer, sub(0x20, 0x4)) */
+      add
+        /* "./src/main/solidity/Delegating.sol":3217:3222  0x101 */
+      0x0101
+        /* "./src/main/solidity/Delegating.sol":3244:3245  1 */
+      0x01
+        /* "./src/main/solidity/Delegating.sol":3241:3242  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3238:3246  eq(c, 1) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":3235:3237  if */
+      iszero
+      tag_48
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":3302:3303  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3299:3300  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":3294:3297  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3289:3292  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3286:3287  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3283:3284  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":3280:3281  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":3275:3304  call(g, a, 0, pos, 0x4, 0, 0) */
+      call
+        /* "./src/main/solidity/Delegating.sol":3265:3304  result := call(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3235:3237  if */
+    tag_48:
+        /* "./src/main/solidity/Delegating.sol":3340:3341  2 */
+      0x02
+        /* "./src/main/solidity/Delegating.sol":3337:3338  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3334:3342  eq(c, 2) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":3331:3333  if */
+      iszero
+      tag_49
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":3402:3403  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3399:3400  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":3394:3397  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3389:3392  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3386:3387  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3383:3384  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":3380:3381  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":3371:3404  callcode(g, a, 0, pos, 0x4, 0, 0) */
+      callcode
+        /* "./src/main/solidity/Delegating.sol":3361:3404  result := callcode(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3331:3333  if */
+    tag_49:
+        /* "./src/main/solidity/Delegating.sol":3440:3441  3 */
+      0x03
+        /* "./src/main/solidity/Delegating.sol":3437:3438  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3434:3442  eq(c, 3) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":3431:3433  if */
+      iszero
+      tag_50
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":3503:3504  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3500:3501  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":3495:3498  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3490:3493  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3487:3488  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":3484:3485  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":3471:3505  delegatecall(g, a, pos, 0x4, 0, 0) */
+      delegatecall
+        /* "./src/main/solidity/Delegating.sol":3461:3505  result := delegatecall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3431:3433  if */
+    tag_50:
+        /* "./src/main/solidity/Delegating.sol":3541:3542  4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3538:3539  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3535:3543  eq(c, 4) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":3532:3534  if */
+      iszero
+      tag_51
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":3602:3603  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3599:3600  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":3594:3597  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3589:3592  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":3586:3587  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":3583:3584  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":3572:3604  staticcall(g, a, pos, 0x4, 0, 0) */
+      staticcall
+        /* "./src/main/solidity/Delegating.sol":3562:3604  result := staticcall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3532:3534  if */
+    tag_51:
+        /* "./src/main/solidity/Delegating.sol":3658:3659  c */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":3651:3656  0x8E5 */
+      0x08e5
+        /* "./src/main/solidity/Delegating.sol":3643:3649  result */
+      dup3
+        /* "./src/main/solidity/Delegating.sol":3640:3641  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3637:3638  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":3632:3660  log3(0, 0, result, 0x8E5, c) */
+      log3
+        /* "./src/main/solidity/Delegating.sol":3048:3670  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":3682:4451  function doSelfDestruct() public {... */
+    tag_24:
+        /* "./src/main/solidity/Delegating.sol":3725:3734  address a */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3737:3749  childAddress */
+      dup1
+      0x00
+      swap1
+      sload
+      swap1
+      0x0100
+      exp
+      swap1
+      div
+      0xffffffffffffffffffffffffffffffffffffffff
+      and
+        /* "./src/main/solidity/Delegating.sol":3725:3749  address a = childAddress */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3759:3765  uint g */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3768:3776  gasToUse */
+      sload(0x01)
+        /* "./src/main/solidity/Delegating.sol":3759:3776  uint g = gasToUse */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3786:3792  uint c */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":3795:3803  callType */
+      sload(0x02)
+        /* "./src/main/solidity/Delegating.sol":3786:3803  uint c = callType */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":3861:3865  0x40 */
+      0x40
+        /* "./src/main/solidity/Delegating.sol":3855:3866  mload(0x40) */
+      mload
+        /* "./src/main/solidity/Delegating.sol":3898:3908  0xc19166cd */
+      0xc19166cd
+        /* "./src/main/solidity/Delegating.sol":3886:3896  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":3879:3909  mstore(memPointer, 0xc19166cd) */
+      mstore
+        /* "./src/main/solidity/Delegating.sol":3959:3962  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":3953:3957  0x20 */
+      0x20
+        /* "./src/main/solidity/Delegating.sol":3949:3963  sub(0x20, 0x4) */
+      sub
+        /* "./src/main/solidity/Delegating.sol":3937:3947  memPointer */
+      dup2
+        /* "./src/main/solidity/Delegating.sol":3933:3964  add(memPointer, sub(0x20, 0x4)) */
+      add
+        /* "./src/main/solidity/Delegating.sol":3992:3997  0x101 */
+      0x0101
+        /* "./src/main/solidity/Delegating.sol":4019:4020  1 */
+      0x01
+        /* "./src/main/solidity/Delegating.sol":4016:4017  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4013:4021  eq(c, 1) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":4010:4012  if */
+      iszero
+      tag_53
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":4077:4078  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4074:4075  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":4069:4072  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":4064:4067  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4061:4062  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4058:4059  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":4055:4056  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":4050:4079  call(g, a, 0, pos, 0x4, 0, 0) */
+      call
+        /* "./src/main/solidity/Delegating.sol":4040:4079  result := call(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":4010:4012  if */
+    tag_53:
+        /* "./src/main/solidity/Delegating.sol":4115:4116  2 */
+      0x02
+        /* "./src/main/solidity/Delegating.sol":4112:4113  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4109:4117  eq(c, 2) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":4106:4108  if */
+      iszero
+      tag_54
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":4177:4178  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4174:4175  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":4169:4172  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":4164:4167  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4161:4162  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4158:4159  a */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":4155:4156  g */
+      dup11
+        /* "./src/main/solidity/Delegating.sol":4146:4179  callcode(g, a, 0, pos, 0x4, 0, 0) */
+      callcode
+        /* "./src/main/solidity/Delegating.sol":4136:4179  result := callcode(g, a, 0, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":4106:4108  if */
+    tag_54:
+        /* "./src/main/solidity/Delegating.sol":4215:4216  3 */
+      0x03
+        /* "./src/main/solidity/Delegating.sol":4212:4213  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4209:4217  eq(c, 3) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":4206:4208  if */
+      iszero
+      tag_55
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":4278:4279  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4275:4276  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":4270:4273  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":4265:4268  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4262:4263  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":4259:4260  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":4246:4280  delegatecall(g, a, pos, 0x4, 0, 0) */
+      delegatecall
+        /* "./src/main/solidity/Delegating.sol":4236:4280  result := delegatecall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":4206:4208  if */
+    tag_55:
+        /* "./src/main/solidity/Delegating.sol":4316:4317  4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":4313:4314  c */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4310:4318  eq(c, 4) */
+      eq
+        /* "./src/main/solidity/Delegating.sol":4307:4309  if */
+      iszero
+      tag_56
+      jumpi
+        /* "./src/main/solidity/Delegating.sol":4377:4378  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4374:4375  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":4369:4372  0x4 */
+      0x04
+        /* "./src/main/solidity/Delegating.sol":4364:4367  pos */
+      dup5
+        /* "./src/main/solidity/Delegating.sol":4361:4362  a */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":4358:4359  g */
+      dup10
+        /* "./src/main/solidity/Delegating.sol":4347:4379  staticcall(g, a, pos, 0x4, 0, 0) */
+      staticcall
+        /* "./src/main/solidity/Delegating.sol":4337:4379  result := staticcall(g, a, pos, 0x4, 0, 0) */
+      swap1
+      pop
+        /* "./src/main/solidity/Delegating.sol":4307:4309  if */
+    tag_56:
+        /* "./src/main/solidity/Delegating.sol":4433:4434  c */
+      dup4
+        /* "./src/main/solidity/Delegating.sol":4426:4431  0x8E5 */
+      0x08e5
+        /* "./src/main/solidity/Delegating.sol":4418:4424  result */
+      dup3
+        /* "./src/main/solidity/Delegating.sol":4415:4416  0 */
+      0x00
+        /* "./src/main/solidity/Delegating.sol":4412:4413  0 */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":4407:4435  log3(0, 0, result, 0x8E5, c) */
+      log3
+        /* "./src/main/solidity/Delegating.sol":3823:4445  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":225:306  function setGasToUse(uint _gasToUse) public {... */
+    tag_27:
+        /* "./src/main/solidity/Delegating.sol":290:299  _gasToUse */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":279:287  gasToUse */
+      0x01
+        /* "./src/main/solidity/Delegating.sol":279:299  gasToUse = _gasToUse */
+      dup2
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/Delegating.sol":225:306  function setGasToUse(uint _gasToUse) public {... */
+      pop
+      jump	// out
+        /* "./src/main/solidity/Delegating.sol":312:393  function setCallType(uint _callType) public {... */
+    tag_30:
+        /* "./src/main/solidity/Delegating.sol":377:386  _callType */
+      dup1
+        /* "./src/main/solidity/Delegating.sol":366:374  callType */
+      0x02
+        /* "./src/main/solidity/Delegating.sol":366:386  callType = _callType */
+      dup2
+      swap1
+      sstore
+      pop
+        /* "./src/main/solidity/Delegating.sol":312:393  function setCallType(uint _callType) public {... */
+      pop
+      jump	// out
+
+    auxdata: 0xa265627a7a7230582000af28c005aa218ace8cd0484342f97ea9a11bcf2f9410f58990369db557e04764736f6c634300050a0032
+}

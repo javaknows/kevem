@@ -1,0 +1,2585 @@
+    /* "./src/main/solidity/NumberFunctions.sol":27:8211  contract NumberFunctions  {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/NumberFunctions.sol":27:8211  contract NumberFunctions  {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/NumberFunctions.sol":27:8211  contract NumberFunctions  {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/NumberFunctions.sol":27:8211  contract NumberFunctions  {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0x89769422
+      gt
+      tag_28
+      jumpi
+      dup1
+      0xd8c8807b
+      gt
+      tag_29
+      jumpi
+      dup1
+      0xe9635a1f
+      gt
+      tag_30
+      jumpi
+      dup1
+      0xe9635a1f
+      eq
+      tag_24
+      jumpi
+      dup1
+      0xf590bbf3
+      eq
+      tag_25
+      jumpi
+      dup1
+      0xfe8c3279
+      eq
+      tag_26
+      jumpi
+      dup1
+      0xffe119e0
+      eq
+      tag_27
+      jumpi
+      jump(tag_2)
+    tag_30:
+      dup1
+      0xd8c8807b
+      eq
+      tag_21
+      jumpi
+      dup1
+      0xdc1ee57b
+      eq
+      tag_22
+      jumpi
+      dup1
+      0xdf9da9fd
+      eq
+      tag_23
+      jumpi
+      jump(tag_2)
+    tag_29:
+      dup1
+      0x89769422
+      eq
+      tag_15
+      jumpi
+      dup1
+      0x9a07a893
+      eq
+      tag_16
+      jumpi
+      dup1
+      0xa2d00d8d
+      eq
+      tag_17
+      jumpi
+      dup1
+      0xb0c37966
+      eq
+      tag_18
+      jumpi
+      dup1
+      0xb894fa07
+      eq
+      tag_19
+      jumpi
+      dup1
+      0xbcdba4ba
+      eq
+      tag_20
+      jumpi
+      jump(tag_2)
+    tag_28:
+      dup1
+      0x2c00612d
+      gt
+      tag_31
+      jumpi
+      dup1
+      0x2c00612d
+      eq
+      tag_9
+      jumpi
+      dup1
+      0x30e0cae1
+      eq
+      tag_10
+      jumpi
+      dup1
+      0x38f07120
+      eq
+      tag_11
+      jumpi
+      dup1
+      0x4361fb43
+      eq
+      tag_12
+      jumpi
+      dup1
+      0x6e443c76
+      eq
+      tag_13
+      jumpi
+      dup1
+      0x895feacd
+      eq
+      tag_14
+      jumpi
+      jump(tag_2)
+    tag_31:
+      dup1
+      0x042d5b23
+      eq
+      tag_3
+      jumpi
+      dup1
+      0x053ee5a2
+      eq
+      tag_4
+      jumpi
+      dup1
+      0x0c6560b3
+      eq
+      tag_5
+      jumpi
+      dup1
+      0x15a831e7
+      eq
+      tag_6
+      jumpi
+      dup1
+      0x21020e22
+      eq
+      tag_7
+      jumpi
+      dup1
+      0x26b70f12
+      eq
+      tag_8
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/NumberFunctions.sol":2012:2333  function callSmod(bytes32 a, bytes32 b) public {... */
+    tag_3:
+      tag_32
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_33
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_33:
+        /* "./src/main/solidity/NumberFunctions.sol":2012:2333  function callSmod(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_34
+      jump	// in
+    tag_32:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":2730:3115  function callMulmod(bytes32 a, bytes32 b, bytes32 c) public {... */
+    tag_4:
+      tag_35
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x60
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_36
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_36:
+        /* "./src/main/solidity/NumberFunctions.sol":2730:3115  function callMulmod(bytes32 a, bytes32 b, bytes32 c) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_37
+      jump	// in
+    tag_35:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":6648:6907  function callNot(bytes32 a) public {... */
+    tag_5:
+      tag_38
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_39
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_39:
+        /* "./src/main/solidity/NumberFunctions.sol":6648:6907  function callNot(bytes32 a) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_40
+      jump	// in
+    tag_38:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":7240:7559  function callShl(bytes32 a, bytes32 b) public {... */
+    tag_6:
+      tag_41
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_42
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_42:
+        /* "./src/main/solidity/NumberFunctions.sol":7240:7559  function callShl(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_43
+      jump	// in
+    tag_41:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":1035:1354  function callDiv(bytes32 a, bytes32 b) public {... */
+    tag_7:
+      tag_44
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_45
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_45:
+        /* "./src/main/solidity/NumberFunctions.sol":1035:1354  function callDiv(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_46
+      jump	// in
+    tag_44:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":3785:4102  function callLt(bytes32 a, bytes32 b) public {... */
+    tag_8:
+      tag_47
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_48
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_48:
+        /* "./src/main/solidity/NumberFunctions.sol":3785:4102  function callLt(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_49
+      jump	// in
+    tag_47:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":5404:5669  function callIszero(bytes32 a) public {... */
+    tag_9:
+      tag_50
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x20
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_51
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_51:
+        /* "./src/main/solidity/NumberFunctions.sol":5404:5669  function callIszero(bytes32 a) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_52
+      jump	// in
+    tag_50:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":5081:5398  function callEq(bytes32 a, bytes32 b) public {... */
+    tag_10:
+      tag_53
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_54
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_54:
+        /* "./src/main/solidity/NumberFunctions.sol":5081:5398  function callEq(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_55
+      jump	// in
+    tag_53:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":6323:6642  function callXor(bytes32 a, bytes32 b) public {... */
+    tag_11:
+      tag_56
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_57
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_57:
+        /* "./src/main/solidity/NumberFunctions.sol":6323:6642  function callXor(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_58
+      jump	// in
+    tag_56:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":1360:1681  function callSdiv(bytes32 a, bytes32 b) public {... */
+    tag_12:
+      tag_59
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_60
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_60:
+        /* "./src/main/solidity/NumberFunctions.sol":1360:1681  function callSdiv(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_61
+      jump	// in
+    tag_59:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":6000:6317  function callOr(bytes32 a, bytes32 b) public {... */
+    tag_13:
+      tag_62
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_63
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_63:
+        /* "./src/main/solidity/NumberFunctions.sol":6000:6317  function callOr(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_64
+      jump	// in
+    tag_62:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":60:379  function callAdd(bytes32 a, bytes32 b) public {... */
+    tag_14:
+      tag_65
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_66
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_66:
+        /* "./src/main/solidity/NumberFunctions.sol":60:379  function callAdd(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_67
+      jump	// in
+    tag_65:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":2339:2724  function callAddmod(bytes32 a, bytes32 b, bytes32 c) public {... */
+    tag_15:
+      tag_68
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x60
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_69
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_69:
+        /* "./src/main/solidity/NumberFunctions.sol":2339:2724  function callAddmod(bytes32 a, bytes32 b, bytes32 c) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_70
+      jump	// in
+    tag_68:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":3121:3440  function callExp(bytes32 a, bytes32 b) public {... */
+    tag_16:
+      tag_71
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_72
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_72:
+        /* "./src/main/solidity/NumberFunctions.sol":3121:3440  function callExp(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_73
+      jump	// in
+    tag_71:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":4756:5075  function callSgt(bytes32 a, bytes32 b) public {... */
+    tag_17:
+      tag_74
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_75
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_75:
+        /* "./src/main/solidity/NumberFunctions.sol":4756:5075  function callSgt(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_76
+      jump	// in
+    tag_74:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":7890:8209  function callSar(bytes32 a, bytes32 b) public {... */
+    tag_18:
+      tag_77
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_78
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_78:
+        /* "./src/main/solidity/NumberFunctions.sol":7890:8209  function callSar(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_79
+      jump	// in
+    tag_77:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":4431:4750  function callSlt(bytes32 a, bytes32 b) public {... */
+    tag_19:
+      tag_80
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_81
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_81:
+        /* "./src/main/solidity/NumberFunctions.sol":4431:4750  function callSlt(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_82
+      jump	// in
+    tag_80:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":710:1029  function callMul(bytes32 a, bytes32 b) public {... */
+    tag_20:
+      tag_83
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_84
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_84:
+        /* "./src/main/solidity/NumberFunctions.sol":710:1029  function callMul(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_85
+      jump	// in
+    tag_83:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":6913:7234  function callByte(bytes32 a, bytes32 b) public {... */
+    tag_21:
+      tag_86
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_87
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_87:
+        /* "./src/main/solidity/NumberFunctions.sol":6913:7234  function callByte(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_88
+      jump	// in
+    tag_86:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":7565:7884  function callShr(bytes32 a, bytes32 b) public {... */
+    tag_22:
+      tag_89
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_90
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_90:
+        /* "./src/main/solidity/NumberFunctions.sol":7565:7884  function callShr(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_91
+      jump	// in
+    tag_89:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":4108:4425  function callGt(bytes32 a, bytes32 b) public {... */
+    tag_23:
+      tag_92
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_93
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_93:
+        /* "./src/main/solidity/NumberFunctions.sol":4108:4425  function callGt(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_94
+      jump	// in
+    tag_92:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":1687:2006  function callMod(bytes32 a, bytes32 b) public {... */
+    tag_24:
+      tag_95
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_96
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_96:
+        /* "./src/main/solidity/NumberFunctions.sol":1687:2006  function callMod(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_97
+      jump	// in
+    tag_95:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":385:704  function callSub(bytes32 a, bytes32 b) public {... */
+    tag_25:
+      tag_98
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_99
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_99:
+        /* "./src/main/solidity/NumberFunctions.sol":385:704  function callSub(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_100
+      jump	// in
+    tag_98:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":5675:5994  function callAnd(bytes32 a, bytes32 b) public {... */
+    tag_26:
+      tag_101
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_102
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_102:
+        /* "./src/main/solidity/NumberFunctions.sol":5675:5994  function callAnd(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_103
+      jump	// in
+    tag_101:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":3446:3779  function callSignextend(bytes32 a, bytes32 b) public {... */
+    tag_27:
+      tag_104
+      0x04
+      dup1
+      calldatasize
+      sub
+        /* "--CODEGEN--":13:15   */
+      0x40
+        /* "--CODEGEN--":8:11   */
+      dup2
+        /* "--CODEGEN--":5:16   */
+      lt
+        /* "--CODEGEN--":2:4   */
+      iszero
+      tag_105
+      jumpi
+        /* "--CODEGEN--":29:30   */
+      0x00
+        /* "--CODEGEN--":26:27   */
+      dup1
+        /* "--CODEGEN--":19:31   */
+      revert
+        /* "--CODEGEN--":2:4   */
+    tag_105:
+        /* "./src/main/solidity/NumberFunctions.sol":3446:3779  function callSignextend(bytes32 a, bytes32 b) public {... */
+      dup2
+      add
+      swap1
+      dup1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      dup1
+      calldataload
+      swap1
+      0x20
+      add
+      swap1
+      swap3
+      swap2
+      swap1
+      pop
+      pop
+      pop
+      tag_106
+      jump	// in
+    tag_104:
+      stop
+        /* "./src/main/solidity/NumberFunctions.sol":2012:2333  function callSmod(bytes32 a, bytes32 b) public {... */
+    tag_34:
+        /* "./src/main/solidity/NumberFunctions.sol":2117:2118  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":2104:2119  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2157:2161  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":2144:2162  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2198:2202  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":2192:2196  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":2187:2203  smod(arg1, arg2) */
+      smod
+        /* "./src/main/solidity/NumberFunctions.sol":2241:2245  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":2235:2246  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":2278:2281  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":2266:2276  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":2259:2282  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":2312:2316  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":2300:2310  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":2295:2317  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":2078:2327  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":2730:3115  function callMulmod(bytes32 a, bytes32 b, bytes32 c) public {... */
+    tag_37:
+        /* "./src/main/solidity/NumberFunctions.sol":2848:2849  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":2835:2850  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2888:2892  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":2875:2893  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2931:2935  0x44 */
+      0x44
+        /* "./src/main/solidity/NumberFunctions.sol":2918:2936  calldataload(0x44) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2980:2984  arg3 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":2974:2978  arg2 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":2968:2972  arg1 */
+      dup5
+        /* "./src/main/solidity/NumberFunctions.sol":2961:2985  mulmod(arg1, arg2, arg3) */
+      mulmod
+        /* "./src/main/solidity/NumberFunctions.sol":3023:3027  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":3017:3028  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":3060:3063  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3048:3058  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3041:3064  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":3094:3098  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":3082:3092  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3077:3099  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":2809:3109  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":6648:6907  function callNot(bytes32 a) public {... */
+    tag_40:
+        /* "./src/main/solidity/NumberFunctions.sol":6741:6742  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":6728:6743  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":6772:6776  arg1 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":6768:6777  not(arg1) */
+      not
+        /* "./src/main/solidity/NumberFunctions.sol":6815:6819  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":6809:6820  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":6852:6855  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6840:6850  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6833:6856  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":6886:6890  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":6874:6884  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6869:6891  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":6702:6901  {... */
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":7240:7559  function callShl(bytes32 a, bytes32 b) public {... */
+    tag_43:
+        /* "./src/main/solidity/NumberFunctions.sol":7344:7345  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":7331:7346  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":7384:7388  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":7371:7389  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":7424:7428  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":7418:7422  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":7414:7429  shl(arg1, arg2) */
+      shl
+        /* "./src/main/solidity/NumberFunctions.sol":7467:7471  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":7461:7472  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":7504:7507  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7492:7502  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7485:7508  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":7538:7542  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":7526:7536  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7521:7543  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":7305:7553  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":1035:1354  function callDiv(bytes32 a, bytes32 b) public {... */
+    tag_46:
+        /* "./src/main/solidity/NumberFunctions.sol":1139:1140  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":1126:1141  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":1179:1183  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":1166:1184  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":1219:1223  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":1213:1217  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":1209:1224  div(arg1, arg2) */
+      div
+        /* "./src/main/solidity/NumberFunctions.sol":1262:1266  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":1256:1267  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":1299:1302  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1287:1297  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1280:1303  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":1333:1337  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":1321:1331  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1316:1338  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":1100:1348  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":3785:4102  function callLt(bytes32 a, bytes32 b) public {... */
+    tag_49:
+        /* "./src/main/solidity/NumberFunctions.sol":3888:3889  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":3875:3890  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":3928:3932  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":3915:3933  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":3967:3971  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":3961:3965  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":3958:3972  lt(arg1, arg2) */
+      lt
+        /* "./src/main/solidity/NumberFunctions.sol":4010:4014  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":4004:4015  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":4047:4050  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4035:4045  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4028:4051  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":4081:4085  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":4069:4079  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4064:4086  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":3849:4096  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":5404:5669  function callIszero(bytes32 a) public {... */
+    tag_52:
+        /* "./src/main/solidity/NumberFunctions.sol":5500:5501  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":5487:5502  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":5534:5538  arg1 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":5527:5539  iszero(arg1) */
+      iszero
+        /* "./src/main/solidity/NumberFunctions.sol":5577:5581  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":5571:5582  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":5614:5617  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5602:5612  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5595:5618  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":5648:5652  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":5636:5646  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5631:5653  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":5461:5663  {... */
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":5081:5398  function callEq(bytes32 a, bytes32 b) public {... */
+    tag_55:
+        /* "./src/main/solidity/NumberFunctions.sol":5184:5185  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":5171:5186  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":5224:5228  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":5211:5229  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":5263:5267  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":5257:5261  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":5254:5268  eq(arg1, arg2) */
+      eq
+        /* "./src/main/solidity/NumberFunctions.sol":5306:5310  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":5300:5311  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":5343:5346  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5331:5341  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5324:5347  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":5377:5381  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":5365:5375  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5360:5382  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":5145:5392  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":6323:6642  function callXor(bytes32 a, bytes32 b) public {... */
+    tag_58:
+        /* "./src/main/solidity/NumberFunctions.sol":6427:6428  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":6414:6429  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":6467:6471  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":6454:6472  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":6507:6511  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":6501:6505  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":6497:6512  xor(arg1, arg2) */
+      xor
+        /* "./src/main/solidity/NumberFunctions.sol":6550:6554  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":6544:6555  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":6587:6590  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6575:6585  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6568:6591  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":6621:6625  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":6609:6619  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6604:6626  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":6388:6636  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":1360:1681  function callSdiv(bytes32 a, bytes32 b) public {... */
+    tag_61:
+        /* "./src/main/solidity/NumberFunctions.sol":1465:1466  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":1452:1467  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":1505:1509  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":1492:1510  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":1546:1550  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":1540:1544  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":1535:1551  sdiv(arg1, arg2) */
+      sdiv
+        /* "./src/main/solidity/NumberFunctions.sol":1589:1593  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":1583:1594  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":1626:1629  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1614:1624  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1607:1630  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":1660:1664  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":1648:1658  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1643:1665  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":1426:1675  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":6000:6317  function callOr(bytes32 a, bytes32 b) public {... */
+    tag_64:
+        /* "./src/main/solidity/NumberFunctions.sol":6103:6104  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":6090:6105  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":6143:6147  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":6130:6148  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":6182:6186  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":6176:6180  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":6173:6187  or(arg1, arg2) */
+      or
+        /* "./src/main/solidity/NumberFunctions.sol":6225:6229  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":6219:6230  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":6262:6265  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6250:6260  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6243:6266  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":6296:6300  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":6284:6294  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":6279:6301  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":6064:6311  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":60:379  function callAdd(bytes32 a, bytes32 b) public {... */
+    tag_67:
+        /* "./src/main/solidity/NumberFunctions.sol":164:165  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":151:166  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":204:208  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":191:209  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":244:248  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":238:242  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":234:249  add(arg1, arg2) */
+      add
+        /* "./src/main/solidity/NumberFunctions.sol":287:291  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":281:292  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":324:327  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":312:322  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":305:328  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":358:362  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":346:356  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":341:363  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":125:373  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":2339:2724  function callAddmod(bytes32 a, bytes32 b, bytes32 c) public {... */
+    tag_70:
+        /* "./src/main/solidity/NumberFunctions.sol":2457:2458  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":2444:2459  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2497:2501  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":2484:2502  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2540:2544  0x44 */
+      0x44
+        /* "./src/main/solidity/NumberFunctions.sol":2527:2545  calldataload(0x44) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":2589:2593  arg3 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":2583:2587  arg2 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":2577:2581  arg1 */
+      dup5
+        /* "./src/main/solidity/NumberFunctions.sol":2570:2594  addmod(arg1, arg2, arg3) */
+      addmod
+        /* "./src/main/solidity/NumberFunctions.sol":2632:2636  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":2626:2637  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":2669:2672  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":2657:2667  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":2650:2673  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":2703:2707  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":2691:2701  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":2686:2708  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":2418:2718  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":3121:3440  function callExp(bytes32 a, bytes32 b) public {... */
+    tag_73:
+        /* "./src/main/solidity/NumberFunctions.sol":3225:3226  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":3212:3227  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":3265:3269  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":3252:3270  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":3305:3309  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":3299:3303  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":3295:3310  exp(arg1, arg2) */
+      exp
+        /* "./src/main/solidity/NumberFunctions.sol":3348:3352  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":3342:3353  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":3385:3388  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3373:3383  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3366:3389  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":3419:3423  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":3407:3417  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3402:3424  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":3186:3434  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":4756:5075  function callSgt(bytes32 a, bytes32 b) public {... */
+    tag_76:
+        /* "./src/main/solidity/NumberFunctions.sol":4860:4861  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":4847:4862  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":4900:4904  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":4887:4905  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":4940:4944  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":4934:4938  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":4930:4945  sgt(arg1, arg2) */
+      sgt
+        /* "./src/main/solidity/NumberFunctions.sol":4983:4987  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":4977:4988  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":5020:5023  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5008:5018  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5001:5024  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":5054:5058  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":5042:5052  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5037:5059  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":4821:5069  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":7890:8209  function callSar(bytes32 a, bytes32 b) public {... */
+    tag_79:
+        /* "./src/main/solidity/NumberFunctions.sol":7994:7995  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":7981:7996  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":8034:8038  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":8021:8039  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":8074:8078  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":8068:8072  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":8064:8079  sar(arg1, arg2) */
+      sar
+        /* "./src/main/solidity/NumberFunctions.sol":8117:8121  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":8111:8122  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":8154:8157  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":8142:8152  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":8135:8158  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":8188:8192  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":8176:8186  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":8171:8193  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":7955:8203  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":4431:4750  function callSlt(bytes32 a, bytes32 b) public {... */
+    tag_82:
+        /* "./src/main/solidity/NumberFunctions.sol":4535:4536  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":4522:4537  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":4575:4579  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":4562:4580  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":4615:4619  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":4609:4613  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":4605:4620  slt(arg1, arg2) */
+      slt
+        /* "./src/main/solidity/NumberFunctions.sol":4658:4662  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":4652:4663  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":4695:4698  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4683:4693  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4676:4699  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":4729:4733  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":4717:4727  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4712:4734  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":4496:4744  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":710:1029  function callMul(bytes32 a, bytes32 b) public {... */
+    tag_85:
+        /* "./src/main/solidity/NumberFunctions.sol":814:815  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":801:816  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":854:858  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":841:859  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":894:898  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":888:892  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":884:899  mul(arg1, arg2) */
+      mul
+        /* "./src/main/solidity/NumberFunctions.sol":937:941  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":931:942  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":974:977  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":962:972  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":955:978  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":1008:1012  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":996:1006  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":991:1013  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":775:1023  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":6913:7234  function callByte(bytes32 a, bytes32 b) public {... */
+    tag_88:
+        /* "./src/main/solidity/NumberFunctions.sol":7018:7019  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":7005:7020  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":7058:7062  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":7045:7063  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":7099:7103  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":7093:7097  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":7088:7104  byte(arg1, arg2) */
+      byte
+        /* "./src/main/solidity/NumberFunctions.sol":7142:7146  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":7136:7147  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":7179:7182  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7167:7177  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7160:7183  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":7213:7217  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":7201:7211  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7196:7218  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":6979:7228  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":7565:7884  function callShr(bytes32 a, bytes32 b) public {... */
+    tag_91:
+        /* "./src/main/solidity/NumberFunctions.sol":7669:7670  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":7656:7671  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":7709:7713  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":7696:7714  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":7749:7753  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":7743:7747  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":7739:7754  shr(arg1, arg2) */
+      shr
+        /* "./src/main/solidity/NumberFunctions.sol":7792:7796  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":7786:7797  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":7829:7832  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7817:7827  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7810:7833  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":7863:7867  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":7851:7861  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":7846:7868  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":7630:7878  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":4108:4425  function callGt(bytes32 a, bytes32 b) public {... */
+    tag_94:
+        /* "./src/main/solidity/NumberFunctions.sol":4211:4212  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":4198:4213  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":4251:4255  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":4238:4256  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":4290:4294  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":4284:4288  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":4281:4295  gt(arg1, arg2) */
+      gt
+        /* "./src/main/solidity/NumberFunctions.sol":4333:4337  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":4327:4338  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":4370:4373  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4358:4368  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4351:4374  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":4404:4408  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":4392:4402  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":4387:4409  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":4172:4419  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":1687:2006  function callMod(bytes32 a, bytes32 b) public {... */
+    tag_97:
+        /* "./src/main/solidity/NumberFunctions.sol":1791:1792  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":1778:1793  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":1831:1835  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":1818:1836  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":1871:1875  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":1865:1869  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":1861:1876  mod(arg1, arg2) */
+      mod
+        /* "./src/main/solidity/NumberFunctions.sol":1914:1918  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":1908:1919  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":1951:1954  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1939:1949  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1932:1955  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":1985:1989  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":1973:1983  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":1968:1990  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":1752:2000  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":385:704  function callSub(bytes32 a, bytes32 b) public {... */
+    tag_100:
+        /* "./src/main/solidity/NumberFunctions.sol":489:490  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":476:491  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":529:533  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":516:534  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":569:573  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":563:567  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":559:574  sub(arg1, arg2) */
+      sub
+        /* "./src/main/solidity/NumberFunctions.sol":612:616  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":606:617  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":649:652  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":637:647  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":630:653  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":683:687  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":671:681  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":666:688  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":450:698  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":5675:5994  function callAnd(bytes32 a, bytes32 b) public {... */
+    tag_103:
+        /* "./src/main/solidity/NumberFunctions.sol":5779:5780  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":5766:5781  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":5819:5823  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":5806:5824  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":5859:5863  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":5853:5857  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":5849:5864  and(arg1, arg2) */
+      and
+        /* "./src/main/solidity/NumberFunctions.sol":5902:5906  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":5896:5907  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":5939:5942  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5927:5937  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5920:5943  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":5973:5977  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":5961:5971  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":5956:5978  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":5740:5988  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+        /* "./src/main/solidity/NumberFunctions.sol":3446:3779  function callSignextend(bytes32 a, bytes32 b) public {... */
+    tag_106:
+        /* "./src/main/solidity/NumberFunctions.sol":3557:3558  4 */
+      0x04
+        /* "./src/main/solidity/NumberFunctions.sol":3544:3559  calldataload(4) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":3597:3601  0x24 */
+      0x24
+        /* "./src/main/solidity/NumberFunctions.sol":3584:3602  calldataload(0x24) */
+      calldataload
+        /* "./src/main/solidity/NumberFunctions.sol":3644:3648  arg2 */
+      dup1
+        /* "./src/main/solidity/NumberFunctions.sol":3638:3642  arg1 */
+      dup3
+        /* "./src/main/solidity/NumberFunctions.sol":3627:3649  signextend(arg1, arg2) */
+      signextend
+        /* "./src/main/solidity/NumberFunctions.sol":3687:3691  0x40 */
+      0x40
+        /* "./src/main/solidity/NumberFunctions.sol":3681:3692  mload(0x40) */
+      mload
+        /* "./src/main/solidity/NumberFunctions.sol":3724:3727  ret */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3712:3722  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3705:3728  mstore(memPointer, ret) */
+      mstore
+        /* "./src/main/solidity/NumberFunctions.sol":3758:3762  0x20 */
+      0x20
+        /* "./src/main/solidity/NumberFunctions.sol":3746:3756  memPointer */
+      dup2
+        /* "./src/main/solidity/NumberFunctions.sol":3741:3763  log0(memPointer, 0x20) */
+      log0
+        /* "./src/main/solidity/NumberFunctions.sol":3518:3773  {... */
+      pop
+      pop
+      pop
+      pop
+      pop
+      pop
+      jump	// out
+
+    auxdata: 0xa265627a7a72305820d47182079162a6c8bd5403246e2174ce14781c6f300be25a3f4caba5f5e928c864736f6c634300050a0032
+}

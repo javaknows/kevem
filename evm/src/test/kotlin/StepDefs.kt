@@ -169,6 +169,12 @@ class StepDefs : En {
             }
         }
 
+        Given("contract code is (0x[a-zA-Z0-9]+)") { byteCode: String ->
+            updateLastCallContext { callContext ->
+                callContext.copy(code = toByteList(byteCode))
+            }
+        }
+
         Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([A-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
             val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
             val newAddress = Address(address)

@@ -1,0 +1,80 @@
+    /* "./src/main/solidity/sample/LogAddress.sol":27:148  contract LogAddress {... */
+  mstore(0x40, 0x80)
+  callvalue
+    /* "--CODEGEN--":8:17   */
+  dup1
+    /* "--CODEGEN--":5:7   */
+  iszero
+  tag_1
+  jumpi
+    /* "--CODEGEN--":30:31   */
+  0x00
+    /* "--CODEGEN--":27:28   */
+  dup1
+    /* "--CODEGEN--":20:32   */
+  revert
+    /* "--CODEGEN--":5:7   */
+tag_1:
+    /* "./src/main/solidity/sample/LogAddress.sol":27:148  contract LogAddress {... */
+  pop
+  dataSize(sub_0)
+  dup1
+  dataOffset(sub_0)
+  0x00
+  codecopy
+  0x00
+  return
+stop
+
+sub_0: assembly {
+        /* "./src/main/solidity/sample/LogAddress.sol":27:148  contract LogAddress {... */
+      mstore(0x40, 0x80)
+      callvalue
+        /* "--CODEGEN--":8:17   */
+      dup1
+        /* "--CODEGEN--":5:7   */
+      iszero
+      tag_1
+      jumpi
+        /* "--CODEGEN--":30:31   */
+      0x00
+        /* "--CODEGEN--":27:28   */
+      dup1
+        /* "--CODEGEN--":20:32   */
+      revert
+        /* "--CODEGEN--":5:7   */
+    tag_1:
+        /* "./src/main/solidity/sample/LogAddress.sol":27:148  contract LogAddress {... */
+      pop
+      jumpi(tag_2, lt(calldatasize, 0x04))
+      shr(0xe0, calldataload(0x00))
+      dup1
+      0xc0406226
+      eq
+      tag_3
+      jumpi
+    tag_2:
+      0x00
+      dup1
+      revert
+        /* "./src/main/solidity/sample/LogAddress.sol":54:146  function run() public {... */
+    tag_3:
+      tag_4
+      tag_5
+      jump	// in
+    tag_4:
+      stop
+    tag_5:
+        /* "./src/main/solidity/sample/LogAddress.sol":120:129  address() */
+      address
+        /* "./src/main/solidity/sample/LogAddress.sol":117:118  0 */
+      0x00
+        /* "./src/main/solidity/sample/LogAddress.sol":114:115  0 */
+      dup1
+        /* "./src/main/solidity/sample/LogAddress.sol":109:130  log1(0, 0, address()) */
+      log1
+        /* "./src/main/solidity/sample/LogAddress.sol":95:140  {... */
+      jump	// out
+
+    auxdata: 0xa265627a7a723058203c79d129fbb20fba2e6d9df99e583e6f5ae5eff7fbc9b1ab4bb602eebe4df83164736f6c634300050a0032
+}

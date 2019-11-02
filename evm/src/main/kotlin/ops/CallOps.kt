@@ -1,5 +1,6 @@
 package com.gammadex.kevin.evm.ops
 
+import com.gammadex.kevin.evm.lang.*
 import com.gammadex.kevin.evm.model.*
 import java.math.BigInteger
 
@@ -163,17 +164,14 @@ object CallOps {
         }
 
     private fun popCallArgsFromStack(context: ExecutionContext, withValue: Boolean): Pair<CallArguments, Stack> {
-        val (elements, newStack) = context.stack.popWords(4)
-        val (inLocation, inSize, outLocation, outSize) = elements
-
-        val (value, newStack2) =
-            if (withValue) {
-                val (value, newStack2) = newStack.popWord()
-                Pair(value.toBigInt(), newStack2)
-            } else Pair(BigInteger.ZERO, newStack)
-
-        val (elements2, newStack3) = newStack2.popWords(2)
-        val (g, a) = elements2
+        val (elements, newStack) = if (withValue) {
+            context.stack.popWords(7)
+        } else {
+            val (elements, newStack) = context.stack.popWords(6)
+            val splicedElements = elements.take(2) + Word.Zero + elements.takeLast(4)
+            Pair(splicedElements, newStack)
+        }
+        val (g, a, value, inLocation, inSize, outLocation, outSize) = elements
 
         val callArguments = CallArguments(
             g.toBigInt(),
@@ -182,10 +180,10 @@ object CallOps {
             inSize.toInt(),
             outLocation.toInt(),
             outSize.toInt(),
-            value
+            value.toBigInt()
         )
 
-        return Pair(callArguments, newStack3)
+        return Pair(callArguments, newStack)
     }
 }
 
