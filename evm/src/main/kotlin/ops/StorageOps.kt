@@ -6,7 +6,9 @@ object StorageOps {
     fun sLoad(context: ExecutionContext): ExecutionContext = with(context) {
         val (word, newStack) = stack.popWord()
         val index = word.toInt()
-        val finalStack = newStack.pushWord(storage[index])
+
+        val contractAddress = context.currentCallContext.contract.address
+        val finalStack = newStack.pushWord(evmState.storageAt(contractAddress, index))
 
         context.updateCurrentCallCtx(stack = finalStack)
     }
@@ -14,8 +16,10 @@ object StorageOps {
     fun sStore(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, newStack) = stack.popWords(2)
         val (a, v) = elements
-        val newStorage = storage.set(a.toInt(), v)
 
-        context.updateCurrentCallCtx(stack = newStack, storage = newStorage)
+        val contractAddress = context.currentCallContext.contract.address
+        val newEvmState = context.evmState.updateStorage(contractAddress, a.toInt(), v)
+
+        context.updateCurrentCallCtx(stack = newStack).copy(evmState = newEvmState)
     }
 }

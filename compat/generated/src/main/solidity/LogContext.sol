@@ -12,14 +12,27 @@ contract LogContext {
         uint c = callType;
 
         assembly {
-            log3(0, 0, c, 1, mload(0x200))
-            log3(0, 0, c, 2, sload(1))
-            log3(0, 0, c, 3, address())
-            log3(0, 0, c, 4, caller())
-            log3(0, 0, c, 5, callvalue())
-            log3(0, 0, c, 6, calldataload(0))
-            log3(0, 0, c, 7, codesize())
-            log3(0, 0, c, 8, origin())
+            let memPointer := mload(0x40)
+            let memStart := memPointer
+
+            mstore(memPointer, memPointer)
+            memPointer := add(memPointer, 0x20)
+
+            mstore(memPointer, sload(1))
+            memPointer := add(memPointer, 0x20)
+
+            mstore(memPointer, address())
+            memPointer := add(memPointer, 0x20)
+
+            mstore(memPointer, caller())
+            memPointer := add(memPointer, 0x20)
+
+            mstore(memPointer, origin())
+
+            return(memStart, add(memStart, 0x200))
         }
     }
+
+    // codesize always same
+    // calldata always same
 }

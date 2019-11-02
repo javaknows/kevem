@@ -38,11 +38,11 @@ class StepDefs : En {
 
         When("opcode (.*) is executed") { opcode: String ->
             val code =
-                if(opcode.contains("0x")) toByteList(opcode).take(1)
+                if (opcode.contains("0x")) toByteList(opcode).take(1)
                 else listOf(Opcode.valueOf(opcode).code, Opcode.JUMPDEST.code)
 
             updateLastCallContext {
-                  val newContract = it.contract.copy(code = code)
+                val newContract = it.contract.copy(code = code)
                 it.copy(contract = newContract, code = code)
             }
 
@@ -243,16 +243,23 @@ class StepDefs : En {
             }
         }
 
-        Given("(0x[a-zA-Z0-9]+) is in storage at location (0x[a-zA-Z0-9]+)") { data: String, location: String ->
-            updateLastCallContext {
-                val newStorage = it.storage.set(toInt(location), Word.coerceFrom(data))
-                it.copy(storage = newStorage)
+        Given("(0x[a-zA-Z0-9]+) is in storage at location (0x[a-zA-Z0-9]+) of (.*)") { data: String, location: String, contractAddress: String ->
+            updateExecutionContext { ctx ->
+                val address =
+                    if (contractAddress == "current contract") ctx.currentCallContext.contract.address.toString()
+                    else contractAddress.replace("contract ", "")
+
+                ctx.copy(evmState = ctx.evmState.updateStorage(Address(address), toInt(location), Word.coerceFrom(data)))
             }
         }
 
-        Then("data in storage at location (\\d+) is (0x[a-zA-Z0-9]+)") { location: Int, data: String ->
+        Then("data in storage at location (\\d+) of (.*) is now (0x[a-zA-Z0-9]+)") { location: Int, contractAddress: String, data: String ->
             checkResult {
-                assertThat(it.storage[location]).isEqualTo(Word.coerceFrom(data))
+                val address =
+                    if (contractAddress == "current contract") it.currentCallContext.contract.address.toString()
+                    else contractAddress.replace("contract ", "")
+
+                assertThat(it.evmState.storageAt(Address(address), location)).isEqualTo(Word.coerceFrom(data))
             }
         }
 
@@ -605,8 +612,7 @@ class StepDefs : En {
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,
                     stack = Stack(),
-                    memory = Memory(),
-                    storage = Storage()
+                    memory = Memory()
                 )
             )
         )

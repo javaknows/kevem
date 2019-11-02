@@ -27,8 +27,8 @@ contract DelegateToLogContext {
         uint c = callType;
 
         assembly {
-            mstore(0x200, 0xDEADBEEF)
-            sstore(0, 0xCAFEBABE)
+            mstore(0x40, add(mload(0x40), 0x200)) // bump free memory pointer to check in delegate later
+            sstore(1, 0xCAFEBABE) // store an element in storage to check in delegate later
 
             let memPointer := mload(0x40)
             mstore(memPointer, 0x8f3242ca)
@@ -48,7 +48,24 @@ contract DelegateToLogContext {
                 result := staticcall(g, a, pos, 0x4, 0, 0)
             }
 
-            log3(0, 0, c, 0x8E5, result)
+            let memLoc := mload(0x40)
+
+            returndatacopy(memLoc, 0x00, 0x20)
+            log3(0, 0, c, 1, mload(memLoc))   // mempointer
+
+            returndatacopy(memLoc, 0x20, 0x20)
+            log3(0, 0, c, 2, mload(memLoc))   // storage
+
+            returndatacopy(memLoc, 0x40, 0x20)
+            log3(0, 0, c, 3, mload(memLoc))   // address
+
+            returndatacopy(memLoc, 0x60, 0x20)
+            log3(0, 0, c, 4, mload(memLoc))   // caller
+
+            returndatacopy(memLoc, 0x80, 0x20)
+            log3(0, 0, c, 5, mload(memLoc))  // origin
+
+            log3(0, 0, c, 9, result) // result
         }
     }
 }

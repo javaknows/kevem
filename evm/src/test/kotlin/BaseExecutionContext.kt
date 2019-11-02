@@ -33,8 +33,7 @@ internal fun baseExecutionContext(
         value = CALL_VALUE,
         code = contractCode,
         stack = stack,
-        memory = memory,
-        storage = storage
+        memory = memory
     )
 
     return ExecutionContext(

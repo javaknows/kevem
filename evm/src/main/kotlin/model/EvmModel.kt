@@ -121,20 +121,20 @@ data class Address(val value: BigInteger) {
     override fun toString() = Word.coerceFrom(value, 20).toString()
 }
 
-open class Contract(val code: List<Byte>, val address: Address) {
+open class Contract(val code: List<Byte>, val address: Address, val storage: Storage = Storage()) {
     operator fun get(index: Int): Byte {
         require(index in code.indices) { "out of range" }
 
         return code[index]
     }
 
-    fun copy(code: List<Byte>? = null, address: Address? = null) =
-        Contract(code ?: this.code, address ?: this.address)
+    fun copy(code: List<Byte>? = null, address: Address? = null, storage: Storage? = null) =
+        Contract(code ?: this.code, address ?: this.address, storage ?: this.storage)
 }
 
 class EmptyContract(address: Address) : Contract(emptyList(), address)
 
-data class AddressLocation(val address: Address, val balance: BigInteger, val contract: Contract?)
+data class AddressLocation(val address: Address, val balance: BigInteger = BigInteger.ZERO, val contract: Contract? = null)
 
 class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()) {
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
@@ -142,6 +142,8 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
+
+    fun storageAt(address: Address, index: Int): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
 
     fun balanceAndContractAt(address: Address): Pair<BigInteger, Contract?> = Pair(
         balanceOf(address), contractAt(address)
@@ -154,6 +156,17 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
             null
         )
         return EvmState(addresses + Pair(address, location))
+    }
+
+    fun updateStorage(address: Address, index: Int, value: Word): EvmState {
+        val account = addresses[address] ?: AddressLocation(address)
+        val contract = account.contract ?: EmptyContract(address)
+
+        val newStorage = contract.storage.set(index, value)
+        val newContract = contract.copy(storage = newStorage)
+        val newAccount = account.copy(contract = newContract)
+
+        return EvmState(addresses + Pair(address, newAccount))
     }
 
     fun updateContract(address: Address, contract: Contract): EvmState {
@@ -193,7 +206,6 @@ class Memory(private val data: Map<Int, Byte> = emptyMap()) {
     fun maxIndex() = data.keys.max()
 }
 
-// TODO - move Storage inside Contract rather than being part of context
 class Storage(private val data: Map<Int, Word> = emptyMap()) {
     operator fun get(index: Int): Word = data.getOrDefault(
         index,
@@ -286,7 +298,6 @@ data class CallContext(
     val returnSize: Int = 0,
     val stack: Stack = Stack(),
     val memory: Memory = Memory(),
-    val storage: Storage = Storage(),
     val currentLocation: Int = 0
 )
 
@@ -329,9 +340,6 @@ data class ExecutionContext(
     val stack: Stack
         get() = currentCallContext.stack
 
-    val storage: Storage
-        get() = currentCallContext.storage
-
     val memory: Memory
         get() = currentCallContext.memory
 
@@ -341,7 +349,6 @@ data class ExecutionContext(
     fun updateCurrentCallCtx(
         stack: Stack? = null,
         memory: Memory? = null,
-        storage: Storage? = null,
         currentLocation: Int? = null,
         gasRemaining: BigInteger? = null
     ): ExecutionContext {
@@ -349,7 +356,6 @@ data class ExecutionContext(
         val newCall = currentCallContext.copy(
             stack = stack ?: call.stack,
             memory = memory ?: call.memory,
-            storage = storage ?: call.storage,
             currentLocation = currentLocation ?: call.currentLocation,
             gasRemaining = gasRemaining ?: call.gasRemaining
         )

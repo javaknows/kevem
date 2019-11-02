@@ -194,7 +194,7 @@ Feature: Single Opcode Execution
     And 100 bytes of memory from position 10 is empty
 
   Scenario: data is loaded from storage with SLOAD
-    Given 0x123456 is in storage at location 0x100
+    Given 0x123456 is in storage at location 0x100 of current contract
     And 0x100 is pushed onto the stack
     When opcode SLOAD is executed
     Then the stack contains 0x123456
@@ -203,14 +203,14 @@ Feature: Single Opcode Execution
     Given 0x9 is pushed onto the stack
     And 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
     When opcode SSTORE is executed
-    Then data in storage at location 9 is 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
+    Then data in storage at location 9 of current contract is now 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
     And 9 bytes of memory from position 0 is empty
 
   Scenario: data is stored in storage from stack with SSTORE
     Given 0x9 is pushed onto the stack
     And 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
     When opcode SSTORE is executed
-    Then data in storage at location 9 is 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
+    Then data in storage at location 9 of current contract is now 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
     And 9 bytes of memory from position 0 is empty
 
   Scenario: can jump to a location in code with JUMP
