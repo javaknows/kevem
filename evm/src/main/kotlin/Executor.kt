@@ -78,7 +78,9 @@ class Executor {
                 }
                 Opcode.ADDRESS -> {
                     val call = callStack.last()
-                    val newStack = stack.pushWord(Word.coerceFrom(call.contract.address.value))
+                    val contractAddress =
+                        call.contractAddress ?: throw RuntimeException("can't determine contract address")
+                    val newStack = stack.pushWord(Word.coerceFrom(contractAddress.value))
 
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
@@ -134,9 +136,8 @@ class Executor {
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
                 Opcode.CODESIZE -> {
-                    // TODO - what should hapen if it is a DELEGATECALL?
                     val call = callStack.last()
-                    val newStack = stack.pushWord(Word.coerceFrom(call.contract.code.size))
+                    val newStack = stack.pushWord(Word.coerceFrom(call.code.size))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.CODECOPY -> {
@@ -144,7 +145,7 @@ class Executor {
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
-                    val data = call.contract.code.subList(from, from + size)
+                    val data = call.code.subList(from, from + size)
                     val newMemory = memory.set(to, data)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)

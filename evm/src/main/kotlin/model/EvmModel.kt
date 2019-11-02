@@ -121,18 +121,16 @@ data class Address(val value: BigInteger) {
     override fun toString() = Word.coerceFrom(value, 20).toString()
 }
 
-open class Contract(val code: List<Byte>, val address: Address, val storage: Storage = Storage()) {
+open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = Storage()) {
     operator fun get(index: Int): Byte {
         require(index in code.indices) { "out of range" }
 
         return code[index]
     }
 
-    fun copy(code: List<Byte>? = null, address: Address? = null, storage: Storage? = null) =
-        Contract(code ?: this.code, address ?: this.address, storage ?: this.storage)
+    fun copy(code: List<Byte>? = null, storage: Storage? = null) =
+        Contract(code ?: this.code, storage ?: this.storage)
 }
-
-class EmptyContract(address: Address) : Contract(emptyList(), address)
 
 data class AddressLocation(val address: Address, val balance: BigInteger = BigInteger.ZERO, val contract: Contract? = null)
 
@@ -160,7 +158,7 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
 
     fun updateStorage(address: Address, index: Int, value: Word): EvmState {
         val account = addresses[address] ?: AddressLocation(address)
-        val contract = account.contract ?: EmptyContract(address)
+        val contract = account.contract ?: Contract()
 
         val newStorage = contract.storage.set(index, value)
         val newContract = contract.copy(storage = newStorage)
@@ -288,7 +286,6 @@ enum class CallType { INITIAL, CALL, CALLCODE, STATICCALL, DELEGATECALL }
 data class CallContext(
     val caller: Address,
     val callData: List<Byte>,
-    val contract: Contract,
     val type: CallType,
     val value: BigInteger,
     val code: List<Byte>,
@@ -298,7 +295,9 @@ data class CallContext(
     val returnSize: Int = 0,
     val stack: Stack = Stack(),
     val memory: Memory = Memory(),
-    val currentLocation: Int = 0
+    val currentLocation: Int = 0,
+    val storageAddress: Address? = null,
+    val contractAddress: Address? = null
 )
 
 data class Block(

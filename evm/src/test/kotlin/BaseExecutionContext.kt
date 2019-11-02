@@ -15,12 +15,10 @@ private val GAS_PRICE = BigInteger("200", 16)
 internal fun baseExecutionContext(
     stack: Stack = Stack(),
     memory: Memory = Memory(),
-    storage: Storage = Storage(),
     contractCode: List<Byte> = emptyList(),
-    evmState: EvmState = EvmState().updateBalance(
-        Address(
-            BALANCE_ADDRESS
-        ), BALANCE_AMOUNT),
+    evmState: EvmState = EvmState()
+        .updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT)
+        .updateContract(Address(CONTRACT_ADDRESS), Contract(contractCode)),
     callData: List<Byte> = emptyList(),
     lastReturnData: List<Byte> = emptyList(),
     previousBlocks: Map<BigInteger, Word> = emptyMap()
@@ -28,12 +26,13 @@ internal fun baseExecutionContext(
     val call = CallContext(
         caller = Address(CALLER),
         callData = callData,
-        contract = Contract(contractCode, Address(CONTRACT_ADDRESS)),
         type = CallType.INITIAL,
         value = CALL_VALUE,
         code = contractCode,
         stack = stack,
-        memory = memory
+        memory = memory,
+        storageAddress = Address(CONTRACT_ADDRESS),
+        contractAddress = Address(CONTRACT_ADDRESS)
     )
 
     return ExecutionContext(

@@ -90,20 +90,21 @@ object HaltOps {
 
     fun suicide(context: ExecutionContext): ExecutionContext = with(context) {
         val (a, _) = context.stack.popWord()
-        val address = a.toAddress()
+        val sendFundsToAddress = a.toAddress()
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)
             ctx.copy(stack = newStack)
         }
 
-        val contract = currentCallContext.contract
+        val contractAddress = currentCallContext.contractAddress  ?: throw RuntimeException("can't determine contract address")
+        val contract = evmState.contractAt(contractAddress) ?: throw RuntimeException("can't determine current contract")
 
         val newEvmState = with(evmState) {
-            val newDestBalance = balanceOf(address) + balanceOf(contract.address)
+            val newDestBalance = balanceOf(sendFundsToAddress) + balanceOf(contractAddress)
 
-            updateBalance(address, newDestBalance)
-                .updateBalanceAndContract(contract.address, BigInteger.ZERO, contract.copy(code = emptyList()))
+            updateBalance(sendFundsToAddress, newDestBalance)
+                .updateBalanceAndContract(contractAddress, BigInteger.ZERO, contract.copy(code = emptyList()))
         }
 
         return context.copy(

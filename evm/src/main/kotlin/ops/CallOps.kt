@@ -36,7 +36,8 @@ object CallOps {
         val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
 
         with(callArguments) {
-            val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
+            val nextCallerAddress = currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
+            val callerBalance = evmState.balanceOf(nextCallerAddress)
             if (callerBalance < value) {
                 TODO("handle case where contract doesn't have enough funds")
             }
@@ -49,21 +50,22 @@ object CallOps {
             val newEvmState = evmState
                 .updateBalance(address, destBalance + value)
 
-            val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
+            val startBalance = newEvmState.balanceOf(nextCallerAddress)
             val newEvmState2 = newEvmState
-                .updateBalance(currentCallContext.contract.address, startBalance - value)
+                .updateBalance(nextCallerAddress, startBalance - value)
 
             val newCall = CallContext(
-                currentCallContext.contract.address,
+                nextCallerAddress,
                 memory.get(inLocation, inSize),
-                currentCallContext.contract,
                 CallType.CALLCODE,
                 value,
-                currentCallContext.contract.code,
+                evmState.codeAt(callArguments.address),
                 context,
                 gas,
                 outLocation,
-                outSize
+                outSize,
+                contractAddress = currentCallContext.contractAddress,
+                storageAddress = currentCallContext.storageAddress
             )
 
             val updatedCtx = updateCurrentCallCtx(
@@ -91,14 +93,15 @@ object CallOps {
             val newCall = CallContext(
                 currentCallContext.caller,
                 memory.get(inLocation, inSize),
-                currentCallContext.contract,
                 CallType.DELEGATECALL,
                 currentCallContext.value,
                 code,
                 context,
                 gas,
                 outLocation,
-                outSize
+                outSize,
+                contractAddress = callArguments.address,
+                storageAddress = currentCallContext.storageAddress
             )
 
             val updatedCtx = updateCurrentCallCtx(
@@ -115,7 +118,8 @@ object CallOps {
     private fun doCall(context: ExecutionContext, args: CallArguments, callType: CallType): ExecutionContext =
         with(context) {
             with(args) {
-                val callerBalance = evmState.balanceOf(currentCallContext.contract.address)
+                val nextCaller = currentCallContext.contractAddress  ?: throw RuntimeException("can't determine contract address")
+                val callerBalance = evmState.balanceOf(nextCaller)
                 if (callerBalance < value) {
                     TODO("handle case where contract doesn't have enough funds")
                 }
@@ -128,22 +132,23 @@ object CallOps {
                 val newEvmState = evmState
                     .updateBalance(address, destBalance + value)
 
-                val startBalance = newEvmState.balanceOf(currentCallContext.contract.address)
+                val startBalance = newEvmState.balanceOf(nextCaller)
                 val newEvmState2 = newEvmState
-                    .updateBalance(currentCallContext.contract.address, startBalance - value)
+                    .updateBalance(nextCaller, startBalance - value)
 
-                val callContract = destContract ?: EmptyContract(address)
+                val callContractCode = destContract?.code ?: emptyList()
                 val newCall = CallContext(
-                    currentCallContext.contract.address,
+                    nextCaller,
                     memory.get(inLocation, inSize),
-                    callContract,
                     callType,
                     value,
-                    callContract.code,
+                    callContractCode,
                     context,
                     gas,
                     outLocation,
-                    outSize
+                    outSize,
+                    contractAddress = address,
+                    storageAddress = address
                 )
 
                 val updatedCtx = updateCurrentCallCtx(

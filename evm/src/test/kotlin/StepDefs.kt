@@ -42,8 +42,7 @@ class StepDefs : En {
                 else listOf(Opcode.valueOf(opcode).code, Opcode.JUMPDEST.code)
 
             updateLastCallContext {
-                val newContract = it.contract.copy(code = code)
-                it.copy(contract = newContract, code = code)
+                it.copy(code = code)
             }
 
             executeContext()
@@ -66,8 +65,7 @@ class StepDefs : En {
 
         Given("the contract address is (0x[a-zA-Z0-9]+)") { address: String ->
             updateLastCallContext {
-                val newContract = it.contract.copy(address = Address(address))
-                it.copy(contract = newContract)
+                it.copy(contractAddress = Address(address))
             }
         }
 
@@ -167,15 +165,14 @@ class StepDefs : En {
             val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
 
             updateLastCallContext { callContext ->
-                val newContract = callContext.contract.copy(code = byteCode)
-                callContext.copy(contract = newContract, code = byteCode)
+                callContext.copy(code = byteCode)
             }
         }
 
         Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([A-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
             val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
             val newAddress = Address(address)
-            val newContract = Contract(byteCode, newAddress)
+            val newContract = Contract(byteCode)
 
             updateExecutionContext {
                 val evmState = it.evmState.updateContract(newAddress, newContract)
@@ -246,17 +243,23 @@ class StepDefs : En {
         Given("(0x[a-zA-Z0-9]+) is in storage at location (0x[a-zA-Z0-9]+) of (.*)") { data: String, location: String, contractAddress: String ->
             updateExecutionContext { ctx ->
                 val address =
-                    if (contractAddress == "current contract") ctx.currentCallContext.contract.address.toString()
+                    if (contractAddress == "current contract") ctx.currentCallContext.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
-                ctx.copy(evmState = ctx.evmState.updateStorage(Address(address), toInt(location), Word.coerceFrom(data)))
+                ctx.copy(
+                    evmState = ctx.evmState.updateStorage(
+                        Address(address),
+                        toInt(location),
+                        Word.coerceFrom(data)
+                    )
+                )
             }
         }
 
         Then("data in storage at location (\\d+) of (.*) is now (0x[a-zA-Z0-9]+)") { location: Int, contractAddress: String, data: String ->
             checkResult {
                 val address =
-                    if (contractAddress == "current contract") it.currentCallContext.contract.address.toString()
+                    if (contractAddress == "current contract") it.currentCallContext.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
                 assertThat(it.evmState.storageAt(Address(address), location)).isEqualTo(Word.coerceFrom(data))
@@ -284,8 +287,7 @@ class StepDefs : En {
         Given("contract code ends with (0x[a-zA-Z0-9]+)") { data: String ->
             updateLastCallContext {
                 val code = toByteList(data)
-                val newContract = it.contract.copy(code = code)
-                it.copy(contract = newContract, code = code)
+                it.copy(code = code)
             }
         }
 
@@ -296,8 +298,7 @@ class StepDefs : En {
 
                 updateLastCallContext { ctx ->
                     val code = listOf(opcode!!.code) + ctx.code
-                    val newContract = ctx.contract.copy(code = code)
-                    ctx.copy(contract = newContract, code = code)
+                    ctx.copy(code = code)
                 }
 
                 executeContext()
@@ -316,8 +317,7 @@ class StepDefs : En {
 
                 updateLastCallContext { ctx ->
                     val code = listOf(opcode!!.code) + ctx.code
-                    val newContract = ctx.contract.copy(code = code)
-                    ctx.copy(contract = newContract, code = code)
+                    ctx.copy(code = code)
                 }
 
                 executeContext()
@@ -337,8 +337,7 @@ class StepDefs : En {
 
                 updateLastCallContext { ctx ->
                     val code = listOf(opcode!!.code) + ctx.code
-                    val newContract = ctx.contract.copy(code = code)
-                    ctx.copy(contract = newContract, code = code)
+                    ctx.copy(code = code)
                 }
 
                 executeContext()
@@ -419,7 +418,7 @@ class StepDefs : En {
                 assertThat(currentCall.type).isEqualTo(CallType.valueOf(type))
                 assertThat(currentCall.caller).isEqualTo(Address(callerAddress))
                 assertThat(currentCall.callData).isEqualTo(toByteList(callData))
-                assertThat(currentCall.contract.address).isEqualTo(Address(contractAddress))
+                assertThat(currentCall.contractAddress).isEqualTo(Address(contractAddress))
                 assertThat(currentCall.value).isEqualTo(toBigInteger(value))
                 assertThat(currentCall.gasRemaining).isEqualTo(toBigInteger(gas))
                 assertThat(currentCall.returnLocation).isEqualTo(toInt(outLocation))
@@ -437,10 +436,14 @@ class StepDefs : En {
         When("the current call is:") { dataTable: DataTable ->
             val currentCallContext = executionContext.currentCallContext
 
-            val newCallCtx = copyContextWithTableData(dataTable, currentCallContext)
+            val (newCallCtx, newExecutionCtx) = copyContextWithTableData(
+                dataTable,
+                currentCallContext,
+                executionContext
+            )
 
-            executionContext = executionContext.copy(
-                callStack = executionContext.callStack.dropLast(1) + newCallCtx
+            executionContext = newExecutionCtx.copy(
+                callStack = newExecutionCtx.callStack.dropLast(1) + newCallCtx
             )
         }
 
@@ -450,10 +453,10 @@ class StepDefs : En {
                 else Pair(callStack[0].copy(), callStack[0])
             }
 
-            val newCallCtx = copyContextWithTableData(dataTable, prevCallContext)
+            val (newCallCtx, newExecutionCtx) = copyContextWithTableData(dataTable, prevCallContext, executionContext)
 
-            executionContext = executionContext.copy(
-                callStack = executionContext.callStack.dropLast(2) + newCallCtx + lastCallContext
+            executionContext = newExecutionCtx.copy(
+                callStack = newExecutionCtx.callStack.dropLast(2) + newCallCtx + lastCallContext
             )
         }
 
@@ -505,8 +508,7 @@ class StepDefs : En {
 
                 updateLastCallContext { ctx ->
                     val code = listOf(opcode!!.code) + ctx.code
-                    val newContract = ctx.contract.copy(code = code)
-                    ctx.copy(contract = newContract, code = code)
+                    ctx.copy(code = code)
                 }
             }
         }
@@ -514,22 +516,28 @@ class StepDefs : En {
 
     private fun copyContextWithTableData(
         dataTable: DataTable,
-        currentCallContext: CallContext
-    ): CallContext {
+        currentCallContext: CallContext,
+        executionContext: ExecutionContext
+    ): Pair<CallContext, ExecutionContext> {
         val (type, callerAddress, callData, contractAddress, value, gas, outLocation, outSize) = dataTable.asLists()[1]
-        val newCallContract = currentCallContext.contract.copy(address = Address(contractAddress))
 
-        val newCallCtx = currentCallContext.copy(
+        val callCtx = currentCallContext.copy(
             type = CallType.valueOf(type),
             caller = Address(callerAddress),
             callData = toByteList(callData),
-            contract = newCallContract,
             value = toBigInteger(value),
             gasRemaining = toBigInteger(gas),
             returnLocation = toInt(outLocation),
-            returnSize = toInt(outSize)
+            returnSize = toInt(outSize),
+            contractAddress = Address(contractAddress)
         )
-        return newCallCtx
+
+        val newEvmState = executionContext.evmState.updateContract(
+            Address(contractAddress),
+            Contract(emptyList())
+        )
+
+        return Pair(callCtx, executionContext.copy(evmState = newEvmState))
     }
 
     private fun updateExecutionContext(updateFunc: (ExecutionContext) -> ExecutionContext) {
@@ -604,15 +612,13 @@ class StepDefs : En {
                 CallContext(
                     caller = Address("0x0"),
                     callData = emptyList(),
-                    contract = Contract(
-                        listOf(Opcode.INVALID.code),
-                        Address("0x0")
-                    ),
                     code = listOf(Opcode.INVALID.code),
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,
                     stack = Stack(),
-                    memory = Memory()
+                    memory = Memory(),
+                    contractAddress = Address("0x0"),
+                    storageAddress = Address("0x0")
                 )
             )
         )

@@ -6,7 +6,7 @@ import com.gammadex.kevin.evm.model.Log
 
 fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {
     val call = context.callStack.last()
-    val data = call.contract.code.subList(context.currentLocation + 1, context.currentLocation + 1 + numBytes)
+    val data = call.code.subList(context.currentLocation + 1, context.currentLocation + 1 + numBytes)
     val newStack = context.stack.push(data)
 
     return context.updateCurrentCallCtx(stack = newStack)

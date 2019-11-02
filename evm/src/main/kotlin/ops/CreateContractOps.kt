@@ -18,8 +18,10 @@ object CreateContractOps {
         val (elements, newStack) = stack.popWords(4)
         val (v, n, p, s) = elements
 
+        val contractAddress =
+            currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
         val newContractAddress = createAddress(
-            currentCallContext.contract.address.toWord().data,
+            contractAddress.toWord().data,
             n.data,
             memory.get(p.toInt(), s.toInt())
         )
@@ -39,9 +41,10 @@ object CreateContractOps {
         // TODO - subtract gas
 
         val newContractCode = memory.get(p, s)
-        val contract = Contract(newContractCode, atAddress)
+        val contract = Contract(newContractCode)
         val balance = v.toBigInt()
-        val currentAddress = currentCallContext.contract.address
+        val currentAddress =
+            currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
         val newEvmState = evmState
             .updateBalanceAndContract(atAddress, balance, contract)
             .updateBalance(currentAddress, evmState.balanceOf(currentAddress).subtract(balance))
