@@ -14,8 +14,6 @@ private data class CallArguments(
     val value: BigInteger = BigInteger.ZERO
 )
 
-// TODO - add return value sto stack - 0 or 1
-
 object CallOps {
     fun call(context: ExecutionContext): ExecutionContext = with(context) {
         val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)

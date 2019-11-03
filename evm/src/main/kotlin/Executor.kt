@@ -7,7 +7,6 @@ import com.gammadex.kevin.evm.ops.*
 // TODO - deduct gas. Deduct opcode base gas here and computed gas in the opcode handling
 // TODO - fail if out of gas
 // TODO - ensure max stack depth won't be reached
-// TODO - in HaltOps when halting in DELEGATECALL or CALLCODE check if context values need to be copied down the stack
 // TODO - don't accept certain operations depending on fork version configured
 
 class Executor {
