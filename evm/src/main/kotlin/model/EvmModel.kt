@@ -145,6 +145,7 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
 
+    // TODO - index should be BigInteger
     fun storageAt(address: Address, index: Int): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
 
     fun balanceAndContractAt(address: Address): Pair<BigInteger, Contract?> = Pair(
@@ -188,6 +189,8 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
         )
         return EvmState(addresses + Pair(address, location))
     }
+
+    fun accountExists(address: Address) = address in addresses.keys
 }
 
 class Memory(private val data: Map<Int, Byte> = emptyMap()) {
@@ -336,7 +339,9 @@ data class ExecutionContext(
     val clock: Clock = Clock.systemUTC(),
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val addressGenerator: AddressGenerator = DefaultAddressGenerator(), // TODO - make a dependency rather than in ctx
-    val lastCallError: EvmError = EvmError.None
+    val lastCallError: EvmError = EvmError.None,
+    val gasRefund: BigInteger = BigInteger.ZERO, // TODO - implement me
+    val suicidedAccounts: List<Address> = emptyList() // TODO - implement me
 ) {
     val currentCallContext: CallContext
         get() = callStack.last()
