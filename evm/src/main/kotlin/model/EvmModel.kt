@@ -222,9 +222,6 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     fun push(data: List<Byte>): Stack =
         Stack(backing.plusElement(data))
 
-    fun sneak(data: List<Byte>): Stack =
-        Stack(listOf(data) + backing)
-
     fun pop(): Pair<List<Byte>, Stack> {
         val last = backing.last()
         val remaining = backing.dropLast(1)
