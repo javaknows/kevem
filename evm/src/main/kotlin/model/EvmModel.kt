@@ -132,7 +132,11 @@ open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = S
         Contract(code ?: this.code, storage ?: this.storage)
 }
 
-data class AddressLocation(val address: Address, val balance: BigInteger = BigInteger.ZERO, val contract: Contract? = null)
+data class AddressLocation(
+    val address: Address,
+    val balance: BigInteger = BigInteger.ZERO,
+    val contract: Contract? = null
+)
 
 class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()) {
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
@@ -252,6 +256,10 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
 
     fun peek(num: Int): List<Byte> = backing.reversed()[num]
 
+    fun peekWords(num: Int): List<Word> = backing.takeLast(num)
+        .map { Word.coerceFrom(it) }
+        .reversed()
+
     fun peekWord(num: Int = 0) = Word.coerceFrom(peek(num))
 
     fun set(index: Int, data: List<Byte>): Stack {
@@ -345,6 +353,7 @@ data class ExecutionContext(
     val currentLocation: Int
         get() = currentCallContext.currentLocation
 
+    // TODO - replace with updateCurrentCallCtxIfPresent
     fun updateCurrentCallCtx(
         stack: Stack? = null,
         memory: Memory? = null,
