@@ -9,5 +9,5 @@ This is an standalone implementation of the [Ethereum Virtual Machine](https://w
 
 It eventually aims to be a complete standalone web3 implementation in the style of [Ganache](https://www.trufflesuite.com/ganache) suitable for test purposes but written natively for the JVM in Kotlin.
 
-Currently in a pretty rough state.
+Currently works well enough to run simple compiled contracts
 

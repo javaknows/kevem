@@ -20,6 +20,16 @@ allprojects {
     repositories {
         mavenCentral()
     }
+
+    test {
+        dependsOn 'cleanTest'
+
+        useJUnitPlatform()
+
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
 }
 
 task codeCoverageReport(type: JacocoReport) {
@@ -34,7 +44,7 @@ task codeCoverageReport(type: JacocoReport) {
 
     reports {
         xml.enabled = true
-        html.enabled = false
+        html.enabled = true
         csv.enabled = false
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
