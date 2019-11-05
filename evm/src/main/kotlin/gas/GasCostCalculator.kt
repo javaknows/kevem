@@ -1,15 +1,19 @@
-package com.gammadex.kevin.evm
+package com.gammadex.kevin.evm.gas
 
+import com.gammadex.kevin.evm.Opcode
 import com.gammadex.kevin.evm.model.ExecutionContext
 import com.gammadex.kevin.evm.Opcode.*
 import com.gammadex.kevin.evm.numbers.BigIntMath
 import com.gammadex.kevin.evm.numbers.logn
 import java.math.BigInteger
+import com.gammadex.kevin.evm.lang.*
 
-class GasCostCalculator {
+class GasCostCalculator(
+    private val callGasCostCalculator: CallGasCostCalculator
+) {
 
     fun calculate(opcode: Opcode, executionContext: ExecutionContext): BigInteger =
-        if (opcode.priceType == GasPriceType.Formula) {
+        if (opcode.cost == GasCost.Formula) {
             when (opcode) {
                 EXP -> expCost(executionContext)
                 SHA3 -> sha3Cost(executionContext)
@@ -22,14 +26,28 @@ class GasCostCalculator {
                 LOG2 -> logCost(executionContext, 2)
                 LOG3 -> logCost(executionContext, 3)
                 LOG4 -> logCost(executionContext, 4)
-                CALL -> TODO()
-                CALLCODE -> TODO()
-                DELEGATECALL -> TODO()
-                STATICCALL -> TODO()
+                CALL -> callCost(executionContext)
+                CALLCODE -> callCost(executionContext)
+                DELEGATECALL -> callCostNoValue(executionContext)
+                STATICCALL -> callCostNoValue(executionContext)
                 SUICIDE -> suicideCost(executionContext)
-                else -> TODO()
+                else -> throw RuntimeException("Don't now how to compute gas cost for $opcode")
             }
-        } else opcode.priceType.cost.toBigInteger()
+        } else opcode.cost.cost.toBigInteger()
+
+    private fun callCost(executionContext: ExecutionContext): BigInteger {
+        val (g, a, v, _, _, _, _) = executionContext.currentCallContext.stack.peekWords(7)
+
+        return callGasCostCalculator.cost(g.toBigInt(), a.toAddress(), v.toBigInt(), executionContext)
+    }
+
+    private fun callCostNoValue(executionContext: ExecutionContext): BigInteger {
+        val (g, a, _, _, _, _) = executionContext.currentCallContext.stack.peekWords(6)
+
+        return callGasCostCalculator.cost(g.toBigInt(), a.toAddress(), BigInteger.ZERO, executionContext)
+    }
+
+    // TODO - use GasCost enum for all these magic numbers
 
     /**
      * 5000 + ((create_new_account) ? 25000 : 0)
@@ -37,6 +55,7 @@ class GasCostCalculator {
     private fun suicideCost(executionContext: ExecutionContext): BigInteger {
         val (address) = executionContext.currentCallContext.stack.peekWords(1).map { it.toAddress() }
 
+        // TODO - add refund
         // TODO - check yellow paper
         val accountExists = executionContext.evmState.accountExists(address)
 
@@ -49,10 +68,11 @@ class GasCostCalculator {
      */
     private fun logCost(executionContext: ExecutionContext, numTopics: Int): BigInteger {
         val elements = executionContext.currentCallContext.stack.peekWords(2 + numTopics)
-        val size = elements.last()
+        val size = elements.last().toInt()
 
-        val baseCost = (375 * (numTopics + 1)).toBigInteger()
-        return baseCost + BigInteger("8") * size.toBigInt()
+        return (GasCost.Log.cost +
+                GasCost.LogTopic.cost * numTopics +
+                GasCost.LogData.cost * size).toBigInteger()
     }
 
     /**

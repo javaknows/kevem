@@ -283,7 +283,8 @@ enum class ErrorCode {
     OUT_OF_GAS,
     STACK_DEPTH,
     STATE_CHANGE_STATIC_CALL,
-    INVALID_JUMP_DESTINATION
+    INVALID_JUMP_DESTINATION,
+    INSUFFICIENT_FUNDS
 }
 
 data class EvmError(val code: ErrorCode, val message: String?) {
@@ -308,7 +309,8 @@ data class CallContext(
     val memory: Memory = Memory(),
     val currentLocation: Int = 0,
     val storageAddress: Address? = null,
-    val contractAddress: Address? = null
+    val contractAddress: Address? = null,
+    val gas: BigInteger = BigInteger.ZERO // gas at start TODO - hook up
 )
 
 data class Block(
@@ -340,7 +342,7 @@ data class ExecutionContext(
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val addressGenerator: AddressGenerator = DefaultAddressGenerator(), // TODO - make a dependency rather than in ctx
     val lastCallError: EvmError = EvmError.None,
-    val gasRefund: BigInteger = BigInteger.ZERO, // TODO - implement me
+    val gasRefunds: Map<Address,BigInteger> = emptyMap(), // TODO - implement me
     val suicidedAccounts: List<Address> = emptyList() // TODO - implement me
 ) {
     val currentCallContext: CallContext
