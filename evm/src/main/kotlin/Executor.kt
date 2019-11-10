@@ -71,9 +71,13 @@ class Executor {
                 Opcode.SHL -> biStackOp(currentContext, VmMath::shl)
                 Opcode.SHR -> biStackOp(currentContext, VmMath::shr)
                 Opcode.SAR -> biStackOp(currentContext, VmMath::sar)
-                Opcode.SHA3 -> biStackOp(currentContext) { a, b ->
-                    val bytes = memory.get(a.toInt(), b.toInt())
-                    keccak256(bytes)
+                Opcode.SHA3 -> {
+                    val (elements, newStack) = stack.popWords(2)
+                    val (a, b) = elements.map { it.toInt() }
+                    val (bytes, newMemory) = memory.read(a, b)
+                    val finalStack = newStack.pushWord(keccak256(bytes))
+
+                    currentContext.updateCurrentCallCtx(stack = finalStack, memory = newMemory)
                 }
                 Opcode.ADDRESS -> {
                     val call = callStack.last()
@@ -94,13 +98,13 @@ class Executor {
                     val newStack = stack.pushWord(Word.coerceFrom(currentTransaction.origin.value))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.CALLER -> {
+                Opcode.CALLER -> { // TODO - just use caller
                     val call = callStack.last { it.type != CallType.DELEGATECALL }
                     val newStack = stack.pushWord(call.caller.toWord())
 
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.CALLVALUE -> {
+                Opcode.CALLVALUE -> { // TODO - just use callvalue
                     val call = callStack.last { it.type != CallType.DELEGATECALL }
                     val newStack = stack.pushWord(Word.coerceFrom(call.value))
 
@@ -131,7 +135,7 @@ class Executor {
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
                     val data = call.callData.subList(from, from + size)
-                    val newMemory = memory.set(to, data)
+                    val newMemory = memory.write(to, data)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -146,7 +150,7 @@ class Executor {
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
                     val data = call.code.subList(from, from + size)
-                    val newMemory = memory.set(to, data)
+                    val newMemory = memory.write(to, data)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -168,7 +172,7 @@ class Executor {
 
                     val code = evmState.codeAt(address.toAddress())
                     val data = code.subList(from.toInt(), from.toInt() + size.toInt())
-                    val newMemory = memory.set(to.toInt(), data)
+                    val newMemory = memory.write(to.toInt(), data)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -181,7 +185,7 @@ class Executor {
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val data = lastReturnData.subList(from, from + size)
-                    val newMemory = memory.set(to, data)
+                    val newMemory = memory.write(to, data)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }

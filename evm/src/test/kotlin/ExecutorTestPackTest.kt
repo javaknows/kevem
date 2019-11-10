@@ -50,7 +50,7 @@ class ExecutorTestPackTest {
                 )
             ),
             contractCode = listOf(Opcode.SHA3.code),
-            memory = Memory().set(0, data)
+            memory = Memory().write(0, data)
         )
 
         val result = underTest.executeNextOpcode(context)

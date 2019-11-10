@@ -43,7 +43,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
     CODESIZE(0x38, 0, 1, 1, GasCost.Base),
     CODECOPY(0x39, 3, 0, 1, GasCost.Formula),
     GASPRICE(0x3A, 0, 1, 1, GasCost.Base),
-    EXTCODESIZE(0x3B, 1, 1, 1, GasCost.ExtCodeSize),
+    EXTCODESIZE(0x3B, 1, 1, 1, GasCost.ExtCode),
     EXTCODECOPY(0x3C, 4, 0, 1, GasCost.Formula),
     RETURNDATASIZE(0x3D, 0, 1, 1, GasCost.Base),
     RETURNDATACOPY(0x3E, 3, 0, 1, GasCost.Formula),
@@ -150,7 +150,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
     companion object {
         val byCode = values().map { it.code to it }.toMap()
 
-        // TODO - validate this set agsinst GETH
+        // TODO - validate this write agsinst GETH
         private val nonStaticOpcodes = setOf(
             SSTORE,
             SUICIDE,

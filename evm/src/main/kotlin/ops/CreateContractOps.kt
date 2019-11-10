@@ -18,12 +18,13 @@ object CreateContractOps {
         val (elements, newStack) = stack.popWords(4)
         val (v, n, p, s) = elements
 
+        val (codeData, _) = memory.read(p.toInt(), s.toInt())
         val contractAddress =
             currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
         val newContractAddress = createAddress(
             contractAddress.toWord().data,
             n.data,
-            memory.get(p.toInt(), s.toInt())
+            codeData
         )
 
         return createContract(p.toInt(), s.toInt(), newContractAddress, v, newStack, context)
@@ -40,7 +41,7 @@ object CreateContractOps {
         // TODO - what if the generated address already exists
         // TODO - subtract gas
 
-        val newContractCode = memory.get(p, s)
+        val (newContractCode, newMemory) = memory.read(p, s)
         val contract = Contract(newContractCode)
         val balance = v.toBigInt()
         val currentAddress =
@@ -53,7 +54,7 @@ object CreateContractOps {
 
         return context
             .copy(evmState = newEvmState)
-            .updateCurrentCallCtx(stack = newStack2)
+            .updateCurrentCallCtx(stack = newStack2, memory = newMemory)
     }
 
     // TODO - create a compatibility pack around this

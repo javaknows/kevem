@@ -21,11 +21,11 @@ object HaltOps {
     fun doReturn(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, _) = context.stack.popWords(2)
         val (dataLocation, dataSize) = elements.map { it.toInt() }
-        val returnData = memory.get(dataLocation, dataSize)
+        val (returnData, newMemory) = memory.read(dataLocation, dataSize) // TODO - handle out of gas
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, oldCtx ->
             val data = coerceByteListToSize(returnData, oldCtx.returnSize)
-            val newMemory = ctx.memory.set(oldCtx.returnLocation, data)
+            val newMemory = ctx.memory.write(oldCtx.returnLocation, data)
             val newStack = ctx.stack.pushWord(Word.One)
 
             ctx.copy(memory = newMemory, stack = newStack)
@@ -65,7 +65,7 @@ object HaltOps {
     fun revert(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, _) = context.stack.popWords(2)
         val (outMemLocation, outSize) = elements.map { it.toInt() }
-        val returnData = memory.get(outMemLocation, outSize)
+        val (returnData, newMemory) = memory.read(outMemLocation, outSize) // TODO - handle gas
 
         val oldCtx = currentCallContext
         val callingContext = currentCallContext.callingContext ?: context.copy(
@@ -75,7 +75,7 @@ object HaltOps {
 
         val callStack = updateLastCallCtxIfPresent(callingContext.callStack) { ctx ->
             val data = coerceByteListToSize(returnData, oldCtx.returnSize)
-            val newMemory = ctx.memory.set(oldCtx.returnLocation, data)
+            val newMemory = ctx.memory.write(oldCtx.returnLocation, data)
             val newStack = ctx.stack.pushWord(Word.Zero)
 
             ctx.copy(memory = newMemory, stack = newStack)

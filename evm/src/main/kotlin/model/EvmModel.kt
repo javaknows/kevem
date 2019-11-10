@@ -3,6 +3,7 @@ package com.gammadex.kevin.evm.model
 import com.gammadex.kevin.evm.*
 import java.math.BigInteger
 import java.time.Clock
+import kotlin.math.max
 
 data class Byte(val value: Int) {
     constructor(v: String) : this(Integer.parseInt(stripHexPrefix(v), 16))
@@ -193,22 +194,34 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     fun accountExists(address: Address) = address in addresses.keys
 }
 
-class Memory(private val data: Map<Int, Byte> = emptyMap()) {
-    operator fun get(index: Int): Byte = data.getOrDefault(
+class Memory(private val data: Map<Int, Byte> = emptyMap(), val maxIndex: Int? = null) {
+    fun peek(index: Int): Byte = data.getOrDefault(
         index,
         Byte.Zero
     )
 
-    fun get(index: Int, length: Int): List<Byte> = index.until(index + length).map { this[it] }
+    fun peek(index: Int, length: Int): List<Byte> = index.until(index + length).map { peek(it) }
 
-    fun set(index: Int, values: List<Byte>): Memory {
-        val to = (index + values.size).coerceAtLeast(0)
-        val memory = data + (index.until(to) zip values).toMap()
+    fun read(index: Int, length: Int): Pair<List<Byte>, Memory> =
+        if (length == 0) Pair(emptyList(), this)
+        else {
+            val max = getMaxIndex(index, length)
+            val mem = peek(index, length)
 
-        return Memory(memory)
-    }
+            Pair(mem, Memory(data, max))
+        }
 
-    fun maxIndex() = data.keys.max()
+    fun write(index: Int, values: List<Byte>): Memory =
+        if (values.isEmpty()) this
+        else {
+            val to = (index + values.size).coerceAtLeast(0)
+            val memory = data + (index.until(to) zip values).toMap()
+            val max = getMaxIndex(index, values.size)
+
+            Memory(memory, max)
+        }
+
+    private fun getMaxIndex(index: Int, length: Int) = max(maxIndex ?: 0, index + length)
 }
 
 class Storage(private val data: Map<Int, Word> = emptyMap()) {
@@ -342,7 +355,7 @@ data class ExecutionContext(
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val addressGenerator: AddressGenerator = DefaultAddressGenerator(), // TODO - make a dependency rather than in ctx
     val lastCallError: EvmError = EvmError.None,
-    val gasRefunds: Map<Address,BigInteger> = emptyMap(), // TODO - implement me
+    val gasRefunds: Map<Address, BigInteger> = emptyMap(), // TODO - implement me
     val suicidedAccounts: List<Address> = emptyList() // TODO - implement me
 ) {
     val currentCallContext: CallContext

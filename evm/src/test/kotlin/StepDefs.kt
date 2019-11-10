@@ -156,7 +156,7 @@ class StepDefs : En {
                 else toByteList(bytes)
 
             checkResult {
-                val actual = it.memory.get(toInt(start), toInt(length))
+                val actual = it.memory.peek(toInt(start), toInt(length))
                 assertThat(actual).isEqualTo(expected)
             }
         }
@@ -241,7 +241,7 @@ class StepDefs : En {
 
         Given("(0x[a-zA-Z0-9]+) is stored in memory at location (0x[a-zA-Z0-9]+)") { data: String, location: String ->
             updateLastCallContext {
-                val newMemory = it.memory.set(toInt(location), toByteList(data))
+                val newMemory = it.memory.write(toInt(location), toByteList(data))
                 it.copy(memory = newMemory)
             }
         }
