@@ -1,5 +1,6 @@
 package com.gammadex.kevin.evm
 
+import com.gammadex.kevin.evm.gas.*
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.lang.*
 import com.gammadex.kevin.evm.model.Byte
@@ -16,7 +17,12 @@ class StepDefs : En {
 
     private var executionContext: ExecutionContext = createBaseExecutionContext()
 
-    private var executor = Executor()
+    private val executor = Executor(
+        GasCostCalculator(
+            BaseGasCostCalculator(CallGasCostCalc()),
+            MemoryUsageGasCostCalculator(MemoryUsageGasCalc())
+        )
+    )
 
     private var result: ExecutionContext? = null
 
@@ -249,7 +255,7 @@ class StepDefs : En {
         Given("(0x[a-zA-Z0-9]+) is in storage at location (0x[a-zA-Z0-9]+) of (.*)") { data: String, location: String, contractAddress: String ->
             updateExecutionContext { ctx ->
                 val address =
-                    if (contractAddress == "current contract") ctx.currentCallContext.contractAddress.toString()
+                    if (contractAddress == "current contract") ctx.currentCallCtx.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
                 ctx.copy(
@@ -265,7 +271,7 @@ class StepDefs : En {
         Then("data in storage at location (\\d+) of (.*) is now (0x[a-zA-Z0-9]+)") { location: Int, contractAddress: String, data: String ->
             checkResult {
                 val address =
-                    if (contractAddress == "current contract") it.currentCallContext.contractAddress.toString()
+                    if (contractAddress == "current contract") it.currentCallCtx.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
                 assertThat(it.evmState.storageAt(Address(address), location)).isEqualTo(Word.coerceFrom(data))
@@ -274,7 +280,7 @@ class StepDefs : En {
 
         Then("the next position in code is now (\\d+)") { position: Int ->
             checkResult {
-                assertThat(it.currentCallContext.currentLocation).isEqualTo(position)
+                assertThat(it.currentCallCtx.currentLocation).isEqualTo(position)
             }
         }
 
@@ -286,7 +292,7 @@ class StepDefs : En {
 
         Given("there is (.*) gas remaining") { gas: String ->
             updateLastCallContext {
-                it.copy(gasRemaining = toBigInteger(gas))
+                it.copy(gas = toBigInteger(gas), gasUsed = BigInteger.ZERO)
             }
         }
 
@@ -419,7 +425,7 @@ class StepDefs : En {
             val (type, callerAddress, callData, contractAddress, value, gas, outLocation, outSize) = dataTable.asLists()[1]
 
             checkResult {
-                val currentCall = it.currentCallContext
+                val currentCall = it.currentCallCtx
 
                 assertThat(currentCall.type).isEqualTo(CallType.valueOf(type))
                 assertThat(currentCall.caller).isEqualTo(Address(callerAddress))
@@ -440,7 +446,7 @@ class StepDefs : En {
         }
 
         When("the current call is:") { dataTable: DataTable ->
-            val currentCallContext = executionContext.currentCallContext
+            val currentCallContext = executionContext.currentCallCtx
 
             val (newCallCtx, newExecutionCtx) = copyContextWithTableData(
                 dataTable,
@@ -532,7 +538,7 @@ class StepDefs : En {
             caller = Address(callerAddress),
             callData = toByteList(callData),
             value = toBigInteger(value),
-            gasRemaining = toBigInteger(gas),
+            gas = toBigInteger(gas),
             returnLocation = toInt(outLocation),
             returnSize = toInt(outSize),
             contractAddress = Address(contractAddress)
@@ -624,7 +630,8 @@ class StepDefs : En {
                     stack = Stack(),
                     memory = Memory(),
                     contractAddress = Address("0x0"),
-                    storageAddress = Address("0x0")
+                    storageAddress = Address("0x0"),
+                    gas = BigInteger("1000000000000000000000")
                 )
             )
         )

@@ -1,5 +1,6 @@
 package com.gammadex.kevin.evm
 
+import com.gammadex.kevin.evm.gas.GasCostCalculator
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.ops.*
@@ -9,7 +10,7 @@ import com.gammadex.kevin.evm.ops.*
 // TODO - ensure max stack depth won't be reached
 // TODO - don't accept certain operations depending on fork version configured
 
-class Executor {
+class Executor(private val gasCostCalculator: GasCostCalculator) {
     tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
         if (executionCtx.completed) executionCtx
         else executeAll(executeNextOpcode(executionCtx))
@@ -18,19 +19,40 @@ class Executor {
         if (isEndOfContract(currentCallContextOrNull))
             HaltOps.stop(executionCtx)
         else {
-            val byteCode = currentCallContext.code[currentLocation]
+            val byteCode = currentCallCtx.code[currentLocation]
             val opcode = Opcode.byCode[byteCode]
 
             when {
-                isStackUnderflow(opcode, currentCallContext) -> HaltOps.fail(
+                opcode == null -> HaltOps.fail(
+                    executionCtx, EvmError(ErrorCode.INVALID_INSTRUCTION, "Invalid instruction: $byteCode")
+                )
+                isStackUnderflow(opcode, currentCallCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STACK_DEPTH, "Stack not deep enough for $opcode")
                 )
-                isModifyInStaticCall(opcode, currentCallContext) -> HaltOps.fail(
+                isModifyInStaticCall(opcode, currentCallCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "$opcode not allowed in static call")
                 )
-                else -> processOpcode(executionCtx, opcode, byteCode)
+                else -> consumeGasAndProcessOpcode(opcode, executionCtx)
             }
         }
+    }
+
+    private fun consumeGasAndProcessOpcode(opcode: Opcode, executionCtx: ExecutionContext): ExecutionContext {
+        val (isOutOfGas, updatedExecutionCtx) = consumeGas(opcode, executionCtx)
+        return if (isOutOfGas) HaltOps.fail(
+            updatedExecutionCtx, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas")
+        ) else processOpcode(updatedExecutionCtx, opcode)
+    }
+
+    private fun consumeGas(opcode: Opcode, executionCtx: ExecutionContext): Pair<Boolean, ExecutionContext> {
+        val cost = gasCostCalculator.calculateCost(opcode, executionCtx)
+        val isOutOfGas = cost > executionCtx.currentCallCtx.gasRemaining
+
+        val newCtx = executionCtx.updateCurrentCallCtx(
+            gasUsed = executionCtx.currentCallCtx.gasUsed + cost
+        )
+
+        return Pair(isOutOfGas, newCtx)
     }
 
     private fun isModifyInStaticCall(opcode: Opcode?, currentCallCtx: CallContext) =
@@ -42,7 +64,7 @@ class Executor {
     private fun isEndOfContract(callCtx: CallContext?) =
         callCtx != null && callCtx.currentLocation !in callCtx.code.indices
 
-    private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode?, byteCode: Byte): ExecutionContext {
+    private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode): ExecutionContext {
         val updatedContext = with(currentContext) {
             when (opcode) {
                 Opcode.STOP -> HaltOps.stop(currentContext)
@@ -227,7 +249,7 @@ class Executor {
                 }
                 Opcode.MSIZE -> MemoryOps.msize(currentContext)
                 Opcode.GAS -> {
-                    val newStack = stack.pushWord(Word.coerceFrom(currentCallContext.gasRemaining))
+                    val newStack = stack.pushWord(Word.coerceFrom(currentCallCtx.gasRemaining))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.JUMPDEST -> JumpOps.jumpDest(currentContext)
@@ -310,7 +332,6 @@ class Executor {
                 Opcode.REVERT -> HaltOps.revert(currentContext)
                 Opcode.INVALID -> HaltOps.invalid(currentContext)
                 Opcode.SUICIDE -> HaltOps.suicide(currentContext)
-                else -> HaltOps.invalid(currentContext, "Invalid instruction - unknown opcode $byteCode")
             }
         }
 

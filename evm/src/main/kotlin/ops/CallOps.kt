@@ -36,7 +36,7 @@ object CallOps {
 
         with(callArguments) {
             val nextCallerAddress =
-                currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
+                currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
             val callerBalance = evmState.balanceOf(nextCallerAddress)
             if (callerBalance < value) {
                 TODO("handle case where contract doesn't have enough funds")
@@ -61,8 +61,8 @@ object CallOps {
                 gas,
                 outLocation,
                 outSize,
-                contractAddress = currentCallContext.contractAddress,
-                storageAddress = currentCallContext.storageAddress
+                contractAddress = currentCallCtx.contractAddress,
+                storageAddress = currentCallCtx.storageAddress
             )
 
             val updatedCtx = updateCurrentCallCtx(
@@ -85,17 +85,17 @@ object CallOps {
 
             val (callData, newMemory) = memory.read(inLocation, inSize)
             val newCall = CallContext(
-                currentCallContext.caller,
+                currentCallCtx.caller,
                 callData,
                 CallType.DELEGATECALL,
-                currentCallContext.value,
+                currentCallCtx.value,
                 code,
                 context,
                 gas,
                 outLocation,
                 outSize,
                 contractAddress = callArguments.address,
-                storageAddress = currentCallContext.storageAddress
+                storageAddress = currentCallCtx.storageAddress
             )
 
             val updatedCtx = updateCurrentCallCtx(
@@ -113,7 +113,7 @@ object CallOps {
         with(context) {
             with(args) {
                 val nextCaller =
-                    currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
+                    currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
                 val callerBalance = evmState.balanceOf(nextCaller)
                 if (callerBalance < value) {
                     TODO("handle case where contract doesn't have enough funds")

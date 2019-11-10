@@ -87,7 +87,7 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
 
         val memCost =
             if (maxByteReferenced != null) {
-                val currentMax = executionContext.currentCallContext.memory.maxIndex
+                val currentMax = executionContext.currentCallCtx.memory.maxIndex
 
                 if (currentMax == null || maxByteReferenced > currentMax) {
                     memoryUseGasCalc.memoryCost(maxByteReferenced) - memoryUseGasCalc.memoryCost(currentMax ?: 0)

@@ -277,10 +277,10 @@ Feature: Single Opcode Execution
     When opcode MSIZE is executed
     Then the stack contains 0x3
 
-  Scenario: remaining has is returned by GAS
+  Scenario: remaining gas is returned by GAS minus two for cost of GAS opcode execution
     Given there is 5 gas remaining
     When opcode GAS is executed
-    Then the stack contains 0x5
+    Then the stack contains 0x3
 
   Scenario: Push opcodes push the right amount of bytes onto the stack
     Given contract code ends with 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -608,7 +608,7 @@ Feature: Single Opcode Execution
     When opcode 0xBB is executed
     Then the call stack is now 0 deep
     And the execution context is now marked as complete
-    And the last error is now INVALID_INSTRUCTION with message "Invalid instruction - unknown opcode 0xbb"
+    And the last error is now INVALID_INSTRUCTION with message "Invalid instruction: 0xbb"
 
   Scenario: fail when not enough elements on the stack
     Given 0x5 is pushed onto the stack

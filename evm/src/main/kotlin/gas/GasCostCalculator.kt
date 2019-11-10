@@ -47,7 +47,7 @@ class CallGasCostCalc {
 
         val extraFee = (GasCost.Call.cost + newAccountFee + transferFee).toBigInteger()
 
-        val callerGas = executionCtx.currentCallContext.gas
+        val callerGas = executionCtx.currentCallCtx.gas
         val gasCap =
             if (callerGas > extraFee) BigIntMath.min(callerGas - extraFee, gas)
             else gas

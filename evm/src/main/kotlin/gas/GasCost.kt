@@ -30,6 +30,7 @@ enum class GasCost(val cost: Int) {
     Memory(3),
     BlockHash(20),
     Formula(0),
+    Copy(3),
     Log(2300),
     LogData(8),
     LogTopic(375),

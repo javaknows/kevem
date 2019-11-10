@@ -44,7 +44,7 @@ object HaltOps {
     }
 
     fun fail(context: ExecutionContext, error: EvmError): ExecutionContext = with(context) {
-        val callingContext = currentCallContext.callingContext ?: context.copy(
+        val callingContext = currentCallCtx.callingContext ?: context.copy(
             callStack = context.callStack.dropLast(1)
         )
         val completed = context.callStack.size == 1
@@ -67,8 +67,8 @@ object HaltOps {
         val (outMemLocation, outSize) = elements.map { it.toInt() }
         val (returnData, newMemory) = memory.read(outMemLocation, outSize) // TODO - handle gas
 
-        val oldCtx = currentCallContext
-        val callingContext = currentCallContext.callingContext ?: context.copy(
+        val oldCtx = currentCallCtx
+        val callingContext = currentCallCtx.callingContext ?: context.copy(
             callStack = context.callStack.dropLast(1)
         )
         val completed = context.callStack.size == 1
@@ -97,7 +97,7 @@ object HaltOps {
             ctx.copy(stack = newStack)
         }
 
-        val contractAddress = currentCallContext.contractAddress  ?: throw RuntimeException("can't determine contract address")
+        val contractAddress = currentCallCtx.contractAddress  ?: throw RuntimeException("can't determine contract address")
         val contract = evmState.contractAt(contractAddress) ?: throw RuntimeException("can't determine current contract")
 
         val newEvmState = with(evmState) {

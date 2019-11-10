@@ -7,7 +7,6 @@ import com.gammadex.kevin.evm.numbers.BigIntMath
 import com.gammadex.kevin.evm.numbers.logn
 import java.math.BigInteger
 import com.gammadex.kevin.evm.ops.CallOps
-import java.lang.Integer.max
 
 class BaseGasCostCalculator(
     private val callGasCostCalc: CallGasCostCalc
@@ -18,9 +17,10 @@ class BaseGasCostCalculator(
             when (opcode) {
                 EXP -> expCost(executionContext)
                 SHA3 -> sha3Cost(executionContext)
-                CALLDATACOPY -> callDataCopyCost(executionContext)
-                CODECOPY -> codeCopyCost(executionContext)
+                CALLDATACOPY -> dataCopyCost(executionContext)
+                CODECOPY -> dataCopyCost(executionContext)
                 EXTCODECOPY -> extCodeCopyCost(executionContext)
+                RETURNDATACOPY -> dataCopyCost(executionContext)
                 SSTORE -> sStoreCost(executionContext)
                 LOG0 -> logCost(executionContext, 0)
                 LOG1 -> logCost(executionContext, 1)
@@ -52,10 +52,8 @@ class BaseGasCostCalculator(
      * 5000 + ((create_new_account) ? 25000 : 0)
      */
     private fun suicideCost(executionContext: ExecutionContext): BigInteger {
-        val (address) = executionContext.currentCallContext.stack.peekWords(1).map { it.toAddress() }
+        val (address) = executionContext.currentCallCtx.stack.peekWords(1).map { it.toAddress() }
 
-        // TODO - add refund
-        // TODO - check yellow paper
         val accountExists = executionContext.evmState.accountExists(address)
 
         val newAccountCharge = if (accountExists) BigInteger("25000") else BigInteger.ZERO
@@ -66,7 +64,7 @@ class BaseGasCostCalculator(
      * 375 + 8 * (number of bytes in log data)
      */
     private fun logCost(executionContext: ExecutionContext, numTopics: Int): BigInteger {
-        val elements = executionContext.currentCallContext.stack.peekWords(2 + numTopics)
+        val elements = executionContext.currentCallCtx.stack.peekWords(2 + numTopics)
         val size = elements.last().toInt()
 
         return (GasCost.Log.cost +
@@ -78,9 +76,9 @@ class BaseGasCostCalculator(
      * ((value != 0) && (storage_location == 0)) ? 20000 : 5000
      */
     private fun sStoreCost(executionContext: ExecutionContext): BigInteger {
-        val (location, value) = executionContext.currentCallContext.stack.peekWords(3).map { it.toBigInt() }
+        val (location, value) = executionContext.currentCallCtx.stack.peekWords(3).map { it.toBigInt() }
 
-        val storageAddress = executionContext.currentCallContext.storageAddress
+        val storageAddress = executionContext.currentCallCtx.storageAddress
             ?: throw RuntimeException("can't determine contract address")
         val oldValue = executionContext.evmState.storageAt(storageAddress, location.toInt())
 
@@ -94,34 +92,22 @@ class BaseGasCostCalculator(
      * 700 + 3 * (number of words copied, rounded up)
      */
     private fun extCodeCopyCost(executionContext: ExecutionContext): BigInteger {
-        val (_, _, _, size) = executionContext.currentCallContext.stack.peekWords(4)
+        val (_, _, _, size) = executionContext.currentCallCtx.stack.peekWords(4)
 
         return BigInteger("700") + BigInteger("3") * size.toBigInt()
     }
 
-    /**
-     * 2 + 3 * (number of words copied, rounded up)
-     */
-    private fun codeCopyCost(executionContext: ExecutionContext): BigInteger {
-        val (_, _, size) = executionContext.currentCallContext.stack.peekWords(3)
+    private fun dataCopyCost(executionContext: ExecutionContext): BigInteger {
+        val (_, _, size) = executionContext.currentCallCtx.stack.peekWords(3)
 
-        return BigInteger("2") + BigInteger("3") * size.toBigInt()
-    }
-
-    /**
-     * 2 + 3 * (number of words copied, rounded up)
-     */
-    private fun callDataCopyCost(executionContext: ExecutionContext): BigInteger {
-        val (_, _, size) = executionContext.currentCallContext.stack.peekWords(3)
-
-        return BigInteger("2") + BigInteger("3") * size.toBigInt()
+        return GasCost.VeryLow.cost.toBigInteger() + GasCost.Copy.cost.toBigInteger() * size.toBigInt()
     }
 
     /**
      * 30 + 6 * (size of input in words)
      */
     private fun sha3Cost(executionContext: ExecutionContext): BigInteger {
-        val (start, end) = executionContext.currentCallContext.stack.peekWords(2)
+        val (start, end) = executionContext.currentCallCtx.stack.peekWords(2)
         val numBytes = BigIntMath.min(end.toBigInt() - start.toBigInt(), BigInteger.ZERO)
         val numWords = numWordsRoundedUp(numBytes)
 
@@ -132,7 +118,7 @@ class BaseGasCostCalculator(
      * (exp == 0) ? 10 : (10 + 10 * (1 + log256(exp)))
      */
     private fun expCost(executionContext: ExecutionContext): BigInteger {
-        val elements = executionContext.currentCallContext.stack.peekWords(2)
+        val elements = executionContext.currentCallCtx.stack.peekWords(2)
         val (n, exp) = elements.map { it.toBigInt() }
 
         return if (exp == BigInteger.ZERO) BigInteger.TEN

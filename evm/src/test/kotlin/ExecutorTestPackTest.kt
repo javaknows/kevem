@@ -1,5 +1,6 @@
 package com.gammadex.kevin.evm
 
+import com.gammadex.kevin.evm.gas.*
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.model.Memory
 import com.gammadex.kevin.evm.model.Stack
@@ -11,10 +12,15 @@ import kotlin.test.junit5.JUnit5Asserter.fail
 
 class ExecutorTestPackTest {
 
-    private val underTest = Executor()
+    private val underTest = Executor(
+        GasCostCalculator(
+            BaseGasCostCalculator(CallGasCostCalc()),
+            MemoryUsageGasCostCalculator(MemoryUsageGasCalc())
+        )
+    )
 
     @ParameterizedTest
-    @CsvFileSource(resources = ["/numeric_test_pack.tsv"], delimiter='\t')
+    @CsvFileSource(resources = ["/numeric_test_pack.tsv"], delimiter = '\t')
     fun pack(function: String, expectedResult: String, arg0: String, arg1: String?, arg2: String?) {
         if (function.startsWith("#")) return
 
@@ -22,7 +28,7 @@ class ExecutorTestPackTest {
 
         val args = listOf(arg0, arg1, arg2)
             .filterNotNull()
-            .map {  Word.coerceFrom(it).data }
+            .map { Word.coerceFrom(it).data }
 
         val context = baseExecutionContext(
             stack = Stack(args.reversed()),
@@ -38,7 +44,7 @@ class ExecutorTestPackTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = ["/sha3_test_pack.tsv"], delimiter='\t')
+    @CsvFileSource(resources = ["/sha3_test_pack.tsv"], delimiter = '\t')
     fun `check sha3 matches ganache output`(input: String, expectedResult: String) {
         val data = Word.coerceFrom(input).data
 

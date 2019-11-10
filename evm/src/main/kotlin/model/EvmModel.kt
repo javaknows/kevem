@@ -315,7 +315,7 @@ data class CallContext(
     val value: BigInteger,
     val code: List<Byte>,
     val callingContext: ExecutionContext? = null,
-    val gasRemaining: BigInteger = BigInteger.ZERO,
+    val gas: BigInteger = BigInteger.ZERO,
     val returnLocation: Int = 0,
     val returnSize: Int = 0,
     val stack: Stack = Stack(),
@@ -323,8 +323,11 @@ data class CallContext(
     val currentLocation: Int = 0,
     val storageAddress: Address? = null,
     val contractAddress: Address? = null,
-    val gas: BigInteger = BigInteger.ZERO // gas at start TODO - hook up
-)
+    val gasUsed: BigInteger = BigInteger.ZERO
+) {
+    val gasRemaining: BigInteger
+        get() = gas - gasUsed
+}
 
 data class Block(
     val number: BigInteger,
@@ -358,34 +361,34 @@ data class ExecutionContext(
     val gasRefunds: Map<Address, BigInteger> = emptyMap(), // TODO - implement me
     val suicidedAccounts: List<Address> = emptyList() // TODO - implement me
 ) {
-    val currentCallContext: CallContext
+    val currentCallCtx: CallContext
         get() = callStack.last()
 
     val currentCallContextOrNull: CallContext?
         get() = callStack.lastOrNull()
 
     val stack: Stack
-        get() = currentCallContext.stack
+        get() = currentCallCtx.stack
 
     val memory: Memory
-        get() = currentCallContext.memory
+        get() = currentCallCtx.memory
 
     val currentLocation: Int
-        get() = currentCallContext.currentLocation
+        get() = currentCallCtx.currentLocation
 
     // TODO - replace with updateCurrentCallCtxIfPresent
     fun updateCurrentCallCtx(
         stack: Stack? = null,
         memory: Memory? = null,
         currentLocation: Int? = null,
-        gasRemaining: BigInteger? = null
+        gasUsed: BigInteger? = null
     ): ExecutionContext {
-        val call = currentCallContext
-        val newCall = currentCallContext.copy(
+        val call = currentCallCtx
+        val newCall = currentCallCtx.copy(
             stack = stack ?: call.stack,
             memory = memory ?: call.memory,
             currentLocation = currentLocation ?: call.currentLocation,
-            gasRemaining = gasRemaining ?: call.gasRemaining
+            gasUsed = gasUsed ?: call.gasUsed
         )
 
         return replaceCurrentCallCtx(newCall)
