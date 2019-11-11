@@ -571,8 +571,8 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with SUICIDE in main contract
     Given the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type   | caller address | calldata | contract address | value | gas     | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A500 | 0x200        | 0x3      |
     And there is only one call on the stack
     And the account with address 0xFFFFFFF has balance 0x1234
     And 0xAAAAAAA is pushed onto the stack
@@ -585,11 +585,11 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with SUICIDE in child contract
     Given the previous call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+      | type   | caller address | calldata | contract address | value | gas     | out location | out size |
+      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A500 | 0x0          | 0x0      |
     And the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type   | caller address | calldata | contract address | value | gas     | out location | out size |
+      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A500 | 0x200        | 0x3      |
     And the account with address 0xFFFFFFF has balance 0x1234
     And 0xAAAAAAA is pushed onto the stack
     When opcode SUICIDE is executed

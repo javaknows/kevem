@@ -290,7 +290,7 @@ class StepDefs : En {
             }
         }
 
-        Given("there is (.*) gas remaining") { gas: String ->
+        Given("there is ([0-9xA-Za-z]*) gas remaining") { gas: String ->
             updateLastCallContext {
                 it.copy(gas = toBigInteger(gas), gasUsed = BigInteger.ZERO)
             }
@@ -390,6 +390,25 @@ class StepDefs : En {
             }
         }
 
+        When("an opcode is executed it consumes gas:") { dataTable: DataTable ->
+            processRows(dataTable, true) {
+                val opcode = Opcode.fromName(it[0])
+                val gas = it[1].toInt()
+
+                updateLastCallContext { ctx ->
+                    val code = listOf(opcode!!.code) + ctx.code
+                    ctx.copy(code = code, gas = BigInteger("100000000"))
+                }
+
+                executeContext()
+
+                checkResult { result ->
+                    val gasUsed = result.currentCallCtx.gas - result.currentCallCtx.gasRemaining
+                    assertThat(gasUsed).isEqualTo(gas)
+                }
+            }
+        }
+
         Given("any new account gets created with address (0x[a-zA-Z0-9]+)") { address: String ->
             updateExecutionContext {
                 it.copy(addressGenerator = object : AddressGenerator {
@@ -442,6 +461,12 @@ class StepDefs : En {
             checkResult {
                 val prevCallContext = it.callStack.takeLast(2).first()
                 assertThat(prevCallContext.gasRemaining).isEqualTo(toBigInteger(gas))
+            }
+        }
+
+        Then("there is now (.*) gas remaining") { gas: String ->
+            checkResult {
+                assertThat(it.currentCallCtx.gasRemaining).isEqualTo(toBigInteger(gas))
             }
         }
 
@@ -558,10 +583,12 @@ class StepDefs : En {
 
     private fun checkResult(checker: (ExecutionContext) -> Unit) = checker(result!!)
 
-    private fun processRows(dataTable: DataTable, processRow: (List<String>) -> Unit) {
+    private fun processRows(dataTable: DataTable, dropFirst: Boolean = false, processRow: (List<String>) -> Unit) {
         val originalContext = executionContext
 
-        dataTable.asLists().forEach {
+        val numToDrop = if (dropFirst) 1 else 0
+
+        dataTable.asLists().drop(numToDrop).forEach {
             executionContext = originalContext
 
             processRow(it)

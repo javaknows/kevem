@@ -13,7 +13,7 @@ enum class GasCost(val cost: Int) {
     Low(5),
     Mid(8),
     High(10),
-    ExtCode(20),
+    ExtCode(700),
     Balance(400),
     SLoad(200),
     JumpDest(1),

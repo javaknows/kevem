@@ -14,7 +14,7 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
     And 0x6A5 is pushed onto the stack
     And the contract address is 0xEEEEEE
     And the account with address 0xEEEEEE has balance 0x1234
-    And there is 0x6A6 gas remaining
+    And there is 0x6A600000 gas remaining
     And the account with address 0xADD8E55 has balance 0x0
     When opcode CALL is executed
     Then the call stack is now 2 deep
@@ -38,7 +38,7 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
     And the current caller address is 0xABCEF
     And the contract address is 0xEEEEEE
     And the account with address 0xEEEEEE has balance 0x1234
-    And there is 0x6A6 gas remaining
+    And there is 0x6A600000 gas remaining
     And the account with address 0xADD8E55 has balance 0x0
     When opcode CALLCODE is executed
     Then the call stack is now 2 deep
@@ -62,7 +62,7 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
     And the current call value is 0x111
     And the contract address is 0xEEEEEE
     And the account with address 0xEEEEEE has balance 0x1234
-    And there is 0x6A6 gas remaining
+    And there is 0x6A600 gas remaining
     And the account with address 0xADD8E55 has balance 0x0
     When opcode DELEGATECALL is executed
     Then the call stack is now 2 deep
@@ -86,7 +86,7 @@ Feature: Single Opcode execution of the CALL, CALLCODE, DELEGATECALL and STATICC
     And the current call value is 0x111
     And the contract address is 0xEEEEEE
     And the account with address 0xEEEEEE has balance 0x1234
-    And there is 0x6A6 gas remaining
+    And there is 0x6A6000 gas remaining
     And the account with address 0xADD8E55 has balance 0x0
     When opcode STATICCALL is executed
     Then the call stack is now 2 deep
