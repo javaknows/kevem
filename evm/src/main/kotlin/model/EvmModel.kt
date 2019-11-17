@@ -192,6 +192,8 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     }
 
     fun accountExists(address: Address) = address in addresses.keys
+
+    fun removeAccount(address: Address) = EvmState(addresses - address)
 }
 
 class Memory(private val data: Map<Int, Byte> = emptyMap(), val maxIndex: Int? = null) {
@@ -414,4 +416,12 @@ data class ExecutionContext(
             val newCallStack = callStack.dropLast(2) + newCall + callStack.last()
             copy(callStack = newCallStack)
         } else this
+
+    fun refund(address: Address, value: BigInteger): ExecutionContext {
+        val totalRefund = gasRefunds.getOrDefault(address, BigInteger.ZERO) + value
+
+        return copy(
+            gasRefunds = gasRefunds + Pair(address, totalRefund)
+        )
+    }
 }

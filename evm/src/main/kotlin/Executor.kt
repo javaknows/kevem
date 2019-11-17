@@ -152,12 +152,12 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.CALLDATACOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
-                    val data = call.callData.subList(from, from + size)
-                    val newMemory = memory.write(to, data)
+                    val data = call.callData.drop(from).take(size)
+                    val paddedData = data + Byte.Zero.repeat(size - data.size)
+                    val newMemory = memory.write(to, paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -167,12 +167,12 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.CODECOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
-                    val data = call.code.subList(from, from + size)
-                    val newMemory = memory.write(to, data)
+                    val data = call.code.drop(from).take(size)
+                    val paddedData = data + Byte.Zero.repeat(size - data.size)
+                    val newMemory = memory.write(to, paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -188,13 +188,13 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                     currentContext.updateCurrentCallCtx(stack = finalStack)
                 }
                 Opcode.EXTCODECOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(4)
                     val (address, to, from, size) = elements
 
                     val code = evmState.codeAt(address.toAddress())
-                    val data = code.subList(from.toInt(), from.toInt() + size.toInt())
-                    val newMemory = memory.write(to.toInt(), data)
+                    val data = code.drop(from.toInt()).take(size.toInt())
+                    val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
+                    val newMemory = memory.write(to.toInt(), paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -203,11 +203,11 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.RETURNDATACOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
-                    val data = lastReturnData.subList(from, from + size)
-                    val newMemory = memory.write(to, data)
+                    val data = lastReturnData.drop(from).take(size)
+                    val paddedData = data + Byte.Zero.repeat(size - data.size)
+                    val newMemory = memory.write(to, paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }

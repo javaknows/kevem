@@ -1,29 +1,16 @@
-Feature: Debugging
+Feature: Gas costs for CALL operations
 
-  Run single scenarios in here
+  Scenario: Gas cost for CALL when sending value to new account
+  Scenario: Gas cost for CALL when sending value to existing account
+  Scenario: Gas cost for CALL with no value
 
+
+
+
+# Add tests specifically for memory usage
 #STOP
-#| CALLDATALOAD | 3       |
-#| MLOAD        | 3       |
-#| SSTORE       | FORMULA |
-#| JUMP         | 8       |
-#| SELFDESTRUCT | FORMULA |
-#| EXP        | FORMULA |
-#| SHA3       | FORMULA |
-#| MSTORE     | 3       |
-#| MSTORE8    | 3       |
-#| JUMPI      | 10      |
-#| LOG0       | FORMULA |
 #| RETURN     | 0       |
-#| CALLDATACOPY | FORMULA |
-#| RETURNDATACOPY | FORMULA |
-#| CODECOPY     | FORMULA |
-#EXTCODECOPY	FORMULA
-#LOG1	FORMULA
-#LOG2	FORMULA
-#LOG3	FORMULA
-#LOG4	FORMULA
-#CREATE	32000
 #CALL	FORMULA
 #CALLCODE	FORMULA
 #DELEGATECALL	FORMULA
+#STATICCALL	FORMULA

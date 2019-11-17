@@ -17,7 +17,7 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
         STATICCALL -> callCost(executionCtx, false)
         SHA3 -> calculate(executionCtx) {
             val (from, length) = it.peekWords(2).map { w -> w.toInt() }
-            highestByteOrNull(length, from)
+            highestByteOrNull(from, length)
         }
         CALLDATACOPY -> calculate(executionCtx) {
             val (to, _, size) = it.peekWords(3).map { w -> w.toInt() }
@@ -28,6 +28,10 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
             highestByteOrNull(to, size)
         }
         RETURNDATACOPY -> calculate(executionCtx) {
+            val (to, _, size) = it.peekWords(3).map { w -> w.toInt() }
+            highestByteOrNull(to, size)
+        }
+        CODECOPY -> calculate(executionCtx) {
             val (to, _, size) = it.peekWords(3).map { w -> w.toInt() }
             highestByteOrNull(to, size)
         }
@@ -103,7 +107,7 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
         else -> max(a, b)
     }
 
-    private fun highestByteOrNull(length: Int, from: Int) =
+    private fun highestByteOrNull(from: Int, length: Int) =
         if (length > 0) from + length
         else null
 }

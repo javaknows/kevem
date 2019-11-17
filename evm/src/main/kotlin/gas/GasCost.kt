@@ -1,5 +1,11 @@
 package com.gammadex.kevin.evm.gas
 
+
+enum class Refund(val wei: Int) {
+    SelfDestruct(24000),
+    StorageClear(15000)
+}
+
 enum class GasCategory {
     Formula,
     MemoryUsage,
@@ -31,7 +37,7 @@ enum class GasCost(val cost: Int) {
     BlockHash(20),
     Formula(0),
     Copy(3),
-    Log(2300),
+    Log(375),
     LogData(8),
     LogTopic(375),
 

@@ -11,7 +11,6 @@ https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18
 * max stack size of 1024
 * stack underflow
 * null vs empty data from return, revert
-* memory access gas costs
 * self destruct set - apply at end of tx & apply refund
 * gas refund for storage set back to 0 
 * use substate object to track refunds and self destructs accounts

@@ -56,7 +56,7 @@ class BaseGasCostCalculator(
 
         val accountExists = executionContext.evmState.accountExists(address)
 
-        val newAccountCharge = if (accountExists) BigInteger("25000") else BigInteger.ZERO
+        val newAccountCharge = if (accountExists) BigInteger.ZERO else BigInteger("25000")
         return BigInteger("5000") + newAccountCharge
     }
 
@@ -65,7 +65,7 @@ class BaseGasCostCalculator(
      */
     private fun logCost(executionContext: ExecutionContext, numTopics: Int): BigInteger {
         val elements = executionContext.currentCallCtx.stack.peekWords(2 + numTopics)
-        val size = elements.last().toInt()
+        val size = elements.take(2).last().toInt()
 
         return (GasCost.Log.cost +
                 GasCost.LogTopic.cost * numTopics +
@@ -94,13 +94,13 @@ class BaseGasCostCalculator(
     private fun extCodeCopyCost(executionContext: ExecutionContext): BigInteger {
         val (_, _, _, size) = executionContext.currentCallCtx.stack.peekWords(4)
 
-        return BigInteger("700") + BigInteger("3") * size.toBigInt()
+        return BigInteger("700") + BigInteger("3") * numWordsRoundedUp(size.toBigInt())
     }
 
     private fun dataCopyCost(executionContext: ExecutionContext): BigInteger {
         val (_, _, size) = executionContext.currentCallCtx.stack.peekWords(3)
 
-        return GasCost.VeryLow.cost.toBigInteger() + GasCost.Copy.cost.toBigInteger() * size.toBigInt()
+        return GasCost.Base.cost.toBigInteger() + GasCost.Copy.cost.toBigInteger() * numWordsRoundedUp(size.toBigInt())
     }
 
     /**
@@ -108,7 +108,7 @@ class BaseGasCostCalculator(
      */
     private fun sha3Cost(executionContext: ExecutionContext): BigInteger {
         val (start, end) = executionContext.currentCallCtx.stack.peekWords(2)
-        val numBytes = BigIntMath.min(end.toBigInt() - start.toBigInt(), BigInteger.ZERO)
+        val numBytes = BigIntMath.max(end.toBigInt() - start.toBigInt(), BigInteger.ZERO)
         val numWords = numWordsRoundedUp(numBytes)
 
         return BigInteger("30") + BigInteger("6") * numWords
@@ -119,10 +119,10 @@ class BaseGasCostCalculator(
      */
     private fun expCost(executionContext: ExecutionContext): BigInteger {
         val elements = executionContext.currentCallCtx.stack.peekWords(2)
-        val (n, exp) = elements.map { it.toBigInt() }
+        val (_, exp) = elements.map { it.toBigInt() }
 
         return if (exp == BigInteger.ZERO) BigInteger.TEN
-        else BigInteger.TEN + BigInteger.TEN * (BigInteger.ONE + logn(n, BigInteger("256")))
+        else BigInteger.TEN + BigInteger.TEN * (BigInteger.ONE + logn(exp, BigInteger("256")))
     }
 
     private fun numWordsRoundedUp(numBytes: BigInteger) = BigIntMath.divRoundUp(numBytes, BigInteger("32"))

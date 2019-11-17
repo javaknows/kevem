@@ -71,7 +71,7 @@ class StepDefs : En {
 
         Given("the contract address is (0x[a-zA-Z0-9]+)") { address: String ->
             updateLastCallContext {
-                it.copy(contractAddress = Address(address))
+                it.copy(contractAddress = Address(address), storageAddress = Address(address))
             }
         }
 
@@ -81,6 +81,23 @@ class StepDefs : En {
             updateExecutionContext {
                 val evmState = it.evmState.updateBalance(Address(address), value)
                 it.copy(evmState = evmState)
+            }
+        }
+
+        Given("there is no existing account with address (.*)") { address: String ->
+            updateExecutionContext {
+                val evmState = it.evmState.removeAccount(Address(address))
+                it.copy(evmState = evmState)
+            }
+        }
+
+        Given("an account with address (.*) exists") { address: String ->
+            updateExecutionContext {
+                if (it.evmState.accountExists(Address(address))) it
+                else {
+                    val evmState = it.evmState.updateBalance(Address(address), BigInteger.ZERO)
+                    it.copy(evmState = evmState)
+                }
             }
         }
 
@@ -156,7 +173,7 @@ class StepDefs : En {
             }
         }
 
-        Given("([a-zA-Z0-9]+) bytes? of memory from position ([a-zA-Z0-9]+) is (empty|0x[a-zA-Z0-9]+)") { length: String, start: String, bytes: String ->
+        When("([a-zA-Z0-9]+) bytes? of memory from position ([a-zA-Z0-9]+) is (empty|0x[a-zA-Z0-9]+)") { length: String, start: String, bytes: String ->
             val expected =
                 if (bytes == "empty") Byte.Zero.repeat(toInt(length))
                 else toByteList(bytes)
@@ -245,9 +262,14 @@ class StepDefs : En {
             }
         }
 
-        Given("(0x[a-zA-Z0-9]+) is stored in memory at location (0x[a-zA-Z0-9]+)") { data: String, location: String ->
+        Given("(.*) is stored in memory at location (0x[a-zA-Z0-9]+)") { data: String, location: String ->
+            val bytes =
+                if (data == "some data" || data == "a word of data")
+                    "0x1234567890123456789012345678901234567890123456789012345678901234"
+                else data
+
             updateLastCallContext {
-                val newMemory = it.memory.write(toInt(location), toByteList(data))
+                val newMemory = it.memory.write(toInt(location), toByteList(bytes))
                 it.copy(memory = newMemory)
             }
         }
@@ -470,6 +492,12 @@ class StepDefs : En {
             }
         }
 
+        Then("(.*) gas is now used") { gas: String ->
+            checkResult {
+                assertThat(it.currentCallCtx.gasUsed).isEqualTo(toBigInteger(gas))
+            }
+        }
+
         When("the current call is:") { dataTable: DataTable ->
             val currentCallContext = executionContext.currentCallCtx
 
@@ -547,6 +575,16 @@ class StepDefs : En {
                     val code = listOf(opcode!!.code) + ctx.code
                     ctx.copy(code = code)
                 }
+            }
+        }
+
+        Then("account (.*) has a refund of (.*)") { ac: String, am: String ->
+            val account = Address(ac)
+            val amount = toBigInteger(am)
+
+            checkResult {
+                val refund: BigInteger = it.gasRefunds.getOrDefault(account, BigInteger.ZERO)
+                assertThat(refund).isEqualTo(amount)
             }
         }
     }
