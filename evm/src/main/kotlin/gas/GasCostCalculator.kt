@@ -47,17 +47,26 @@ class CallGasCostCalc {
 
         val extraFee = (GasCost.Call.cost + newAccountFee + transferFee).toBigInteger()
 
+        // TODO - gas cap is in the yellow paper but not in parity or ganache - look into this maybe an EIP defines different behvaiour
+        /*
         val callerGas = executionCtx.currentCallCtx.gas
         val gasCap =
-            if (callerGas > extraFee) BigIntMath.min(callerGas - extraFee, gas)
+            if (callerGas > extraFee) BigIntMath.min(allButOne64th(callerGas - extraFee), gas)
             else gas
+            */
+        val gasCap = gas
 
         val callGas =
-            if (value > BigInteger.ZERO) gasCap
-            else gasCap + GasCost.CallStipend.cost.toBigInteger()
+            if (value > BigInteger.ZERO) gasCap + GasCost.CallStipend.cost.toBigInteger()
+            else gasCap
 
         val callCost = gasCap + extraFee
-        
+
         return Pair(callCost, callGas)
     }
+
+    /**
+     * L(n) in the yellow papaer (298)
+     */
+    private fun allButOne64th(num: BigInteger) = num - num / BigInteger("64")
 }

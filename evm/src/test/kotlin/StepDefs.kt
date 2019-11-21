@@ -34,6 +34,20 @@ class StepDefs : En {
             }
         }
 
+        Given("the stack contains elements \\[([xA-Z0-9, ]+)\\]") { list: String ->
+            val elements = list.split(",")
+                .map { it.trim() }
+                .map { toByteList(it) }
+                .reversed()
+
+            updateLastCallContext {
+                val newStack = elements.fold(it.stack) { acc, e ->
+                    acc.push(e)
+                }
+                it.copy(stack = newStack)
+            }
+        }
+
         When("the next opcode in the context is executed") {
             executeContext()
         }
@@ -492,9 +506,13 @@ class StepDefs : En {
             }
         }
 
-        Then("(.*) gas is now used") { gas: String ->
+        Then("(.*) gas is now used(.*)") { gas: String, by: String ->
             checkResult {
-                assertThat(it.currentCallCtx.gasUsed).isEqualTo(toBigInteger(gas))
+                val ctx =
+                    if (by == " by the previous call context") it.callStack.takeLast(2).first()
+                    else it.currentCallCtx
+
+                assertThat(ctx.gasUsed).isEqualTo(toBigInteger(gas))
             }
         }
 
