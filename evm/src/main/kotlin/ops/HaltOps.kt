@@ -19,7 +19,8 @@ object HaltOps {
             .copy(
                 completed = newCallStack.isEmpty(),
                 callStack = newCallStack,
-                lastReturnData = emptyList()
+                lastReturnData = emptyList(),
+                gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
 
@@ -44,7 +45,8 @@ object HaltOps {
             .copy(
                 completed = newCallStack.isEmpty(),
                 callStack = newCallStack,
-                lastReturnData = returnData
+                lastReturnData = returnData,
+                gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
 
@@ -68,7 +70,8 @@ object HaltOps {
             callStack = callStack,
             completed = completed,
             lastReturnData = emptyList(),
-            lastCallError = error
+            lastCallError = error,
+            gasUsed = gasUsed + currentCallCtx.gas
         )
     }
 
@@ -99,7 +102,8 @@ object HaltOps {
             .copy(
                 callStack = callStack,
                 completed = completed,
-                lastReturnData = returnData
+                lastReturnData = returnData,
+                gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
 
@@ -133,7 +137,8 @@ object HaltOps {
                 completed = newCallStack.isEmpty(),
                 lastReturnData = emptyList(),
                 evmState = newEvmState,
-                callStack = newCallStack
+                callStack = newCallStack,
+                gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
 

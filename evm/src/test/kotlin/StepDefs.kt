@@ -332,6 +332,12 @@ class StepDefs : En {
             }
         }
 
+        Given("there is ([0-9xA-Za-z]*) gas used") { gas: String ->
+            updateLastCallContext {
+                it.copy(gasUsed = toBigInteger(gas))
+            }
+        }
+
         Given("contract code ends with (0x[a-zA-Z0-9]+)") { data: String ->
             updateLastCallContext {
                 val code = toByteList(data)
@@ -513,6 +519,12 @@ class StepDefs : En {
                     else it.currentCallCtx
 
                 assertThat(ctx.gasUsed).isEqualTo(toBigInteger(gas))
+            }
+        }
+
+        Then("the transaction has now used (.*) gas") { gas: String ->
+            checkResult {
+                assertThat(it.gasUsed).isEqualTo(toBigInteger(gas))
             }
         }
 
