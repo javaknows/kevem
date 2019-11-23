@@ -5,7 +5,7 @@ import com.gammadex.kevin.evm.model.ExecutionContext
 object StorageOps {
     fun sLoad(context: ExecutionContext): ExecutionContext = with(context) {
         val (word, newStack) = stack.popWord()
-        val index = word.toInt()
+        val index = word.toBigInt()
 
         val contractAddress = context.currentCallCtx.storageAddress ?: throw RuntimeException("can't determine contract address")
         val finalStack = newStack.pushWord(evmState.storageAt(contractAddress, index))
@@ -18,7 +18,7 @@ object StorageOps {
         val (a, v) = elements
 
         val contractAddress = context.currentCallCtx.storageAddress ?: throw RuntimeException("can't determine contract address")
-        val newEvmState = context.evmState.updateStorage(contractAddress, a.toInt(), v)
+        val newEvmState = context.evmState.updateStorage(contractAddress, a.toBigInt(), v)
 
         context.updateCurrentCallCtx(stack = newStack).copy(evmState = newEvmState)
     }

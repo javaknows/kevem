@@ -78,7 +78,7 @@ class BaseGasCostCalculator(
 
         val storageAddress = executionContext.currentCallCtx.storageAddress
             ?: throw RuntimeException("can't determine contract address")
-        val oldValue = executionContext.evmState.storageAt(storageAddress, location.toInt())
+        val oldValue = executionContext.evmState.storageAt(storageAddress, location)
 
         return if (value != BigInteger.ZERO && oldValue.toBigInt() == BigInteger.ZERO)
             GasCost.SSet.costBigInt

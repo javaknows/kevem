@@ -286,20 +286,20 @@ class StepDefs : En {
                 ctx.copy(
                     evmState = ctx.evmState.updateStorage(
                         Address(address),
-                        toInt(location),
+                        toBigInteger(location),
                         Word.coerceFrom(data)
                     )
                 )
             }
         }
 
-        Then("data in storage at location (\\d+) of (.*) is now (0x[a-zA-Z0-9]+)") { location: Int, contractAddress: String, data: String ->
+        Then("data in storage at location (.*) of (.*) is now (0x[a-zA-Z0-9]+)") { location: String, contractAddress: String, data: String ->
             checkResult {
                 val address =
                     if (contractAddress == "current contract") it.currentCallCtx.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
-                assertThat(it.evmState.storageAt(Address(address), location)).isEqualTo(Word.coerceFrom(data))
+                assertThat(it.evmState.storageAt(Address(address), toBigInteger(location))).isEqualTo(Word.coerceFrom(data))
             }
         }
 

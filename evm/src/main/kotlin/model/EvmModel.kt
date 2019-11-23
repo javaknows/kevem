@@ -133,28 +133,28 @@ open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = S
         Contract(code ?: this.code, storage ?: this.storage)
 }
 
-data class AddressLocation(
+data class Account(
     val address: Address,
     val balance: BigInteger = BigInteger.ZERO,
-    val contract: Contract? = null
+    val contract: Contract? = null,
+    val nonce: BigInteger = BigInteger.ZERO
 )
 
-class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()) {
+class EvmState(private val addresses: Map<Address, Account> = emptyMap()) {
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
 
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
 
-    // TODO - index should be BigInteger
-    fun storageAt(address: Address, index: Int): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
+    fun storageAt(address: Address, index: BigInteger): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
 
     fun balanceAndContractAt(address: Address): Pair<BigInteger, Contract?> = Pair(
         balanceOf(address), contractAt(address)
     )
 
     fun updateBalance(address: Address, balance: BigInteger): EvmState {
-        val location = addresses[address]?.copy(balance = balance) ?: AddressLocation(
+        val location = addresses[address]?.copy(balance = balance) ?: Account(
             address,
             balance,
             null
@@ -162,8 +162,8 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
         return EvmState(addresses + Pair(address, location))
     }
 
-    fun updateStorage(address: Address, index: Int, value: Word): EvmState {
-        val account = addresses[address] ?: AddressLocation(address)
+    fun updateStorage(address: Address, index: BigInteger, value: Word): EvmState {
+        val account = addresses[address] ?: Account(address)
         val contract = account.contract ?: Contract()
 
         val newStorage = contract.storage.set(index, value)
@@ -174,7 +174,7 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     }
 
     fun updateContract(address: Address, contract: Contract): EvmState {
-        val location = addresses[address]?.copy(contract = contract) ?: AddressLocation(
+        val location = addresses[address]?.copy(contract = contract) ?: Account(
             address,
             BigInteger.ZERO,
             contract
@@ -183,7 +183,7 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
     }
 
     fun updateBalanceAndContract(address: Address, balance: BigInteger, contract: Contract): EvmState {
-        val location = addresses[address]?.copy(balance = balance) ?: AddressLocation(
+        val location = addresses[address]?.copy(balance = balance) ?: Account(
             address,
             balance,
             contract
@@ -227,13 +227,13 @@ class Memory(private val data: Map<Int, Byte> = emptyMap(), val maxIndex: Int? =
     private fun getMaxIndex(index: Int, length: Int) = max(maxIndex ?: 0, index + length)
 }
 
-class Storage(private val data: Map<Int, Word> = emptyMap()) {
-    operator fun get(index: Int): Word = data.getOrDefault(
+class Storage(private val data: Map<BigInteger, Word> = emptyMap()) {
+    operator fun get(index: BigInteger): Word = data.getOrDefault(
         index,
         Word.Zero
     )
 
-    fun set(index: Int, value: Word): Storage {
+    fun set(index: BigInteger, value: Word): Storage {
         val newData = data + (index to value)
 
         return Storage(newData)
