@@ -1,5 +1,7 @@
 package com.gammadex.kevin.evm.gas
 
+import java.math.BigInteger
+
 
 enum class Refund(val wei: Int) {
     SelfDestruct(24000),
@@ -21,10 +23,13 @@ enum class GasCost(val cost: Int) {
     High(10),
     ExtCode(700),
     Balance(400),
+    Sha3(30),
+    Sha3Word(6),
     SLoad(200),
     JumpDest(1),
     SSet(20000),
     SReset(5000),
+    SelfDestruct(5000),
     Create(32000),
     CodeDeposit(200),
     Call(700),
@@ -39,6 +44,8 @@ enum class GasCost(val cost: Int) {
     Copy(3),
     Log(375),
     LogData(8),
-    LogTopic(375),
+    LogTopic(375);
 
+    val costBigInt: BigInteger
+        get() = cost.toBigInteger()
 }

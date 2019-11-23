@@ -10,4 +10,4 @@ Feature: Gas costs for EXP operation
     Given 0xFF1 is pushed onto the stack
     And 0x1 is pushed onto the stack
     When opcode EXP is executed
-    Then 30 gas is now used
+    Then 110 gas is now used

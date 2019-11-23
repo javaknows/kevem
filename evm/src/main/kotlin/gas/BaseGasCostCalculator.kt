@@ -46,8 +46,6 @@ class BaseGasCostCalculator(
         }
     }
 
-    // TODO - use GasCost enum for all these magic numbers
-
     /**
      * 5000 + ((create_new_account) ? 25000 : 0)
      */
@@ -56,8 +54,8 @@ class BaseGasCostCalculator(
 
         val accountExists = executionContext.evmState.accountExists(address)
 
-        val newAccountCharge = if (accountExists) BigInteger.ZERO else BigInteger("25000")
-        return BigInteger("5000") + newAccountCharge
+        val newAccountCharge = if (accountExists) BigInteger.ZERO else GasCost.NewAccount.costBigInt
+        return GasCost.SelfDestruct.costBigInt + newAccountCharge
     }
 
     /**
@@ -83,9 +81,9 @@ class BaseGasCostCalculator(
         val oldValue = executionContext.evmState.storageAt(storageAddress, location.toInt())
 
         return if (value != BigInteger.ZERO && oldValue.toBigInt() == BigInteger.ZERO)
-            GasCost.SSet.cost.toBigInteger()
+            GasCost.SSet.costBigInt
         else
-            GasCost.SReset.cost.toBigInteger()
+            GasCost.SReset.costBigInt
     }
 
     /**
@@ -94,13 +92,13 @@ class BaseGasCostCalculator(
     private fun extCodeCopyCost(executionContext: ExecutionContext): BigInteger {
         val (_, _, _, size) = executionContext.currentCallCtx.stack.peekWords(4)
 
-        return BigInteger("700") + BigInteger("3") * numWordsRoundedUp(size.toBigInt())
+        return GasCost.ExtCode.costBigInt + GasCost.Copy.costBigInt * numWordsRoundedUp(size.toBigInt())
     }
 
     private fun dataCopyCost(executionContext: ExecutionContext): BigInteger {
         val (_, _, size) = executionContext.currentCallCtx.stack.peekWords(3)
 
-        return GasCost.Base.cost.toBigInteger() + GasCost.Copy.cost.toBigInteger() * numWordsRoundedUp(size.toBigInt())
+        return GasCost.Base.costBigInt + GasCost.Copy.costBigInt * numWordsRoundedUp(size.toBigInt())
     }
 
     /**
@@ -111,18 +109,18 @@ class BaseGasCostCalculator(
         val numBytes = BigIntMath.max(end.toBigInt() - start.toBigInt(), BigInteger.ZERO)
         val numWords = numWordsRoundedUp(numBytes)
 
-        return BigInteger("30") + BigInteger("6") * numWords
+        return GasCost.Sha3.costBigInt + GasCost.Sha3Word.costBigInt * numWords
     }
 
     /**
-     * (exp == 0) ? 10 : (10 + 10 * (1 + log256(exp)))
+     * (exp == 0) ? 10 : (10 + 50 * (1 + log256(exp)))
      */
     private fun expCost(executionContext: ExecutionContext): BigInteger {
         val elements = executionContext.currentCallCtx.stack.peekWords(2)
         val (_, exp) = elements.map { it.toBigInt() }
 
-        return if (exp == BigInteger.ZERO) BigInteger.TEN
-        else BigInteger.TEN + BigInteger.TEN * (BigInteger.ONE + logn(exp, BigInteger("256")))
+        return if (exp == BigInteger.ZERO) GasCost.Exp.costBigInt
+        else GasCost.Exp.costBigInt + GasCost.ExpByte.costBigInt * (BigInteger.ONE + logn(exp, BigInteger("256")))
     }
 
     private fun numWordsRoundedUp(numBytes: BigInteger) = BigIntMath.divRoundUp(numBytes, BigInteger("32"))
