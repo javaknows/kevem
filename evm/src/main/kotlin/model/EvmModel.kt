@@ -302,7 +302,8 @@ enum class ErrorCode {
     STACK_OVERFLOW,
     STATE_CHANGE_STATIC_CALL,
     INVALID_JUMP_DESTINATION,
-    INSUFFICIENT_FUNDS
+    INSUFFICIENT_FUNDS,
+    CONTRACT_EXISTS
 }
 
 data class EvmError(val code: ErrorCode, val message: String?) {

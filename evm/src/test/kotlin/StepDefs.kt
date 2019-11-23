@@ -116,6 +116,12 @@ class StepDefs : En {
             }
         }
 
+        Then("there is now no account with address (.*)") { address: String ->
+            checkResult {
+                assertThat(it.evmState.accountExists(Address(address))).isFalse()
+            }
+        }
+
         Given("an account with address (.*) exists") { address: String ->
             updateExecutionContext {
                 if (it.evmState.accountExists(Address(address))) it
@@ -299,7 +305,11 @@ class StepDefs : En {
                     if (contractAddress == "current contract") it.currentCallCtx.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
-                assertThat(it.evmState.storageAt(Address(address), toBigInteger(location))).isEqualTo(Word.coerceFrom(data))
+                assertThat(it.evmState.storageAt(Address(address), toBigInteger(location))).isEqualTo(
+                    Word.coerceFrom(
+                        data
+                    )
+                )
             }
         }
 

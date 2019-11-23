@@ -485,7 +485,7 @@ Feature: Single Opcode Execution
       | 0xD |
 
   Scenario: a contract is created and deployed with CREATE
-    Given the contract address is 0xEE
+    Given the current caller address is 0xEE
     And the account with address 0xEE has balance 0x9
     And 0x123456 is stored in memory at location 0x100
     And 0x3 is pushed onto the stack
@@ -493,12 +493,12 @@ Feature: Single Opcode Execution
     And 0x4 is pushed onto the stack
     When opcode CREATE is executed
     Then the balance of account 0xEE is now 5
-    And the balance of account 0x3f17f1962b36e491b30a40b2405849e597ba5fb5 is now 4
-    And the code at address 0x3f17f1962b36e491b30a40b2405849e597ba5fb5 is 0x123456
-    And the stack contains 0x3f17f1962b36e491b30a40b2405849e597ba5fb5
+    And the balance of account 0x6a8316d94e2c0992fc889454e231f704190e7a66 is now 4
+    And the code at address 0x6a8316d94e2c0992fc889454e231f704190e7a66 is 0x123456
+    And the stack contains 0x6a8316d94e2c0992fc889454e231f704190e7a66
 
   Scenario: a contract is created and deployed with CREATE2
-    Given the contract address is 0xEE
+    Given the current caller address is 0xEE
     And the account with address 0xEE has balance 0x9
     And 0x123456 is stored in memory at location 0x100
     And 0x3 is pushed onto the stack
@@ -507,9 +507,23 @@ Feature: Single Opcode Execution
     And 0x4 is pushed onto the stack
     When opcode CREATE2 is executed
     Then the balance of account 0xEE is now 5
-    And the balance of account 0xb42ef6d8789aa191d5c6f948a528f40153745664 is now 4
-    And the code at address 0xb42ef6d8789aa191d5c6f948a528f40153745664 is 0x123456
-    And the stack contains 0xb42ef6d8789aa191d5c6f948a528f40153745664
+    And the balance of account 0x262c6a65c625753e3e7ddf2cde88c4c6a68a54af is now 4
+    And the code at address 0x262c6a65c625753e3e7ddf2cde88c4c6a68a54af is 0x123456
+    And the stack contains 0x262c6a65c625753e3e7ddf2cde88c4c6a68a54af
+
+  Scenario: contract creation fails when sender doesn't have enough balance
+    Given the current caller address is 0xEE
+    And the account with address 0xEE has balance 0x3
+    And 0x123456 is stored in memory at location 0x100
+    And 0x3 is pushed onto the stack
+    And 0x100 is pushed onto the stack
+    And 0x1 is pushed onto the stack
+    And 0x4 is pushed onto the stack
+    When opcode CREATE2 is executed
+    Then the balance of account 0xEE is now 3
+    And there is now no account with address 0xdb5f240f1a0f0dde5420d6fdf3e7fdca02441426
+    Then the last error is now INSUFFICIENT_FUNDS with message "0x00000000000000000000000000000000000000ee has balance of 3 but attempted to send 0x0000000000000000000000000000000000000000000000000000000000000004"
+
 
   Scenario: Execution is halted with STOP in main contract
     Given the current call is:
