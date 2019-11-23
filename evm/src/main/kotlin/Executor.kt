@@ -6,7 +6,6 @@ import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.ops.*
 import java.math.BigInteger
 
-// TODO - ensure max stack depth won't be reached
 // TODO - don't accept certain operations depending on fork version configured
 
 class Executor(private val gasCostCalculator: GasCostCalculator) {

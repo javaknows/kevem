@@ -38,42 +38,44 @@ object CallOps {
             val nextCallerAddress =
                 currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
             val callerBalance = evmState.balanceOf(nextCallerAddress)
+
             if (callerBalance < value) {
-                TODO("handle case where contract doesn't have enough funds")
+                val message = "$nextCallerAddress has balance of $callerBalance but attempted to send $value"
+                HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
+            } else {
+                val (destBalance, _) = evmState.balanceAndContractAt(address)
+                val newEvmState = evmState
+                    .updateBalance(address, destBalance + value)
+
+                val startBalance = newEvmState.balanceOf(nextCallerAddress)
+                val newEvmState2 = newEvmState
+                    .updateBalance(nextCallerAddress, startBalance - value)
+
+                val (callData, newMemory) = memory.read(inLocation, inSize)
+                val newCall = CallContext(
+                    nextCallerAddress,
+                    callData,
+                    CallType.CALLCODE,
+                    value,
+                    evmState.codeAt(callArguments.address),
+                    context,
+                    gas,
+                    outLocation,
+                    outSize,
+                    contractAddress = currentCallCtx.contractAddress,
+                    storageAddress = currentCallCtx.storageAddress
+                )
+
+                val updatedCtx = updateCurrentCallCtx(
+                    stack = newStack,
+                    memory = newMemory
+                )
+
+                updatedCtx.copy(
+                    callStack = updatedCtx.callStack + newCall,
+                    evmState = newEvmState2
+                )
             }
-
-            val (destBalance, _) = evmState.balanceAndContractAt(address)
-            val newEvmState = evmState
-                .updateBalance(address, destBalance + value)
-
-            val startBalance = newEvmState.balanceOf(nextCallerAddress)
-            val newEvmState2 = newEvmState
-                .updateBalance(nextCallerAddress, startBalance - value)
-
-            val (callData, newMemory) = memory.read(inLocation, inSize)
-            val newCall = CallContext(
-                nextCallerAddress,
-                callData,
-                CallType.CALLCODE,
-                value,
-                evmState.codeAt(callArguments.address),
-                context,
-                gas,
-                outLocation,
-                outSize,
-                contractAddress = currentCallCtx.contractAddress,
-                storageAddress = currentCallCtx.storageAddress
-            )
-
-            val updatedCtx = updateCurrentCallCtx(
-                stack = newStack,
-                memory = newMemory
-            )
-
-            updatedCtx.copy(
-                callStack = updatedCtx.callStack + newCall,
-                evmState = newEvmState2
-            )
         }
     }
 
@@ -116,41 +118,43 @@ object CallOps {
                     currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
                 val callerBalance = evmState.balanceOf(nextCaller)
                 if (callerBalance < value) {
-                    TODO("handle case where contract doesn't have enough funds")
+                    val message = "$nextCaller has balance of $callerBalance but attempted to send $value"
+                    HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
+                } else {
+
+                    val (destBalance, destContract) = evmState.balanceAndContractAt(address)
+                    val newEvmState = evmState
+                        .updateBalance(address, destBalance + value)
+
+                    val startBalance = newEvmState.balanceOf(nextCaller)
+                    val newEvmState2 = newEvmState
+                        .updateBalance(nextCaller, startBalance - value)
+
+                    val (callData, newMemory) = memory.read(inLocation, inSize)
+                    val callContractCode = destContract?.code ?: emptyList()
+                    val newCall = CallContext(
+                        nextCaller,
+                        callData,
+                        callType,
+                        value,
+                        callContractCode,
+                        context,
+                        gas,
+                        outLocation,
+                        outSize,
+                        contractAddress = address,
+                        storageAddress = address
+                    )
+
+                    val updatedCtx = updateCurrentCallCtx(
+                        memory = newMemory
+                    )
+
+                    updatedCtx.copy(
+                        callStack = updatedCtx.callStack + newCall,
+                        evmState = newEvmState2
+                    )
                 }
-
-                val (destBalance, destContract) = evmState.balanceAndContractAt(address)
-                val newEvmState = evmState
-                    .updateBalance(address, destBalance + value)
-
-                val startBalance = newEvmState.balanceOf(nextCaller)
-                val newEvmState2 = newEvmState
-                    .updateBalance(nextCaller, startBalance - value)
-
-                val (callData, newMemory) = memory.read(inLocation, inSize)
-                val callContractCode = destContract?.code ?: emptyList()
-                val newCall = CallContext(
-                    nextCaller,
-                    callData,
-                    callType,
-                    value,
-                    callContractCode,
-                    context,
-                    gas,
-                    outLocation,
-                    outSize,
-                    contractAddress = address,
-                    storageAddress = address
-                )
-
-                val updatedCtx = updateCurrentCallCtx(
-                    memory = newMemory
-                )
-
-                updatedCtx.copy(
-                    callStack = updatedCtx.callStack + newCall,
-                    evmState = newEvmState2
-                )
             }
         }
 

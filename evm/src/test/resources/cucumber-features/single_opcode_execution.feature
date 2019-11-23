@@ -57,6 +57,30 @@ Feature: Single Opcode Execution
       | CALLCODE   |
       | STATICCALL |
 
+  Scenario Outline: Call fails if caller doesn't have enough balance - <callType>
+    Given the stack contains elements [0x1, 0xADD7E55, 0x100, 0x0, 0x0, 0x0, 0x0]
+    And the contract address is 0xC0476AC7
+    And the account with address 0xC0476AC7 has balance 0x99
+    When opcode <callType> is executed
+    Then the last error is now INSUFFICIENT_FUNDS with message "0x00000000000000000000000000000000c0476ac7 has balance of 153 but attempted to send 256"
+
+    Examples:
+      | callType |
+      | CALL     |
+      | CALLCODE |
+
+  Scenario Outline: Call succeeds when caller has enough balance - <callType>
+    Given the stack contains elements [0x1, 0xADD7E55, 0x100, 0x0, 0x0, 0x0, 0x0]
+    And the contract address is 0xC0476AC7
+    And the account with address 0xC0476AC7 has balance 0x100
+    When opcode <callType> is executed
+    Then there is no last error
+
+    Examples:
+      | callType |
+      | CALL     |
+      | CALLCODE |
+
   Scenario: Current call value is returned by CALLVALUE
     Given the current call value is 0x1111
     When opcode CALLVALUE is executed
