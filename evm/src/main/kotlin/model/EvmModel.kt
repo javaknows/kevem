@@ -292,12 +292,12 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     fun size() = backing.size
 }
 
-// TODO - align errors and error codes consistent with geth / eth / ganahche
 enum class ErrorCode {
     None,
     INVALID_INSTRUCTION,
     OUT_OF_GAS,
-    STACK_DEPTH,
+    STACK_UNDERFLOW,
+    STACK_OVERFLOW,
     STATE_CHANGE_STATIC_CALL,
     INVALID_JUMP_DESTINATION,
     INSUFFICIENT_FUNDS

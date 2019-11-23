@@ -26,7 +26,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                     executionCtx, EvmError(ErrorCode.INVALID_INSTRUCTION, "Invalid instruction: $byteCode")
                 )
                 isStackUnderflow(opcode, currentCallCtx) -> HaltOps.fail(
-                    executionCtx, EvmError(ErrorCode.STACK_DEPTH, "Stack not deep enough for $opcode")
+                    executionCtx, EvmError(ErrorCode.STACK_UNDERFLOW, "Stack not deep enough for $opcode")
                 )
                 isModifyInStaticCall(opcode, executionCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "$opcode not allowed in static call")
@@ -57,7 +57,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
     private fun isModifyInStaticCall(opcode: Opcode?, executionCtx: ExecutionContext): Boolean = when {
         executionCtx.currentCallCtx.type != CallType.STATICCALL -> false
         opcode == Opcode.CALL && executionCtx.currentCallCtx.stack.peekWord(2).toBigInt() > BigInteger.ZERO -> true
-        else -> ! Opcode.isAllowedInStatic(opcode)
+        else -> !Opcode.isAllowedInStatic(opcode)
     }
 
     private fun isStackUnderflow(opcode: Opcode?, callCtx: CallContext) =
@@ -337,8 +337,14 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
             }
         }
 
-        return incrementLocation(updatedContext, opcode)
+        return if (isStackOverflow(updatedContext))
+            HaltOps.fail(updatedContext, EvmError(ErrorCode.STACK_OVERFLOW, "Stack overflow"))
+        else
+            incrementLocation(updatedContext, opcode)
     }
+
+    private fun isStackOverflow(executionCtx: ExecutionContext) =
+        executionCtx.callStack.isNotEmpty() && executionCtx.currentCallCtx.stack.size() > 1024
 
     private fun incrementLocation(executionCtx: ExecutionContext, opcode: Opcode?): ExecutionContext =
         when {

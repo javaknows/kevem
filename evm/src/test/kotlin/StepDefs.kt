@@ -48,6 +48,17 @@ class StepDefs : En {
             }
         }
 
+        Given("the stack contains ([0-9]+) elements") { num: Int ->
+            val elements = Byte.Zero.repeat(num)
+
+            updateLastCallContext {
+                val newStack = elements.fold(it.stack) { acc, e ->
+                    acc.push(listOf(e))
+                }
+                it.copy(stack = newStack)
+            }
+        }
+
         When("the next opcode in the context is executed") {
             executeContext()
         }

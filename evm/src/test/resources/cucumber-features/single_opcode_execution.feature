@@ -624,7 +624,12 @@ Feature: Single Opcode Execution
   Scenario: fail when not enough elements on the stack
     Given 0x5 is pushed onto the stack
     When opcode ADD is executed
-    Then the last error is now STACK_DEPTH with message "Stack not deep enough for ADD"
+    Then the last error is now STACK_UNDERFLOW with message "Stack not deep enough for ADD"
+
+  Scenario: fail when over 1024 elements on stack
+    Given the stack contains 1024 elements
+    When opcode DUP1 is executed
+    Then the last error is now STACK_OVERFLOW with message "Stack overflow"
 
   Scenario Outline: Can call any of the read-only opcodes in static context <opcode>
     Given the current call type is STATICCALL
