@@ -7,7 +7,7 @@ object StorageOps {
         val (word, newStack) = stack.popWord()
         val index = word.toInt()
 
-        val contractAddress = context.currentCallContext.storageAddress ?: throw RuntimeException("can't determine contract address")
+        val contractAddress = context.currentCallCtx.storageAddress ?: throw RuntimeException("can't determine contract address")
         val finalStack = newStack.pushWord(evmState.storageAt(contractAddress, index))
 
         context.updateCurrentCallCtx(stack = finalStack)
@@ -17,7 +17,7 @@ object StorageOps {
         val (elements, newStack) = stack.popWords(2)
         val (a, v) = elements
 
-        val contractAddress = context.currentCallContext.storageAddress ?: throw RuntimeException("can't determine contract address")
+        val contractAddress = context.currentCallCtx.storageAddress ?: throw RuntimeException("can't determine contract address")
         val newEvmState = context.evmState.updateStorage(contractAddress, a.toInt(), v)
 
         context.updateCurrentCallCtx(stack = newStack).copy(evmState = newEvmState)

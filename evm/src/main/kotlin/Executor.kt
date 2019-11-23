@@ -1,5 +1,6 @@
 package com.gammadex.kevin.evm
 
+import com.gammadex.kevin.evm.gas.GasCostCalculator
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.ops.*
@@ -9,7 +10,7 @@ import com.gammadex.kevin.evm.ops.*
 // TODO - ensure max stack depth won't be reached
 // TODO - don't accept certain operations depending on fork version configured
 
-class Executor {
+class Executor(private val gasCostCalculator: GasCostCalculator) {
     tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
         if (executionCtx.completed) executionCtx
         else executeAll(executeNextOpcode(executionCtx))
@@ -18,19 +19,40 @@ class Executor {
         if (isEndOfContract(currentCallContextOrNull))
             HaltOps.stop(executionCtx)
         else {
-            val byteCode = currentCallContext.code[currentLocation]
+            val byteCode = currentCallCtx.code[currentLocation]
             val opcode = Opcode.byCode[byteCode]
 
             when {
-                isStackUnderflow(opcode, currentCallContext) -> HaltOps.fail(
+                opcode == null -> HaltOps.fail(
+                    executionCtx, EvmError(ErrorCode.INVALID_INSTRUCTION, "Invalid instruction: $byteCode")
+                )
+                isStackUnderflow(opcode, currentCallCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STACK_DEPTH, "Stack not deep enough for $opcode")
                 )
-                isModifyInStaticCall(opcode, currentCallContext) -> HaltOps.fail(
+                isModifyInStaticCall(opcode, currentCallCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "$opcode not allowed in static call")
                 )
-                else -> processOpcode(executionCtx, opcode, byteCode)
+                else -> consumeGasAndProcessOpcode(opcode, executionCtx)
             }
         }
+    }
+
+    private fun consumeGasAndProcessOpcode(opcode: Opcode, executionCtx: ExecutionContext): ExecutionContext {
+        val (isOutOfGas, updatedExecutionCtx) = consumeGas(opcode, executionCtx)
+        return if (isOutOfGas) HaltOps.fail(
+            updatedExecutionCtx, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas")
+        ) else processOpcode(updatedExecutionCtx, opcode)
+    }
+
+    private fun consumeGas(opcode: Opcode, executionCtx: ExecutionContext): Pair<Boolean, ExecutionContext> {
+        val cost = gasCostCalculator.calculateCost(opcode, executionCtx)
+        val isOutOfGas = cost > executionCtx.currentCallCtx.gasRemaining
+
+        val newCtx = executionCtx.updateCurrentCallCtx(
+            gasUsed = executionCtx.currentCallCtx.gasUsed + cost
+        )
+
+        return Pair(isOutOfGas, newCtx)
     }
 
     private fun isModifyInStaticCall(opcode: Opcode?, currentCallCtx: CallContext) =
@@ -42,7 +64,7 @@ class Executor {
     private fun isEndOfContract(callCtx: CallContext?) =
         callCtx != null && callCtx.currentLocation !in callCtx.code.indices
 
-    private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode?, byteCode: Byte): ExecutionContext {
+    private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode): ExecutionContext {
         val updatedContext = with(currentContext) {
             when (opcode) {
                 Opcode.STOP -> HaltOps.stop(currentContext)
@@ -71,9 +93,13 @@ class Executor {
                 Opcode.SHL -> biStackOp(currentContext, VmMath::shl)
                 Opcode.SHR -> biStackOp(currentContext, VmMath::shr)
                 Opcode.SAR -> biStackOp(currentContext, VmMath::sar)
-                Opcode.SHA3 -> biStackOp(currentContext) { a, b ->
-                    val bytes = memory.get(a.toInt(), b.toInt())
-                    keccak256(bytes)
+                Opcode.SHA3 -> {
+                    val (elements, newStack) = stack.popWords(2)
+                    val (a, b) = elements.map { it.toInt() }
+                    val (bytes, newMemory) = memory.read(a, b)
+                    val finalStack = newStack.pushWord(keccak256(bytes))
+
+                    currentContext.updateCurrentCallCtx(stack = finalStack, memory = newMemory)
                 }
                 Opcode.ADDRESS -> {
                     val call = callStack.last()
@@ -94,13 +120,13 @@ class Executor {
                     val newStack = stack.pushWord(Word.coerceFrom(currentTransaction.origin.value))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.CALLER -> {
+                Opcode.CALLER -> { // TODO - just use caller
                     val call = callStack.last { it.type != CallType.DELEGATECALL }
                     val newStack = stack.pushWord(call.caller.toWord())
 
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.CALLVALUE -> {
+                Opcode.CALLVALUE -> { // TODO - just use callvalue
                     val call = callStack.last { it.type != CallType.DELEGATECALL }
                     val newStack = stack.pushWord(Word.coerceFrom(call.value))
 
@@ -126,12 +152,12 @@ class Executor {
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.CALLDATACOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
-                    val data = call.callData.subList(from, from + size)
-                    val newMemory = memory.set(to, data)
+                    val data = call.callData.drop(from).take(size)
+                    val paddedData = data + Byte.Zero.repeat(size - data.size)
+                    val newMemory = memory.write(to, paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -141,12 +167,12 @@ class Executor {
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.CODECOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
                     val call = callStack.last()
-                    val data = call.code.subList(from, from + size)
-                    val newMemory = memory.set(to, data)
+                    val data = call.code.drop(from).take(size)
+                    val paddedData = data + Byte.Zero.repeat(size - data.size)
+                    val newMemory = memory.write(to, paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -162,13 +188,13 @@ class Executor {
                     currentContext.updateCurrentCallCtx(stack = finalStack)
                 }
                 Opcode.EXTCODECOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(4)
                     val (address, to, from, size) = elements
 
                     val code = evmState.codeAt(address.toAddress())
-                    val data = code.subList(from.toInt(), from.toInt() + size.toInt())
-                    val newMemory = memory.set(to.toInt(), data)
+                    val data = code.drop(from.toInt()).take(size.toInt())
+                    val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
+                    val newMemory = memory.write(to.toInt(), paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -177,11 +203,11 @@ class Executor {
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.RETURNDATACOPY -> {
-                    // TODO - how should it handle out of range ?
                     val (elements, newStack) = stack.popWords(3)
                     val (to, from, size) = elements.map { it.toInt() }
-                    val data = lastReturnData.subList(from, from + size)
-                    val newMemory = memory.set(to, data)
+                    val data = lastReturnData.drop(from).take(size)
+                    val paddedData = data + Byte.Zero.repeat(size - data.size)
+                    val newMemory = memory.write(to, paddedData)
 
                     currentContext.updateCurrentCallCtx(stack = newStack, memory = newMemory)
                 }
@@ -223,7 +249,7 @@ class Executor {
                 }
                 Opcode.MSIZE -> MemoryOps.msize(currentContext)
                 Opcode.GAS -> {
-                    val newStack = stack.pushWord(Word.coerceFrom(currentCallContext.gasRemaining))
+                    val newStack = stack.pushWord(Word.coerceFrom(currentCallCtx.gasRemaining))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
                 Opcode.JUMPDEST -> JumpOps.jumpDest(currentContext)
@@ -306,7 +332,6 @@ class Executor {
                 Opcode.REVERT -> HaltOps.revert(currentContext)
                 Opcode.INVALID -> HaltOps.invalid(currentContext)
                 Opcode.SUICIDE -> HaltOps.suicide(currentContext)
-                else -> HaltOps.invalid(currentContext, "Invalid instruction - unknown opcode $byteCode")
             }
         }
 

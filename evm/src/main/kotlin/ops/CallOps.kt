@@ -4,7 +4,7 @@ import com.gammadex.kevin.evm.lang.*
 import com.gammadex.kevin.evm.model.*
 import java.math.BigInteger
 
-private data class CallArguments(
+data class CallArguments(
     val gas: BigInteger,
     val address: Address,
     val inLocation: Int,
@@ -16,7 +16,7 @@ private data class CallArguments(
 
 object CallOps {
     fun call(context: ExecutionContext): ExecutionContext = with(context) {
-        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
+        val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = true)
 
         val newCtx = updateCurrentCallCtx(stack = newStack)
 
@@ -24,7 +24,7 @@ object CallOps {
     }
 
     fun staticCall(context: ExecutionContext): ExecutionContext = with(context) {
-        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = false)
+        val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = false)
 
         val newCtx = updateCurrentCallCtx(stack = newStack)
 
@@ -32,17 +32,14 @@ object CallOps {
     }
 
     fun callCode(context: ExecutionContext): ExecutionContext = with(context) {
-        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = true)
+        val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = true)
 
         with(callArguments) {
-            val nextCallerAddress = currentCallContext.contractAddress ?: throw RuntimeException("can't determine contract address")
+            val nextCallerAddress =
+                currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
             val callerBalance = evmState.balanceOf(nextCallerAddress)
             if (callerBalance < value) {
                 TODO("handle case where contract doesn't have enough funds")
-            }
-
-            if (currentCallContext.gasRemaining < gas) {
-                TODO("handle case where not enugh gas remaining")
             }
 
             val (destBalance, _) = evmState.balanceAndContractAt(address)
@@ -53,9 +50,10 @@ object CallOps {
             val newEvmState2 = newEvmState
                 .updateBalance(nextCallerAddress, startBalance - value)
 
+            val (callData, newMemory) = memory.read(inLocation, inSize)
             val newCall = CallContext(
                 nextCallerAddress,
-                memory.get(inLocation, inSize),
+                callData,
                 CallType.CALLCODE,
                 value,
                 evmState.codeAt(callArguments.address),
@@ -63,13 +61,13 @@ object CallOps {
                 gas,
                 outLocation,
                 outSize,
-                contractAddress = currentCallContext.contractAddress,
-                storageAddress = currentCallContext.storageAddress
+                contractAddress = currentCallCtx.contractAddress,
+                storageAddress = currentCallCtx.storageAddress
             )
 
             val updatedCtx = updateCurrentCallCtx(
                 stack = newStack,
-                gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
+                memory = newMemory
             )
 
             updatedCtx.copy(
@@ -80,32 +78,29 @@ object CallOps {
     }
 
     fun delegateCall(context: ExecutionContext): ExecutionContext = with(context) {
-        val (callArguments, newStack) = popCallArgsFromStack(context, withValue = false)
+        val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = false)
 
         with(callArguments) {
-            if (currentCallContext.gasRemaining < gas) {
-                TODO("handle case where not enugh gas remaining")
-            }
-
             val code = evmState.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
 
+            val (callData, newMemory) = memory.read(inLocation, inSize)
             val newCall = CallContext(
-                currentCallContext.caller,
-                memory.get(inLocation, inSize),
+                currentCallCtx.caller,
+                callData,
                 CallType.DELEGATECALL,
-                currentCallContext.value,
+                currentCallCtx.value,
                 code,
                 context,
                 gas,
                 outLocation,
                 outSize,
                 contractAddress = callArguments.address,
-                storageAddress = currentCallContext.storageAddress
+                storageAddress = currentCallCtx.storageAddress
             )
 
             val updatedCtx = updateCurrentCallCtx(
                 stack = newStack,
-                gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
+                memory = newMemory
             )
 
             updatedCtx.copy(
@@ -117,14 +112,11 @@ object CallOps {
     private fun doCall(context: ExecutionContext, args: CallArguments, callType: CallType): ExecutionContext =
         with(context) {
             with(args) {
-                val nextCaller = currentCallContext.contractAddress  ?: throw RuntimeException("can't determine contract address")
+                val nextCaller =
+                    currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
                 val callerBalance = evmState.balanceOf(nextCaller)
                 if (callerBalance < value) {
                     TODO("handle case where contract doesn't have enough funds")
-                }
-
-                if (currentCallContext.gasRemaining < gas) {
-                    TODO("handle case where not enugh gas remaining")
                 }
 
                 val (destBalance, destContract) = evmState.balanceAndContractAt(address)
@@ -135,10 +127,11 @@ object CallOps {
                 val newEvmState2 = newEvmState
                     .updateBalance(nextCaller, startBalance - value)
 
+                val (callData, newMemory) = memory.read(inLocation, inSize)
                 val callContractCode = destContract?.code ?: emptyList()
                 val newCall = CallContext(
                     nextCaller,
-                    memory.get(inLocation, inSize),
+                    callData,
                     callType,
                     value,
                     callContractCode,
@@ -151,7 +144,7 @@ object CallOps {
                 )
 
                 val updatedCtx = updateCurrentCallCtx(
-                    gasRemaining = currentCallContext.gasRemaining - gas // TODO should only subtract gas used
+                    memory = newMemory
                 )
 
                 updatedCtx.copy(
@@ -161,17 +154,34 @@ object CallOps {
             }
         }
 
-    private fun popCallArgsFromStack(context: ExecutionContext, withValue: Boolean): Pair<CallArguments, Stack> {
+    fun popCallArgsFromStack(stack: Stack, withValue: Boolean): Pair<CallArguments, Stack> {
         val (elements, newStack) = if (withValue) {
-            context.stack.popWords(7)
+            stack.popWords(7)
         } else {
-            val (elements, newStack) = context.stack.popWords(6)
+            val (elements, newStack) = stack.popWords(6)
             val splicedElements = elements.take(2) + Word.Zero + elements.takeLast(4)
             Pair(splicedElements, newStack)
         }
+        val callArguments = callArguments(elements)
+
+        return Pair(callArguments, newStack)
+    }
+
+    fun peekCallArgsFromStack(stack: Stack, withValue: Boolean): CallArguments {
+        val elements = if (withValue) {
+            stack.peekWords(7)
+        } else {
+            val elements = stack.peekWords(6)
+            elements.take(2) + Word.Zero + elements.takeLast(4)
+        }
+
+        return callArguments(elements)
+    }
+
+    private fun callArguments(elements: List<Word>): CallArguments {
         val (g, a, value, inLocation, inSize, outLocation, outSize) = elements
 
-        val callArguments = CallArguments(
+        return CallArguments(
             g.toBigInt(),
             a.toAddress(),
             inLocation.toInt(),
@@ -180,8 +190,6 @@ object CallOps {
             outSize.toInt(),
             value.toBigInt()
         )
-
-        return Pair(callArguments, newStack)
     }
 }
 

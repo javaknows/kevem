@@ -3,6 +3,7 @@ package com.gammadex.kevin.evm.model
 import com.gammadex.kevin.evm.*
 import java.math.BigInteger
 import java.time.Clock
+import kotlin.math.max
 
 data class Byte(val value: Int) {
     constructor(v: String) : this(Integer.parseInt(stripHexPrefix(v), 16))
@@ -132,7 +133,11 @@ open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = S
         Contract(code ?: this.code, storage ?: this.storage)
 }
 
-data class AddressLocation(val address: Address, val balance: BigInteger = BigInteger.ZERO, val contract: Contract? = null)
+data class AddressLocation(
+    val address: Address,
+    val balance: BigInteger = BigInteger.ZERO,
+    val contract: Contract? = null
+)
 
 class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()) {
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
@@ -141,6 +146,7 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
 
+    // TODO - index should be BigInteger
     fun storageAt(address: Address, index: Int): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
 
     fun balanceAndContractAt(address: Address): Pair<BigInteger, Contract?> = Pair(
@@ -184,24 +190,41 @@ class EvmState(private val addresses: Map<Address, AddressLocation> = emptyMap()
         )
         return EvmState(addresses + Pair(address, location))
     }
+
+    fun accountExists(address: Address) = address in addresses.keys
+
+    fun removeAccount(address: Address) = EvmState(addresses - address)
 }
 
-class Memory(private val data: Map<Int, Byte> = emptyMap()) {
-    operator fun get(index: Int): Byte = data.getOrDefault(
+// TODO - indexes/lengths should be BigInteger
+class Memory(private val data: Map<Int, Byte> = emptyMap(), val maxIndex: Int? = null) {
+    fun peek(index: Int): Byte = data.getOrDefault(
         index,
         Byte.Zero
     )
 
-    fun get(index: Int, length: Int): List<Byte> = index.until(index + length).map { this[it] }
+    fun peek(index: Int, length: Int): List<Byte> = index.until(index + length).map { peek(it) }
 
-    fun set(index: Int, values: List<Byte>): Memory {
-        val to = (index + values.size).coerceAtLeast(0)
-        val memory = data + (index.until(to) zip values).toMap()
+    fun read(index: Int, length: Int): Pair<List<Byte>, Memory> =
+        if (length == 0) Pair(emptyList(), this)
+        else {
+            val max = getMaxIndex(index, length)
+            val mem = peek(index, length)
 
-        return Memory(memory)
-    }
+            Pair(mem, Memory(data, max))
+        }
 
-    fun maxIndex() = data.keys.max()
+    fun write(index: Int, values: List<Byte>): Memory =
+        if (values.isEmpty()) this
+        else {
+            val to = (index + values.size).coerceAtLeast(0)
+            val memory = data + (index.until(to) zip values).toMap()
+            val max = getMaxIndex(index, values.size)
+
+            Memory(memory, max)
+        }
+
+    private fun getMaxIndex(index: Int, length: Int) = max(maxIndex ?: 0, index + length)
 }
 
 class Storage(private val data: Map<Int, Word> = emptyMap()) {
@@ -252,6 +275,10 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
 
     fun peek(num: Int): List<Byte> = backing.reversed()[num]
 
+    fun peekWords(num: Int): List<Word> = backing.takeLast(num)
+        .map { Word.coerceFrom(it) }
+        .reversed()
+
     fun peekWord(num: Int = 0) = Word.coerceFrom(peek(num))
 
     fun set(index: Int, data: List<Byte>): Stack {
@@ -272,7 +299,8 @@ enum class ErrorCode {
     OUT_OF_GAS,
     STACK_DEPTH,
     STATE_CHANGE_STATIC_CALL,
-    INVALID_JUMP_DESTINATION
+    INVALID_JUMP_DESTINATION,
+    INSUFFICIENT_FUNDS
 }
 
 data class EvmError(val code: ErrorCode, val message: String?) {
@@ -290,15 +318,19 @@ data class CallContext(
     val value: BigInteger,
     val code: List<Byte>,
     val callingContext: ExecutionContext? = null,
-    val gasRemaining: BigInteger = BigInteger.ZERO,
+    val gas: BigInteger = BigInteger.ZERO,
     val returnLocation: Int = 0,
     val returnSize: Int = 0,
     val stack: Stack = Stack(),
     val memory: Memory = Memory(),
     val currentLocation: Int = 0,
     val storageAddress: Address? = null,
-    val contractAddress: Address? = null
-)
+    val contractAddress: Address? = null,
+    val gasUsed: BigInteger = BigInteger.ZERO
+) {
+    val gasRemaining: BigInteger
+        get() = gas - gasUsed
+}
 
 data class Block(
     val number: BigInteger,
@@ -325,38 +357,42 @@ data class ExecutionContext(
     val logs: List<Log> = emptyList(),
     val completed: Boolean = false,
     val lastReturnData: List<Byte> = emptyList(),
-    val clock: Clock = Clock.systemUTC(),
+    val clock: Clock = Clock.systemUTC(), // TODO - fixed value
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val addressGenerator: AddressGenerator = DefaultAddressGenerator(), // TODO - make a dependency rather than in ctx
-    val lastCallError: EvmError = EvmError.None
+    val lastCallError: EvmError = EvmError.None,
+    val gasRefunds: Map<Address, BigInteger> = emptyMap(),
+    val suicidedAccounts: List<Address> = emptyList(), // TODO - implement me
+    val gasUsed: BigInteger = BigInteger.ZERO
 ) {
-    val currentCallContext: CallContext
+    val currentCallCtx: CallContext
         get() = callStack.last()
 
     val currentCallContextOrNull: CallContext?
         get() = callStack.lastOrNull()
 
     val stack: Stack
-        get() = currentCallContext.stack
+        get() = currentCallCtx.stack
 
     val memory: Memory
-        get() = currentCallContext.memory
+        get() = currentCallCtx.memory
 
     val currentLocation: Int
-        get() = currentCallContext.currentLocation
+        get() = currentCallCtx.currentLocation
 
+    // TODO - replace with updateCurrentCallCtxIfPresent
     fun updateCurrentCallCtx(
         stack: Stack? = null,
         memory: Memory? = null,
         currentLocation: Int? = null,
-        gasRemaining: BigInteger? = null
+        gasUsed: BigInteger? = null
     ): ExecutionContext {
-        val call = currentCallContext
-        val newCall = currentCallContext.copy(
+        val call = currentCallCtx
+        val newCall = currentCallCtx.copy(
             stack = stack ?: call.stack,
             memory = memory ?: call.memory,
             currentLocation = currentLocation ?: call.currentLocation,
-            gasRemaining = gasRemaining ?: call.gasRemaining
+            gasUsed = gasUsed ?: call.gasUsed
         )
 
         return replaceCurrentCallCtx(newCall)
@@ -382,4 +418,12 @@ data class ExecutionContext(
             val newCallStack = callStack.dropLast(2) + newCall + callStack.last()
             copy(callStack = newCallStack)
         } else this
+
+    fun refund(address: Address, value: BigInteger): ExecutionContext {
+        val totalRefund = gasRefunds.getOrDefault(address, BigInteger.ZERO) + value
+
+        return copy(
+            gasRefunds = gasRefunds + Pair(address, totalRefund)
+        )
+    }
 }

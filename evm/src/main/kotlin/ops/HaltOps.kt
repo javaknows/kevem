@@ -6,36 +6,48 @@ import java.math.BigInteger
 
 object HaltOps {
     fun stop(context: ExecutionContext): ExecutionContext = with(context) {
+        val caller = currentCallCtx.caller
+        val refund = currentCallCtx.gasRemaining
+
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)
             ctx.copy(stack = newStack)
         }
 
-        return context.copy(
-            completed = newCallStack.isEmpty(),
-            callStack = newCallStack,
-            lastReturnData = emptyList()
-        )
+        return context
+            .refund(caller, refund)
+            .copy(
+                completed = newCallStack.isEmpty(),
+                callStack = newCallStack,
+                lastReturnData = emptyList(),
+                gasUsed = gasUsed + currentCallCtx.gasUsed
+            )
     }
 
     fun doReturn(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, _) = context.stack.popWords(2)
         val (dataLocation, dataSize) = elements.map { it.toInt() }
-        val returnData = memory.get(dataLocation, dataSize)
+        val (returnData, newMemory) = memory.read(dataLocation, dataSize)
+
+        val caller = currentCallCtx.caller
+        val refund = currentCallCtx.gasRemaining
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, oldCtx ->
             val data = coerceByteListToSize(returnData, oldCtx.returnSize)
-            val newMemory = ctx.memory.set(oldCtx.returnLocation, data)
+            val newMemory = ctx.memory.write(oldCtx.returnLocation, data)
             val newStack = ctx.stack.pushWord(Word.One)
 
             ctx.copy(memory = newMemory, stack = newStack)
         }
 
-        return context.copy(
-            completed = newCallStack.isEmpty(),
-            callStack = newCallStack,
-            lastReturnData = returnData
-        )
+        return context
+            .refund(caller, refund)
+            .copy(
+                completed = newCallStack.isEmpty(),
+                callStack = newCallStack,
+                lastReturnData = returnData,
+                gasUsed = gasUsed + currentCallCtx.gasUsed
+            )
     }
 
     fun invalid(context: ExecutionContext, message: String? = null): ExecutionContext {
@@ -44,7 +56,7 @@ object HaltOps {
     }
 
     fun fail(context: ExecutionContext, error: EvmError): ExecutionContext = with(context) {
-        val callingContext = currentCallContext.callingContext ?: context.copy(
+        val callingContext = currentCallCtx.callingContext ?: context.copy(
             callStack = context.callStack.dropLast(1)
         )
         val completed = context.callStack.size == 1
@@ -58,47 +70,59 @@ object HaltOps {
             callStack = callStack,
             completed = completed,
             lastReturnData = emptyList(),
-            lastCallError = error
+            lastCallError = error,
+            gasUsed = gasUsed + currentCallCtx.gas
         )
     }
 
     fun revert(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, _) = context.stack.popWords(2)
         val (outMemLocation, outSize) = elements.map { it.toInt() }
-        val returnData = memory.get(outMemLocation, outSize)
+        val (returnData, newMemory) = memory.read(outMemLocation, outSize)
 
-        val oldCtx = currentCallContext
-        val callingContext = currentCallContext.callingContext ?: context.copy(
+        val oldCtx = currentCallCtx
+        val callingContext = currentCallCtx.callingContext ?: context.copy(
             callStack = context.callStack.dropLast(1)
         )
         val completed = context.callStack.size == 1
 
+        val caller = currentCallCtx.caller
+        val refund = currentCallCtx.gasRemaining
+
         val callStack = updateLastCallCtxIfPresent(callingContext.callStack) { ctx ->
             val data = coerceByteListToSize(returnData, oldCtx.returnSize)
-            val newMemory = ctx.memory.set(oldCtx.returnLocation, data)
+            val newMemory = ctx.memory.write(oldCtx.returnLocation, data)
             val newStack = ctx.stack.pushWord(Word.Zero)
 
             ctx.copy(memory = newMemory, stack = newStack)
         }
 
-        return callingContext.copy(
-            callStack = callStack,
-            completed = completed,
-            lastReturnData = returnData
-        )
+        return callingContext
+            .refund(caller, refund)
+            .copy(
+                callStack = callStack,
+                completed = completed,
+                lastReturnData = returnData,
+                gasUsed = gasUsed + currentCallCtx.gasUsed
+            )
     }
 
     fun suicide(context: ExecutionContext): ExecutionContext = with(context) {
         val (a, _) = context.stack.popWord()
         val sendFundsToAddress = a.toAddress()
 
+        val caller = currentCallCtx.caller
+        val refund = currentCallCtx.gasRemaining
+
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)
             ctx.copy(stack = newStack)
         }
 
-        val contractAddress = currentCallContext.contractAddress  ?: throw RuntimeException("can't determine contract address")
-        val contract = evmState.contractAt(contractAddress) ?: throw RuntimeException("can't determine current contract")
+        val contractAddress =
+            currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
+        val contract =
+            evmState.contractAt(contractAddress) ?: throw RuntimeException("can't determine current contract")
 
         val newEvmState = with(evmState) {
             val newDestBalance = balanceOf(sendFundsToAddress) + balanceOf(contractAddress)
@@ -107,12 +131,15 @@ object HaltOps {
                 .updateBalanceAndContract(contractAddress, BigInteger.ZERO, contract.copy(code = emptyList()))
         }
 
-        return context.copy(
-            completed = newCallStack.isEmpty(),
-            lastReturnData = emptyList(),
-            evmState = newEvmState,
-            callStack = newCallStack
-        )
+        return context
+            .refund(caller, refund)
+            .copy(
+                completed = newCallStack.isEmpty(),
+                lastReturnData = emptyList(),
+                evmState = newEvmState,
+                callStack = newCallStack,
+                gasUsed = gasUsed + currentCallCtx.gasUsed
+            )
     }
 
     private fun updateLastCallCtxIfPresent(

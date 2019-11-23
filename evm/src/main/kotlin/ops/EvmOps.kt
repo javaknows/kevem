@@ -34,11 +34,11 @@ fun log(context: ExecutionContext, num: Int): ExecutionContext = with(context) {
     val (p, s) = elements
     val (topics, newStack2) = newStack.popWords(num)
 
-    val data = memory.get(p.toInt(), s.toInt())
+    val (data, newMemory) = memory.read(p.toInt(), s.toInt())
     val newLog = Log(data, topics)
 
     return context
-        .updateCurrentCallCtx(stack = newStack2)
+        .updateCurrentCallCtx(stack = newStack2, memory = newMemory)
         .copy(logs = context.logs + newLog)
 }
 
