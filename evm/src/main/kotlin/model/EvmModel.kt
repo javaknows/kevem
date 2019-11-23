@@ -149,6 +149,8 @@ class EvmState(private val addresses: Map<Address, Account> = emptyMap()) {
 
     fun storageAt(address: Address, index: BigInteger): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
 
+    fun nonceOf(address: Address): BigInteger = addresses[address]?.nonce ?: BigInteger.ZERO
+
     fun balanceAndContractAt(address: Address): Pair<BigInteger, Contract?> = Pair(
         balanceOf(address), contractAt(address)
     )
@@ -359,7 +361,6 @@ data class ExecutionContext(
     val lastReturnData: List<Byte> = emptyList(),
     val clock: Clock = Clock.systemUTC(), // TODO - fixed value
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
-    val addressGenerator: AddressGenerator = DefaultAddressGenerator(), // TODO - make a dependency rather than in ctx
     val lastCallError: EvmError = EvmError.None,
     val gasRefunds: Map<Address, BigInteger> = emptyMap(),
     val suicidedAccounts: List<Address> = emptyList(), // TODO - implement me

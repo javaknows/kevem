@@ -491,12 +491,11 @@ Feature: Single Opcode Execution
     And 0x3 is pushed onto the stack
     And 0x100 is pushed onto the stack
     And 0x4 is pushed onto the stack
-    And any new account gets created with address 0xFFFFFF
     When opcode CREATE is executed
     Then the balance of account 0xEE is now 5
-    And the balance of account 0xFFFFFF is now 4
-    And the code at address 0xFFFFFF is 0x123456
-    And the stack contains 0xFFFFFF
+    And the balance of account 0x3f17f1962b36e491b30a40b2405849e597ba5fb5 is now 4
+    And the code at address 0x3f17f1962b36e491b30a40b2405849e597ba5fb5 is 0x123456
+    And the stack contains 0x3f17f1962b36e491b30a40b2405849e597ba5fb5
 
   Scenario: a contract is created and deployed with CREATE2
     Given the contract address is 0xEE

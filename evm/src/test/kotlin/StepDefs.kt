@@ -440,15 +440,6 @@ class StepDefs : En {
             }
         }
 
-        Given("any new account gets created with address (0x[a-zA-Z0-9]+)") { address: String ->
-            updateExecutionContext {
-                it.copy(addressGenerator = object : AddressGenerator {
-                    override fun nextAddress(): Address =
-                        Address(address)
-                })
-            }
-        }
-
         Then("the balance of account (0x[a-zA-Z0-9]+) is now (.*)") { address: String, amount: String ->
             checkResult {
                 val balance = it.evmState.balanceOf(Address(address))

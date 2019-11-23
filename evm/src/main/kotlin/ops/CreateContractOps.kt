@@ -9,7 +9,9 @@ object CreateContractOps {
         val (elements, newStack) = stack.popWords(3)
         val (v, p, s) = elements
 
-        val newContractAddress = addressGenerator.nextAddress()
+        val sender = context.currentCallCtx.caller
+        val nonce = context.evmState.nonceOf(sender)
+        val newContractAddress =  keccak256(sender.toWord().data + Word.coerceFrom(nonce).data).toAddress()
 
         return createContract(p.toInt(), s.toInt(), newContractAddress, v, newStack, context)
     }
