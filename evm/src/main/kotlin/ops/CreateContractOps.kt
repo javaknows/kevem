@@ -39,7 +39,6 @@ object CreateContractOps {
     ): ExecutionContext {
         // TODO - what if current contract doesn't have enough wei to send
         // TODO - what if the generated address already exists
-        // TODO - subtract gas
 
         val (newContractCode, newMemory) = memory.read(p, s)
         val contract = Contract(newContractCode)

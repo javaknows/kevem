@@ -62,9 +62,7 @@ object VmMath {
         }
 
     /**
-     * Not quite right - not consistent with ganache.
-     *
-     * TODO - check geth + parity output
+     * TODO - support large numbers here
      */
     fun exp(w1: Word, w2: Word): Word = when {
         w1.toBigInt() == BigInteger.ONE -> w1

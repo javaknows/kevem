@@ -121,15 +121,13 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                     val newStack = stack.pushWord(Word.coerceFrom(currentTransaction.origin.value))
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.CALLER -> { // TODO - just use caller
-                    val call = callStack.last { it.type != CallType.DELEGATECALL }
-                    val newStack = stack.pushWord(call.caller.toWord())
+                Opcode.CALLER -> {
+                    val newStack = stack.pushWord(currentCallCtx.caller.toWord())
 
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
-                Opcode.CALLVALUE -> { // TODO - just use callvalue
-                    val call = callStack.last { it.type != CallType.DELEGATECALL }
-                    val newStack = stack.pushWord(Word.coerceFrom(call.value))
+                Opcode.CALLVALUE -> {
+                    val newStack = stack.pushWord(Word.coerceFrom(currentCallCtx.value))
 
                     currentContext.updateCurrentCallCtx(stack = newStack)
                 }
