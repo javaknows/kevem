@@ -37,15 +37,15 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
         }
         MLOAD -> calculate(executionCtx) {
             val (loc) = it.peekWords(1).map { w -> w.toInt() }
-            loc + 32 // TODO - off by one?
+            loc + 32
         }
         MSTORE -> calculate(executionCtx) {
             val (loc, _) = it.peekWords(2).map { w -> w.toInt() }
-            loc + 32 // TODO - off by one?
+            loc + 32
         }
         MSTORE8 -> calculate(executionCtx) {
             val (loc, _) = it.peekWords(2).map { w -> w.toInt() }
-            loc + 1 // TODO - off by one?
+            loc + 1
         }
         LOG0 -> logCost(executionCtx)
         LOG1 -> logCost(executionCtx)

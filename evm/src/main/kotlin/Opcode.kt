@@ -3,7 +3,6 @@ package com.gammadex.kevin.evm
 import com.gammadex.kevin.evm.gas.GasCost
 import com.gammadex.kevin.evm.model.Byte
 
-// TODO - move gas cost out of here
 enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numBytes: Int, val cost: GasCost) {
     STOP(0x00, 0, 0, 1, GasCost.Zero),
     ADD(0x01, 2, 1, 1, GasCost.VeryLow),
