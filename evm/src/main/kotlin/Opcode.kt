@@ -150,16 +150,11 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
     companion object {
         val byCode = values().map { it.code to it }.toMap()
 
-        // TODO - validate this write agsinst GETH
         private val nonStaticOpcodes = setOf(
             SSTORE,
             SUICIDE,
-            REVERT,
             CREATE,
             CREATE2,
-            CALL,
-            CALLCODE,
-            DELEGATECALL,
             LOG0,
             LOG1,
             LOG2,

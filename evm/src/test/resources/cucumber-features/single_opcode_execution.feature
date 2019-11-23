@@ -2,6 +2,11 @@ Feature: Single Opcode Execution
 
   Check that each opcode executes correctly
 
+  Background: Plenty gas available and plenty balance available
+    Given there is 500000 gas remaining
+    And the contract address is 0xC0476AC7
+    And the account with address 0xC0476AC7 has balance 0x1000
+
   Scenario: Two numbers can be added using ADD
     Given 0x01 is pushed onto the stack
     And 0x02 is pushed onto the stack
@@ -24,27 +29,33 @@ Feature: Single Opcode Execution
     When opcode ORIGIN is executed
     Then the stack contains 0xBB
 
-  Scenario: Caller is returned for CALLER
+  Scenario Outline: Caller is returned for CALLER during <callType>
     Given the current caller address is 0xABC
-    And the current call type is any of
-      | INITIAL |
-      | CALL |
-      | CALLCODE |
-      | STATICCALL |
+    And the current call type is <callType>
     When opcode CALLER is executed
     Then the stack contains 0xABC
 
-  Scenario: Current caller is not used if current call is DELEGATECALL
+    Examples:
+      | callType   |
+      | INITIAL    |
+      | CALL       |
+      | CALLCODE   |
+      | STATICCALL |
+
+  Scenario Outline: Current caller is not used if current call is DELEGATECALL during <callType>
     Given the current caller address is 0xABC
     And the current call type is DELEGATECALL
     And the previous caller address is 0xFFF
-    And the previous call type is any of
-      | INITIAL |
-      | CALL |
-      | CALLCODE |
-      | STATICCALL |
+    And the previous call type is <callType>
     When opcode CALLER is executed
     Then the stack contains 0xFFF
+
+    Examples:
+      | callType   |
+      | INITIAL    |
+      | CALL       |
+      | CALLCODE   |
+      | STATICCALL |
 
   Scenario: Current call value is returned by CALLVALUE
     Given the current call value is 0x1111
@@ -285,57 +296,57 @@ Feature: Single Opcode Execution
   Scenario: Push opcodes push the right amount of bytes onto the stack
     Given contract code ends with 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     When the push opcode is executed it will have data on stack
-     | PUSH1  | 0xff |
-     | PUSH2  | 0xffff |
-     | PUSH3  | 0xffffff |
-     | PUSH4  | 0xffffffff |
-     | PUSH5  | 0xffffffffff |
-     | PUSH6  | 0xffffffffffff |
-     | PUSH7  | 0xffffffffffffff |
-     | PUSH8  | 0xffffffffffffffff |
-     | PUSH9  | 0xffffffffffffffffff |
-     | PUSH10 | 0xffffffffffffffffffff |
-     | PUSH11 | 0xffffffffffffffffffffff |
-     | PUSH12 | 0xffffffffffffffffffffffff |
-     | PUSH13 | 0xffffffffffffffffffffffffff |
-     | PUSH14 | 0xffffffffffffffffffffffffffff |
-     | PUSH15 | 0xffffffffffffffffffffffffffffff |
-     | PUSH16 | 0xffffffffffffffffffffffffffffffff |
-     | PUSH17 | 0xffffffffffffffffffffffffffffffffff |
-     | PUSH18 | 0xffffffffffffffffffffffffffffffffffff |
-     | PUSH19 | 0xffffffffffffffffffffffffffffffffffffff |
-     | PUSH20 | 0xffffffffffffffffffffffffffffffffffffffff|
-     | PUSH21 | 0xffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH22 | 0xffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH23 | 0xffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH24 | 0xffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH25 | 0xffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH26 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH27 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH28 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH29 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH30 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH31 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
-     | PUSH32 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
+      | PUSH1  | 0xff                                                               |
+      | PUSH2  | 0xffff                                                             |
+      | PUSH3  | 0xffffff                                                           |
+      | PUSH4  | 0xffffffff                                                         |
+      | PUSH5  | 0xffffffffff                                                       |
+      | PUSH6  | 0xffffffffffff                                                     |
+      | PUSH7  | 0xffffffffffffff                                                   |
+      | PUSH8  | 0xffffffffffffffff                                                 |
+      | PUSH9  | 0xffffffffffffffffff                                               |
+      | PUSH10 | 0xffffffffffffffffffff                                             |
+      | PUSH11 | 0xffffffffffffffffffffff                                           |
+      | PUSH12 | 0xffffffffffffffffffffffff                                         |
+      | PUSH13 | 0xffffffffffffffffffffffffff                                       |
+      | PUSH14 | 0xffffffffffffffffffffffffffff                                     |
+      | PUSH15 | 0xffffffffffffffffffffffffffffff                                   |
+      | PUSH16 | 0xffffffffffffffffffffffffffffffff                                 |
+      | PUSH17 | 0xffffffffffffffffffffffffffffffffff                               |
+      | PUSH18 | 0xffffffffffffffffffffffffffffffffffff                             |
+      | PUSH19 | 0xffffffffffffffffffffffffffffffffffffff                           |
+      | PUSH20 | 0xffffffffffffffffffffffffffffffffffffffff                         |
+      | PUSH21 | 0xffffffffffffffffffffffffffffffffffffffffff                       |
+      | PUSH22 | 0xffffffffffffffffffffffffffffffffffffffffffff                     |
+      | PUSH23 | 0xffffffffffffffffffffffffffffffffffffffffffffff                   |
+      | PUSH24 | 0xffffffffffffffffffffffffffffffffffffffffffffffff                 |
+      | PUSH25 | 0xffffffffffffffffffffffffffffffffffffffffffffffffff               |
+      | PUSH26 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffff             |
+      | PUSH27 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffff           |
+      | PUSH28 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff         |
+      | PUSH29 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffff       |
+      | PUSH30 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff     |
+      | PUSH31 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff   |
+      | PUSH32 | 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff |
 
-   Scenario: the dup opcodes duplicate the stack element at the correct depth
-     Given 0x1 is pushed onto the stack
-     And 0x2 is pushed onto the stack
-     And 0x3 is pushed onto the stack
-     And 0x4 is pushed onto the stack
-     And 0x5 is pushed onto the stack
-     And 0x6 is pushed onto the stack
-     And 0x7 is pushed onto the stack
-     And 0x8 is pushed onto the stack
-     And 0x9 is pushed onto the stack
-     And 0x10 is pushed onto the stack
-     And 0x11 is pushed onto the stack
-     And 0x12 is pushed onto the stack
-     And 0x13 is pushed onto the stack
-     And 0x14 is pushed onto the stack
-     And 0x15 is pushed onto the stack
-     And 0x16 is pushed onto the stack
-     When the DUP opcode is executed it will have data on stack
+  Scenario: the dup opcodes duplicate the stack element at the correct depth
+    Given 0x1 is pushed onto the stack
+    And 0x2 is pushed onto the stack
+    And 0x3 is pushed onto the stack
+    And 0x4 is pushed onto the stack
+    And 0x5 is pushed onto the stack
+    And 0x6 is pushed onto the stack
+    And 0x7 is pushed onto the stack
+    And 0x8 is pushed onto the stack
+    And 0x9 is pushed onto the stack
+    And 0x10 is pushed onto the stack
+    And 0x11 is pushed onto the stack
+    And 0x12 is pushed onto the stack
+    And 0x13 is pushed onto the stack
+    And 0x14 is pushed onto the stack
+    And 0x15 is pushed onto the stack
+    And 0x16 is pushed onto the stack
+    When the DUP opcode is executed it will have data on stack
       | DUP1  | 0x16 |
       | DUP2  | 0x15 |
       | DUP3  | 0x14 |
@@ -479,8 +490,8 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with STOP in main contract
     Given the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x200        | 0x2      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x200        | 0x2      |
     And there is only one call on the stack
     When opcode STOP is executed
     Then the call stack is now 0 deep
@@ -489,11 +500,11 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with STOP in child contract
     Given the previous call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
     And the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x2      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x2      |
     When opcode STOP is executed
     Then the call stack is now 1 deep
     And the execution context is now marked as not complete
@@ -502,11 +513,11 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with RETURN in child contract
     Given the previous call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
     And the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And 0x123456 is stored in memory at location 0x100
     And 0x3 is pushed onto the stack
     And 0x100 is pushed onto the stack
@@ -519,8 +530,8 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with INVALID in main contract
     Given the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And there is only one call on the stack
     When opcode INVALID is executed
     Then the call stack is now 0 deep
@@ -528,11 +539,11 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with INVALID in child contract
     Given the previous call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
     And the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     When opcode INVALID is executed
     Then the call stack is now 1 deep
     And the execution context is now marked as not complete
@@ -542,8 +553,8 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with REVERT in main contract
     Given the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And there is only one call on the stack
     And 0x123456 is stored in memory at location 0x100
     And 0x3 is pushed onto the stack
@@ -554,11 +565,11 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with REVERT in child contract
     Given the previous call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A5 | 0x0          | 0x0      |
     And the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And 0x123456 is stored in memory at location 0x100
     And 0x3 is pushed onto the stack
     And 0x100 is pushed onto the stack
@@ -571,8 +582,8 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with SUICIDE in main contract
     Given the current call is:
-      | type   | caller address | calldata | contract address | value | gas     | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A500 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas     | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A500 | 0x200        | 0x3      |
     And there is only one call on the stack
     And the account with address 0xFFFFFFF has balance 0x1234
     And 0xAAAAAAA is pushed onto the stack
@@ -585,11 +596,11 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with SUICIDE in child contract
     Given the previous call is:
-      | type   | caller address | calldata | contract address | value | gas     | out location | out size |
-      | CALL   | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A500 | 0x0          | 0x0      |
+      | type | caller address | calldata | contract address | value | gas     | out location | out size |
+      | CALL | 0xEEEEEE       | 0x123456 | 0xADD8E55        | 0x0   | 0x6A500 | 0x0          | 0x0      |
     And the current call is:
-      | type   | caller address | calldata | contract address | value | gas     | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A500 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas     | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A500 | 0x200        | 0x3      |
     And the account with address 0xFFFFFFF has balance 0x1234
     And 0xAAAAAAA is pushed onto the stack
     When opcode SUICIDE is executed
@@ -602,8 +613,8 @@ Feature: Single Opcode Execution
 
   Scenario: Execution is halted with unknown opcode in main contract
     Given the current call is:
-      | type   | caller address | calldata | contract address | value | gas   | out location | out size |
-      | CALL   | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
+      | type | caller address | calldata | contract address | value | gas   | out location | out size |
+      | CALL | 0xADD8E55      | 0x123456 | 0xFFFFFFF        | 0x0   | 0x6A5 | 0x200        | 0x3      |
     And there is only one call on the stack
     When opcode 0xBB is executed
     Then the call stack is now 0 deep
@@ -615,29 +626,117 @@ Feature: Single Opcode Execution
     When opcode ADD is executed
     Then the last error is now STACK_DEPTH with message "Stack not deep enough for ADD"
 
-  Scenario: Can call any of the read-only opcodes in static context
-    Given the current call type is any of
-      | STATICCALL |
-    And 0x01 is pushed onto the stack
-    And 0x02 is pushed onto the stack
-    And 0x03 is pushed onto the stack
-    # TODO - add a bunch of opcodes here
-    And the opcode is any of
-      | ADD |
-    When the next opcode in the context is executed
+  Scenario Outline: Can call any of the read-only opcodes in static context <opcode>
+    Given the current call type is STATICCALL
+    And the stack contains elements [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7]
+    When opcode <opcode> is executed
     Then there is no last error
 
-  Scenario: fail if trying to execute non-read only opcodes in static context
-    Given the current call type is any of
-      | STATICCALL |
-    And 0x01 is pushed onto the stack
-    And 0x02 is pushed onto the stack
-    And 0x03 is pushed onto the stack
-    # TODO - add a bunch of opcodes here
-    And the opcode is any of
-      | LOG0 |
-    When the next opcode in the context is executed
-    Then the last error is now STATE_CHANGE_STATIC_CALL with message "LOG0 not allowed in static call"
+    Examples:
+      | opcode         |
+      | STOP           |
+      | ADD            |
+      | SUB            |
+      | MUL            |
+      | DIV            |
+      | SDIV           |
+      | MOD            |
+      | SMOD           |
+      | EXP            |
+      | NOT            |
+      | LT             |
+      | GT             |
+      | SLT            |
+      | SGT            |
+      | EQ             |
+      | ISZERO         |
+      | AND            |
+      | OR             |
+      | XOR            |
+      | BYTE           |
+      | SHL            |
+      | SHR            |
+      | SAR            |
+      | ADDMOD         |
+      | MULMOD         |
+      | SIGNEXTEND     |
+      | SHA3           |
+      | SHA3           |
+      | JUMP           |
+      | JUMPI          |
+      | PC             |
+      | POP            |
+      | DUP1           |
+      | SWAP1          |
+      | MLOAD          |
+      | MSTORE         |
+      | MSTORE8        |
+      | SLOAD          |
+      | MSIZE          |
+      | GAS            |
+      | ADDRESS        |
+      | BALANCE        |
+      | CALLER         |
+      | CALLVALUE      |
+      | CALLDATALOAD   |
+      | CALLDATASIZE   |
+      | CALLDATACOPY   |
+      | CODESIZE       |
+      | CODECOPY       |
+      | EXTCODESIZE    |
+      | EXTCODECOPY    |
+      | RETURNDATASIZE |
+      | RETURNDATACOPY |
+      | CALLCODE       |
+      | DELEGATECALL   |
+      | STATICCALL     |
+      | RETURN         |
+      | ORIGIN         |
+      | GASPRICE       |
+      | BLOCKHASH      |
+      | COINBASE       |
+      | TIMESTAMP      |
+      | NUMBER         |
+      | DIFFICULTY     |
+      | GASLIMIT       |
+      | JUMPDEST       |
+      | REVERT         |
+
+
+  Scenario Outline: fail if trying to execute non-read only opcodes in static context <opcode>
+    Given the current call type is STATICCALL
+    And the stack contains elements [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7]
+    When opcode <opcode> is executed
+    Then the last error is now STATE_CHANGE_STATIC_CALL with message "<opcode> not allowed in static call"
+
+    Examples:
+      | opcode  |
+      | SSTORE  |
+      | CREATE  |
+      | CREATE2 |
+      | SUICIDE |
+      | LOG0    |
+      | LOG1    |
+      | LOG2    |
+      | LOG3    |
+      | LOG4    |
+
+  Scenario: Can call INVALID opcode from static context
+    Given the current call type is STATICCALL
+    When opcode INVALID is executed
+    Then the last error is now INVALID_INSTRUCTION with message "Invalid instruction"
+
+  Scenario: Can't execute CALL with non-zero value in STATIC context
+    Given the current call type is STATICCALL
+    And the stack contains elements [0x1, 0xADD7E55, 0x100, 0x0, 0x0, 0x0, 0x0]
+    When opcode CALL is executed
+    Then the last error is now STATE_CHANGE_STATIC_CALL with message "CALL not allowed in static call"
+
+  Scenario: Can execute CALL with zero value in STATIC context
+    Given the current call type is STATICCALL
+    And the stack contains elements [0x1, 0xADD7E55, 0x0, 0x0, 0x0, 0x0, 0x0]
+    When opcode CALL is executed
+    Then there is no last error
 
   Scenario: Execution is halted at end of main contract
     Given contract code is [DUP1, DUP1, GAS]
@@ -645,4 +744,3 @@ Feature: Single Opcode Execution
     When the next opcode in the context is executed
     Then the execution context is now marked as complete
     And return data is now empty
-

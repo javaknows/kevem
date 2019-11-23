@@ -32,7 +32,8 @@ internal fun baseExecutionContext(
         stack = stack,
         memory = memory,
         storageAddress = Address(CONTRACT_ADDRESS),
-        contractAddress = Address(CONTRACT_ADDRESS)
+        contractAddress = Address(CONTRACT_ADDRESS),
+        gas = BigInteger("99999999999999999999999")
     )
 
     return ExecutionContext(

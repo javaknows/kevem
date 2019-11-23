@@ -134,21 +134,6 @@ class StepDefs : En {
             }
         }
 
-        // TODO - multi-dimensional
-        Given("the current call type is any of") { dataTable: DataTable ->
-            val originalContext = executionContext
-
-            dataTable.asLists().forEach {
-                executionContext = originalContext
-
-                val callType = CallType.valueOf(it[0])
-
-                updateLastCallContext {
-                    it.copy(type = callType)
-                }
-            }
-        }
-
         Given("the current call value is (0x[a-zA-Z0-9]+)") { value: String ->
             updateLastCallContext {
                 it.copy(value = BigInteger(value.replaceFirst("0x", ""), 16))
@@ -169,13 +154,6 @@ class StepDefs : En {
         }
 
         Given("the previous call type is ([A-Z]+)") { callType: CallType ->
-            setPreviousCallType(callType)
-        }
-
-        // TODO - multi-dimensional
-        Given("the previous call type is any of") { dataTable: DataTable ->
-            val callType = CallType.valueOf(dataTable.asList()[0])
-
             setPreviousCallType(callType)
         }
 
@@ -593,18 +571,6 @@ class StepDefs : En {
         Then("there is no last error") {
             checkResult {
                 assertThat(it.lastCallError).isEqualTo(EvmError.None)
-            }
-        }
-
-        // TODO - multi-dimensional
-        Given("the opcode is any of") { dataTable: DataTable ->
-            dataTable.asLists().forEach {
-                val opcode = Opcode.fromName(it[0])
-
-                updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
-                    ctx.copy(code = code)
-                }
             }
         }
 

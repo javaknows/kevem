@@ -4,9 +4,8 @@ import com.gammadex.kevin.evm.gas.GasCostCalculator
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.ops.*
+import java.math.BigInteger
 
-// TODO - deduct gas. Deduct opcode base gas here and computed gas in the opcode handling
-// TODO - fail if out of gas
 // TODO - ensure max stack depth won't be reached
 // TODO - don't accept certain operations depending on fork version configured
 
@@ -29,7 +28,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                 isStackUnderflow(opcode, currentCallCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STACK_DEPTH, "Stack not deep enough for $opcode")
                 )
-                isModifyInStaticCall(opcode, currentCallCtx) -> HaltOps.fail(
+                isModifyInStaticCall(opcode, executionCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "$opcode not allowed in static call")
                 )
                 else -> consumeGasAndProcessOpcode(opcode, executionCtx)
@@ -55,8 +54,11 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
         return Pair(isOutOfGas, newCtx)
     }
 
-    private fun isModifyInStaticCall(opcode: Opcode?, currentCallCtx: CallContext) =
-        currentCallCtx.type == CallType.STATICCALL && !Opcode.isAllowedInStatic(opcode)
+    private fun isModifyInStaticCall(opcode: Opcode?, executionCtx: ExecutionContext): Boolean = when {
+        executionCtx.currentCallCtx.type != CallType.STATICCALL -> false
+        opcode == Opcode.CALL && executionCtx.currentCallCtx.stack.peekWord(2).toBigInt() > BigInteger.ZERO -> true
+        else -> ! Opcode.isAllowedInStatic(opcode)
+    }
 
     private fun isStackUnderflow(opcode: Opcode?, callCtx: CallContext) =
         Opcode.numArgs(opcode) > callCtx.stack.size()
