@@ -2,7 +2,7 @@ package com.gammadex.kevin.evm.model
 
 import com.gammadex.kevin.evm.*
 import java.math.BigInteger
-import java.time.Clock
+import java.time.Instant
 import kotlin.math.max
 
 data class Byte(val value: Int) {
@@ -338,7 +338,8 @@ data class CallContext(
 data class Block(
     val number: BigInteger,
     val difficulty: BigInteger,
-    val gasLimit: BigInteger
+    val gasLimit: BigInteger,
+    val timestamp: Instant
 )
 
 data class Transaction(
@@ -360,7 +361,6 @@ data class ExecutionContext(
     val logs: List<Log> = emptyList(),
     val completed: Boolean = false,
     val lastReturnData: List<Byte> = emptyList(),
-    val clock: Clock = Clock.systemUTC(), // TODO - fixed value
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val lastCallError: EvmError = EvmError.None,
     val gasRefunds: Map<Address, BigInteger> = emptyMap(),

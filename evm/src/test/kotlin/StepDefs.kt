@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
 import com.gammadex.kevin.evm.util.*
 
 class StepDefs : En {
@@ -238,10 +237,8 @@ class StepDefs : En {
         }
 
         Given("time is \"(.*)\"") { date: String ->
-            val clock = Clock.fixed(Instant.parse(date), ZoneId.systemDefault())
-
             updateExecutionContext {
-                it.copy(clock = clock)
+                it.copy(currentBlock = it.currentBlock.copy(timestamp = Instant.parse(date)))
             }
         }
 
@@ -249,7 +246,7 @@ class StepDefs : En {
             val expected = Instant.parse(date)
 
             checkResult {
-                assertThat(it.clock.instant()).isEqualTo(expected)
+                assertThat(it.currentBlock.timestamp).isEqualTo(expected)
             }
         }
 
@@ -683,7 +680,8 @@ class StepDefs : En {
             currentBlock = Block(
                 number = BigInteger.ONE,
                 difficulty = BigInteger.TEN,
-                gasLimit = BigInteger("100")
+                gasLimit = BigInteger("100"),
+                timestamp = Clock.systemUTC().instant()
             ),
             currentTransaction = Transaction(
                 origin = Address("0xFFEEDD"),
@@ -692,7 +690,6 @@ class StepDefs : En {
             coinBase = Address("0xFFEEDD"),
             logs = emptyList(),
             completed = false,
-            clock = Clock.systemUTC(),
             callStack = listOf(
                 CallContext(
                     caller = Address("0x0"),

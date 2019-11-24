@@ -19,7 +19,7 @@ object BlockOps {
     }
 
     fun timeStamp(context: ExecutionContext): ExecutionContext = with(context) {
-        val epoch = clock.instant().epochSecond
+        val epoch = currentBlock.timestamp.epochSecond
         val newStack = stack.pushWord(Word.coerceFrom(epoch))
         updateCurrentCallCtx(stack = newStack)
     }

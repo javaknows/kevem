@@ -40,7 +40,8 @@ internal fun baseExecutionContext(
         currentBlock = Block(
             number = BigInteger.ONE,
             difficulty = BigInteger.TEN,
-            gasLimit = BigInteger("100")
+            gasLimit = BigInteger("100"),
+            timestamp = Clock.systemUTC().instant()
         ),
         currentTransaction = Transaction(
             origin = Address(CALLER),
@@ -52,7 +53,6 @@ internal fun baseExecutionContext(
         logs = emptyList(),
         completed = false,
         lastReturnData = lastReturnData,
-        clock = Clock.systemUTC(),
         previousBlocks = previousBlocks
     )
 }
