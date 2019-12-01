@@ -1,5 +1,7 @@
-package com.gammadex.kevin.evm
+package com.gammadex.kevin.evm.test.executor
 
+import com.gammadex.kevin.evm.Executor
+import com.gammadex.kevin.evm.Opcode
 import com.gammadex.kevin.evm.gas.*
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.lang.*
@@ -12,7 +14,7 @@ import java.time.Clock
 import java.time.Instant
 import com.gammadex.kevin.evm.util.*
 
-class StepDefs : En {
+class ExecutorStepDefs : En {
 
     private var executionContext: ExecutionContext = createBaseExecutionContext()
 
@@ -103,30 +105,30 @@ class StepDefs : En {
             val value = toBigInteger(balance)
 
             updateExecutionContext {
-                val evmState = it.evmState.updateBalance(Address(address), value)
-                it.copy(evmState = evmState)
+                val evmState = it.accounts.updateBalance(Address(address), value)
+                it.copy(accounts = evmState)
             }
         }
 
         Given("there is no existing account with address (.*)") { address: String ->
             updateExecutionContext {
-                val evmState = it.evmState.removeAccount(Address(address))
-                it.copy(evmState = evmState)
+                val evmState = it.accounts.removeAccount(Address(address))
+                it.copy(accounts = evmState)
             }
         }
 
         Then("there is now no account with address (.*)") { address: String ->
             checkResult {
-                assertThat(it.evmState.accountExists(Address(address))).isFalse()
+                assertThat(it.accounts.accountExists(Address(address))).isFalse()
             }
         }
 
         Given("an account with address (.*) exists") { address: String ->
             updateExecutionContext {
-                if (it.evmState.accountExists(Address(address))) it
+                if (it.accounts.accountExists(Address(address))) it
                 else {
-                    val evmState = it.evmState.updateBalance(Address(address), BigInteger.ZERO)
-                    it.copy(evmState = evmState)
+                    val evmState = it.accounts.updateBalance(Address(address), BigInteger.ZERO)
+                    it.copy(accounts = evmState)
                 }
             }
         }
@@ -212,8 +214,8 @@ class StepDefs : En {
             val newContract = Contract(byteCode)
 
             updateExecutionContext {
-                val evmState = it.evmState.updateContract(newAddress, newContract)
-                it.copy(evmState = evmState)
+                val evmState = it.accounts.updateContract(newAddress, newContract)
+                it.copy(accounts = evmState)
             }
         }
 
@@ -287,7 +289,7 @@ class StepDefs : En {
                     else contractAddress.replace("contract ", "")
 
                 ctx.copy(
-                    evmState = ctx.evmState.updateStorage(
+                    accounts = ctx.accounts.updateStorage(
                         Address(address),
                         toBigInteger(location),
                         Word.coerceFrom(data)
@@ -302,7 +304,7 @@ class StepDefs : En {
                     if (contractAddress == "current contract") it.currentCallCtx.contractAddress.toString()
                     else contractAddress.replace("contract ", "")
 
-                assertThat(it.evmState.storageAt(Address(address), toBigInteger(location))).isEqualTo(
+                assertThat(it.accounts.storageAt(Address(address), toBigInteger(location))).isEqualTo(
                     Word.coerceFrom(
                         data
                     )
@@ -449,7 +451,7 @@ class StepDefs : En {
 
         Then("the balance of account (0x[a-zA-Z0-9]+) is now (.*)") { address: String, amount: String ->
             checkResult {
-                val balance = it.evmState.balanceOf(Address(address))
+                val balance = it.accounts.balanceOf(Address(address))
                 assertThat(toBigInteger(amount)).isEqualTo(balance)
             }
         }
@@ -458,7 +460,7 @@ class StepDefs : En {
             val parsedExpectedCode = if (expectedCode == "empty") emptyList() else toByteList(expectedCode)
 
             checkResult {
-                val code = it.evmState.codeAt(Address(address))
+                val code = it.accounts.codeAt(Address(address))
                 assertThat(code).isEqualTo(parsedExpectedCode)
             }
         }
@@ -588,7 +590,7 @@ class StepDefs : En {
             val amount = toBigInteger(am)
 
             checkResult {
-                val refund: BigInteger = it.gasRefunds.getOrDefault(account, BigInteger.ZERO)
+                val refund: BigInteger = it.refunds.getOrDefault(account, BigInteger.ZERO)
                 assertThat(refund).isEqualTo(amount)
             }
         }
@@ -612,12 +614,12 @@ class StepDefs : En {
             contractAddress = Address(contractAddress)
         )
 
-        val newEvmState = executionContext.evmState.updateContract(
+        val newEvmState = executionContext.accounts.updateContract(
             Address(contractAddress),
             Contract(emptyList())
         )
 
-        return Pair(callCtx, executionContext.copy(evmState = newEvmState))
+        return Pair(callCtx, executionContext.copy(accounts = newEvmState))
     }
 
     private fun updateExecutionContext(updateFunc: (ExecutionContext) -> ExecutionContext) {

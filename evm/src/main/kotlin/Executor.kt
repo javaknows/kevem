@@ -7,12 +7,14 @@ import com.gammadex.kevin.evm.ops.*
 import java.math.BigInteger
 
 // TODO - don't accept certain operations depending on fork version configured
+// TODO - move stack overflow check to start (add on opcode stack delta)
 
 class Executor(private val gasCostCalculator: GasCostCalculator) {
     tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
         if (executionCtx.completed) executionCtx
         else executeAll(executeNextOpcode(executionCtx))
 
+    // TODO - make this private - public because convenient for testing
     fun executeNextOpcode(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
         if (isEndOfContract(currentCallContextOrNull))
             HaltOps.stop(executionCtx)

@@ -3,7 +3,6 @@ package com.gammadex.kevin.evm.gas
 import com.gammadex.kevin.evm.Opcode
 import com.gammadex.kevin.evm.model.Address
 import com.gammadex.kevin.evm.model.ExecutionContext
-import com.gammadex.kevin.evm.numbers.BigIntMath
 import java.math.BigInteger
 
 class GasCostCalculator(
@@ -38,7 +37,7 @@ class CallGasCostCalc {
         executionCtx: ExecutionContext
     ): Pair<BigInteger, BigInteger> {
         val newAccountFee =
-            if (value > BigInteger.ZERO && !executionCtx.evmState.accountExists(to)) GasCost.NewAccount.cost
+            if (value > BigInteger.ZERO && !executionCtx.accounts.accountExists(to)) GasCost.NewAccount.cost
             else 0
 
         val transferFee =

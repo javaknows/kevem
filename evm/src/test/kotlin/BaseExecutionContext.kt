@@ -16,7 +16,7 @@ internal fun baseExecutionContext(
     stack: Stack = Stack(),
     memory: Memory = Memory(),
     contractCode: List<Byte> = emptyList(),
-    evmState: EvmState = EvmState()
+    accounts: Accounts = Accounts()
         .updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT)
         .updateContract(Address(CONTRACT_ADDRESS), Contract(contractCode)),
     callData: List<Byte> = emptyList(),
@@ -49,7 +49,7 @@ internal fun baseExecutionContext(
         ),
         coinBase = Address("0xFFEEDD"),
         callStack = listOf(call),
-        evmState = evmState,
+        accounts = accounts,
         logs = emptyList(),
         completed = false,
         lastReturnData = lastReturnData,

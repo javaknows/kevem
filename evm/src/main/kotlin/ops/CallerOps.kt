@@ -15,7 +15,7 @@ object CallerOps {
 
     fun balance(context: ExecutionContext): ExecutionContext = with(context) {
         val (popped, newStack) = stack.popWord()
-        val balance = evmState.balanceOf(popped.toAddress())
+        val balance = accounts.balanceOf(popped.toAddress())
         val finalStack = newStack.pushWord(Word.coerceFrom(balance))
 
         updateCurrentCallCtx(stack = finalStack)

@@ -7,9 +7,9 @@ import org.junit.runner.RunWith
 @RunWith(Cucumber::class)
 @CucumberOptions(
     plugin = ["pretty"],
-    features = ["src/test/resources/features/executor"],
+    features = ["src/test/resources/features/transaction_processor"],
     tags = ["not @Ignore"],
-    glue=["com.gammadex.kevin.evm.test.executor"]
+    glue=["com.gammadex.kevin.evm.test.transaction_processor"]
 
 )
-class ExecutorCucumberTest
+class TransactionProcessorCucumberTest

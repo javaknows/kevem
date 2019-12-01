@@ -37,14 +37,14 @@ object CallOps {
         with(callArguments) {
             val nextCallerAddress =
                 currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
-            val callerBalance = evmState.balanceOf(nextCallerAddress)
+            val callerBalance = accounts.balanceOf(nextCallerAddress)
 
             if (callerBalance < value) {
                 val message = "$nextCallerAddress has balance of $callerBalance but attempted to send $value"
                 HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
             } else {
-                val (destBalance, _) = evmState.balanceAndContractAt(address)
-                val newEvmState = evmState
+                val (destBalance, _) = accounts.balanceAndContractAt(address)
+                val newEvmState = accounts
                     .updateBalance(address, destBalance + value)
 
                 val startBalance = newEvmState.balanceOf(nextCallerAddress)
@@ -57,7 +57,7 @@ object CallOps {
                     callData,
                     CallType.CALLCODE,
                     value,
-                    evmState.codeAt(callArguments.address),
+                    accounts.codeAt(callArguments.address),
                     context,
                     gas,
                     outLocation,
@@ -73,7 +73,7 @@ object CallOps {
 
                 updatedCtx.copy(
                     callStack = updatedCtx.callStack + newCall,
-                    evmState = newEvmState2
+                    accounts = newEvmState2
                 )
             }
         }
@@ -83,7 +83,7 @@ object CallOps {
         val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = false)
 
         with(callArguments) {
-            val code = evmState.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
+            val code = accounts.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
 
             val (callData, newMemory) = memory.read(inLocation, inSize)
             val newCall = CallContext(
@@ -116,14 +116,14 @@ object CallOps {
             with(args) {
                 val nextCaller =
                     currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
-                val callerBalance = evmState.balanceOf(nextCaller)
+                val callerBalance = accounts.balanceOf(nextCaller)
                 if (callerBalance < value) {
                     val message = "$nextCaller has balance of $callerBalance but attempted to send $value"
                     HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
                 } else {
 
-                    val (destBalance, destContract) = evmState.balanceAndContractAt(address)
-                    val newEvmState = evmState
+                    val (destBalance, destContract) = accounts.balanceAndContractAt(address)
+                    val newEvmState = accounts
                         .updateBalance(address, destBalance + value)
 
                     val startBalance = newEvmState.balanceOf(nextCaller)
@@ -152,7 +152,7 @@ object CallOps {
 
                     updatedCtx.copy(
                         callStack = updatedCtx.callStack + newCall,
-                        evmState = newEvmState2
+                        accounts = newEvmState2
                     )
                 }
             }

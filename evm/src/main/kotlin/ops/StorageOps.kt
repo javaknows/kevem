@@ -8,7 +8,7 @@ object StorageOps {
         val index = word.toBigInt()
 
         val contractAddress = context.currentCallCtx.storageAddress ?: throw RuntimeException("can't determine contract address")
-        val finalStack = newStack.pushWord(evmState.storageAt(contractAddress, index))
+        val finalStack = newStack.pushWord(accounts.storageAt(contractAddress, index))
 
         context.updateCurrentCallCtx(stack = finalStack)
     }
@@ -18,8 +18,8 @@ object StorageOps {
         val (a, v) = elements
 
         val contractAddress = context.currentCallCtx.storageAddress ?: throw RuntimeException("can't determine contract address")
-        val newEvmState = context.evmState.updateStorage(contractAddress, a.toBigInt(), v)
+        val newEvmState = context.accounts.updateStorage(contractAddress, a.toBigInt(), v)
 
-        context.updateCurrentCallCtx(stack = newStack).copy(evmState = newEvmState)
+        context.updateCurrentCallCtx(stack = newStack).copy(accounts = newEvmState)
     }
 }

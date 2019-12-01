@@ -122,9 +122,9 @@ object HaltOps {
         val contractAddress =
             currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
         val contract =
-            evmState.contractAt(contractAddress) ?: throw RuntimeException("can't determine current contract")
+            accounts.contractAt(contractAddress) ?: throw RuntimeException("can't determine current contract")
 
-        val newEvmState = with(evmState) {
+        val newEvmState = with(accounts) {
             val newDestBalance = balanceOf(sendFundsToAddress) + balanceOf(contractAddress)
 
             updateBalance(sendFundsToAddress, newDestBalance)
@@ -136,7 +136,7 @@ object HaltOps {
             .copy(
                 completed = newCallStack.isEmpty(),
                 lastReturnData = emptyList(),
-                evmState = newEvmState,
+                accounts = newEvmState,
                 callStack = newCallStack,
                 gasUsed = gasUsed + currentCallCtx.gasUsed
             )

@@ -140,14 +140,15 @@ data class Account(
     val nonce: BigInteger = BigInteger.ZERO
 )
 
-class EvmState(private val addresses: Map<Address, Account> = emptyMap()) {
+class Accounts(private val addresses: Map<Address, Account> = emptyMap()) {
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
 
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
 
-    fun storageAt(address: Address, index: BigInteger): Word = addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
+    fun storageAt(address: Address, index: BigInteger): Word =
+        addresses[address]?.contract?.storage?.get(index) ?: Word.Zero
 
     fun nonceOf(address: Address): BigInteger = addresses[address]?.nonce ?: BigInteger.ZERO
 
@@ -155,16 +156,16 @@ class EvmState(private val addresses: Map<Address, Account> = emptyMap()) {
         balanceOf(address), contractAt(address)
     )
 
-    fun updateBalance(address: Address, balance: BigInteger): EvmState {
+    fun updateBalance(address: Address, balance: BigInteger): Accounts {
         val location = addresses[address]?.copy(balance = balance) ?: Account(
             address,
             balance,
             null
         )
-        return EvmState(addresses + Pair(address, location))
+        return Accounts(addresses + Pair(address, location))
     }
 
-    fun updateStorage(address: Address, index: BigInteger, value: Word): EvmState {
+    fun updateStorage(address: Address, index: BigInteger, value: Word): Accounts {
         val account = addresses[address] ?: Account(address)
         val contract = account.contract ?: Contract()
 
@@ -172,30 +173,30 @@ class EvmState(private val addresses: Map<Address, Account> = emptyMap()) {
         val newContract = contract.copy(storage = newStorage)
         val newAccount = account.copy(contract = newContract)
 
-        return EvmState(addresses + Pair(address, newAccount))
+        return Accounts(addresses + Pair(address, newAccount))
     }
 
-    fun updateContract(address: Address, contract: Contract): EvmState {
+    fun updateContract(address: Address, contract: Contract): Accounts {
         val location = addresses[address]?.copy(contract = contract) ?: Account(
             address,
             BigInteger.ZERO,
             contract
         )
-        return EvmState(addresses + Pair(address, location))
+        return Accounts(addresses + Pair(address, location))
     }
 
-    fun updateBalanceAndContract(address: Address, balance: BigInteger, contract: Contract): EvmState {
+    fun updateBalanceAndContract(address: Address, balance: BigInteger, contract: Contract): Accounts {
         val location = addresses[address]?.copy(balance = balance) ?: Account(
             address,
             balance,
             contract
         )
-        return EvmState(addresses + Pair(address, location))
+        return Accounts(addresses + Pair(address, location))
     }
 
     fun accountExists(address: Address) = address in addresses.keys
 
-    fun removeAccount(address: Address) = EvmState(addresses - address)
+    fun removeAccount(address: Address) = Accounts(addresses - address)
 }
 
 // TODO - indexes/lengths should be BigInteger
@@ -339,7 +340,8 @@ data class Block(
     val number: BigInteger,
     val difficulty: BigInteger,
     val gasLimit: BigInteger,
-    val timestamp: Instant
+    val timestamp: Instant,
+    val logs: List<Log> = emptyList()
 )
 
 data class Transaction(
@@ -357,13 +359,13 @@ data class ExecutionContext(
     val currentTransaction: Transaction,
     val coinBase: Address,
     val callStack: List<CallContext> = emptyList(),
-    val evmState: EvmState = EvmState(),
+    val accounts: Accounts = Accounts(),
     val logs: List<Log> = emptyList(),
     val completed: Boolean = false,
     val lastReturnData: List<Byte> = emptyList(),
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val lastCallError: EvmError = EvmError.None,
-    val gasRefunds: Map<Address, BigInteger> = emptyMap(),
+    val refunds: Map<Address, BigInteger> = emptyMap(),
     val suicidedAccounts: List<Address> = emptyList(), // TODO - implement me
     val gasUsed: BigInteger = BigInteger.ZERO
 ) {
@@ -422,10 +424,30 @@ data class ExecutionContext(
         } else this
 
     fun refund(address: Address, value: BigInteger): ExecutionContext {
-        val totalRefund = gasRefunds.getOrDefault(address, BigInteger.ZERO) + value
+        val totalRefund = refunds.getOrDefault(address, BigInteger.ZERO) + value
 
         return copy(
-            gasRefunds = gasRefunds + Pair(address, totalRefund)
+            refunds = refunds + Pair(address, totalRefund)
         )
     }
 }
+
+data class WorldState(val blocks: List<Block>, val accounts: Accounts)
+
+data class MessageCall(val value: BigInteger)
+
+enum class MessageType { CONTRACT_CREATION, CALL }
+
+data class TransactionMessage(
+    val from: Address,
+    val to: Address?,
+    val value: BigInteger,
+    val gasPrice: BigInteger,
+    val gasLimit: BigInteger,
+    val data: List<Byte> = emptyList(),
+    val nonce: BigInteger
+)
+
+enum class ResultStatus {FAILED, COMPLETE, REJECTED}
+
+data class TransactionResult(val status: ResultStatus, val logs: List<Log> = emptyList())

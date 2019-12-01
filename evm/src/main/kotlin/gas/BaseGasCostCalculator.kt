@@ -52,7 +52,7 @@ class BaseGasCostCalculator(
     private fun suicideCost(executionContext: ExecutionContext): BigInteger {
         val (address) = executionContext.currentCallCtx.stack.peekWords(1).map { it.toAddress() }
 
-        val accountExists = executionContext.evmState.accountExists(address)
+        val accountExists = executionContext.accounts.accountExists(address)
 
         val newAccountCharge = if (accountExists) BigInteger.ZERO else GasCost.NewAccount.costBigInt
         return GasCost.SelfDestruct.costBigInt + newAccountCharge
@@ -78,7 +78,7 @@ class BaseGasCostCalculator(
 
         val storageAddress = executionContext.currentCallCtx.storageAddress
             ?: throw RuntimeException("can't determine contract address")
-        val oldValue = executionContext.evmState.storageAt(storageAddress, location)
+        val oldValue = executionContext.accounts.storageAt(storageAddress, location)
 
         return if (value != BigInteger.ZERO && oldValue.toBigInt() == BigInteger.ZERO)
             GasCost.SSet.costBigInt

@@ -3,6 +3,9 @@ package com.gammadex.kevin.evm.ops
 import com.gammadex.kevin.evm.keccak256
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.model.Byte
+import com.gammadex.kevin.evm.numbers.generateAddress
+import com.gammadex.kevin.evm.numbers.generateAddressFromSenderAndNonce
+import java.math.BigInteger
 
 // TODO - create a compatibility pack around this
 object CreateContractOps {
@@ -11,8 +14,8 @@ object CreateContractOps {
         val (v, p, s) = elements
 
         val sender = context.currentCallCtx.caller
-        val nonce = context.evmState.nonceOf(sender)
-        val newContractAddress = keccak256(sender.toWord().data + Word.coerceFrom(nonce).data).toAddress()
+        val nonce = context.accounts.nonceOf(sender)
+        val newContractAddress = generateAddressFromSenderAndNonce(sender, nonce)
 
         return createContract(p.toInt(), s.toInt(), newContractAddress, v, newStack, context)
     }
@@ -24,7 +27,7 @@ object CreateContractOps {
         val (codeData, _) = memory.read(p.toInt(), s.toInt())
         val contractAddress =
             currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
-        val newContractAddress = createAddress(
+        val newContractAddress = generateAddress(
             contractAddress.toWord().data,
             n.data,
             codeData
@@ -41,11 +44,11 @@ object CreateContractOps {
         context: ExecutionContext
     ): ExecutionContext {
         val (callerBalance, callerAddress) = with(currentCallCtx) {
-            Pair(evmState.balanceOf(caller), caller)
+            Pair(accounts.balanceOf(caller), caller)
         }
 
         return when {
-            context.evmState.accountExists(atAddress) -> {
+            context.accounts.accountExists(atAddress) -> {
                 val message = "There is already a contract at $atAddress"
                 HaltOps.fail(context, EvmError(ErrorCode.CONTRACT_EXISTS, message))
             }
@@ -58,19 +61,18 @@ object CreateContractOps {
                 val contract = Contract(newContractCode)
                 val balance = v.toBigInt()
                 val sender = context.currentCallCtx.caller
-                val newEvmState = evmState
+                val newEvmState = accounts
                     .updateBalanceAndContract(atAddress, balance, contract)
-                    .updateBalance(sender, evmState.balanceOf(sender).subtract(balance))
+                    .updateBalance(sender, accounts.balanceOf(sender).subtract(balance))
 
                 val newStack2 = newStack.pushWord(atAddress.toWord())
 
                 context
-                    .copy(evmState = newEvmState)
+                    .copy(accounts = newEvmState)
                     .updateCurrentCallCtx(stack = newStack2, memory = newMemory)
             }
         }
     }
 }
 
-private fun createAddress(address: List<Byte>, salt: List<Byte>, codeData: List<Byte>): Address =
-    keccak256(listOf(Byte(0xFF)) + address + salt + keccak256(codeData).data).toAddress()
+

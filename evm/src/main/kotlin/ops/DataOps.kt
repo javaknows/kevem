@@ -72,7 +72,7 @@ object DataOps {
 
     fun extCodeSize(context: ExecutionContext): ExecutionContext = with(context) {
         val (popped, newStack) = stack.popWord()
-        val code = evmState.codeAt(popped.toAddress())
+        val code = accounts.codeAt(popped.toAddress())
         val finalStack = newStack.pushWord(Word.coerceFrom(code.size))
 
         context.updateCurrentCallCtx(stack = finalStack)
@@ -82,7 +82,7 @@ object DataOps {
         val (elements, newStack) = stack.popWords(4)
         val (address, to, from, size) = elements
 
-        val code = evmState.codeAt(address.toAddress())
+        val code = accounts.codeAt(address.toAddress())
         val data = code.drop(from.toInt()).take(size.toInt())
         val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
         val newMemory = memory.write(to.toInt(), paddedData)
