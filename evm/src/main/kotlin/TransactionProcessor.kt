@@ -7,6 +7,7 @@ import java.time.Instant
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.numbers.generateAddressFromSenderAndNonce
 
+// TODO - consider block gas limit
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
     fun process(

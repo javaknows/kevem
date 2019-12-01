@@ -70,6 +70,14 @@ class TransactionProcessorStepDefs : En {
             worldState = worldState.copy(accounts = newAccounts)
         }
 
+        Given("account (0x[a-zA-Z0-9]+) has nonce (.*)") { a: String, n: String ->
+            val address = Address(a)
+            val nonce = toBigInteger(n)
+
+            val newAccounts = worldState.accounts.updateNonce(address, nonce)
+            worldState = worldState.copy(accounts = newAccounts)
+        }
+
         When("the transaction is executed") {
             val tp = TransactionProcessor(executor, coinbase)
             val (ws, tr) = tp.process(worldState, transaction, timestamp)

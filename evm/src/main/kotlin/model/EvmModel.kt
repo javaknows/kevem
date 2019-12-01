@@ -165,6 +165,21 @@ class Accounts(private val addresses: Map<Address, Account> = emptyMap()) {
         return Accounts(addresses + Pair(address, location))
     }
 
+    fun updateNonce(address: Address, nonce: BigInteger): Accounts {
+        val location = addresses[address]?.copy(nonce = nonce) ?: Account(
+            address,
+            BigInteger.ZERO,
+            null,
+            nonce
+        )
+        return Accounts(addresses + Pair(address, location))
+    }
+
+    fun incrementNonce(address: Address): Accounts {
+        val newNonce = nonceOf(address) + BigInteger.ONE
+        return updateNonce(address, newNonce)
+    }
+
     fun updateStorage(address: Address, index: BigInteger, value: Word): Accounts {
         val account = addresses[address] ?: Account(address)
         val contract = account.contract ?: Contract()
