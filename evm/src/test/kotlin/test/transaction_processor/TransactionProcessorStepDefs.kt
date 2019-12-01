@@ -90,11 +90,10 @@ class TransactionProcessorStepDefs : En {
             assertThat(worldStateResult!!.accounts.balanceOf(address)).isEqualTo(balance)
         }
 
-        Then("transaction used (.*) gas") { a: String, b: String ->
-            val address = Address(a)
-            val balance = toBigInteger(b)
+        Then("transaction used (.*) gas") {g: String ->
+            val gas = toBigInteger(g)
 
-            assertThat(worldStateResult!!.accounts.balanceOf(address)).isEqualTo(balance)
+            assertThat(transactionResult!!.gasUsed).isEqualTo(gas)
         }
     }
 }

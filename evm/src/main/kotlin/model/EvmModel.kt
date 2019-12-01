@@ -450,4 +450,4 @@ data class TransactionMessage(
 
 enum class ResultStatus {FAILED, COMPLETE, REJECTED}
 
-data class TransactionResult(val status: ResultStatus, val logs: List<Log> = emptyList())
+data class TransactionResult(val status: ResultStatus, val gasUsed: BigInteger, val logs: List<Log> = emptyList())

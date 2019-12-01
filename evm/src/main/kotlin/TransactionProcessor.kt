@@ -18,40 +18,73 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             val (newWorldState, recipient)
                     = updateBalancesAndCreateInitialContractIfRequired(worldState, transaction)
 
-            val executionContext = createExecutionContext(newWorldState, timestamp, transaction, recipient)
-            val executionResult = executor.executeAll(executionContext)
-
-            if (executionResult.lastCallError == EvmError.None) {
-                val finalisedAccounts = applyRefundsAndSuicides(executionResult)
-
-                val accountsWithNewContractCode =
-                    updateCreatedContractCodeIfRequired(finalisedAccounts, transaction, executionResult, recipient)
-
-                Pair(
-                    newWorldState.copy(accounts = accountsWithNewContractCode),
-                    TransactionResult(
-                        ResultStatus.COMPLETE,
-                        executionResult.logs
-                    )
-                )
-            } else Pair(
-                worldState.copy(accounts = deductAllSenderGas(worldState.accounts, transaction)),
-                TransactionResult(ResultStatus.FAILED)
+            val execResult = executor.executeAll(
+                createExecutionContext(newWorldState, timestamp, transaction, recipient)
             )
 
-        } else Pair(worldState, TransactionResult(ResultStatus.REJECTED))
+            if (execResult.lastCallError == EvmError.None) {
+                val contractCreationGas = contractCreationCost(transaction, execResult)
+                if (contractCreationGas + execResult.gasUsed > transaction.gasLimit)
+                    consumeGasLimitAndFailResult(worldState, transaction)
+                else {
+                    val finalisedAccounts = applyRefundsAndSuicides(execResult)
 
-    private fun updateCreatedContractCodeIfRequired(
+                    val gasUsed = contractCreationGas + execResult.gasUsed
+                    //val gasRefund = transaction.gasLimit - gasUsed
+                    val xAccounts = chargeAccount(finalisedAccounts, transaction.from, contractCreationGas)
+
+                    val accountsWithNewContractCode =
+                        updateCodeIfCreated(
+                            xAccounts,
+                            transaction.to != null,
+                            execResult.lastReturnData,
+                            recipient
+                        )
+                    Pair(
+                        newWorldState.copy(accounts = accountsWithNewContractCode),
+                        TransactionResult(
+                            ResultStatus.COMPLETE,
+                            gasUsed,
+                            execResult.logs
+                        )
+                    )
+                }
+            } else consumeGasLimitAndFailResult(worldState, transaction)
+        } else Pair(
+            worldState,
+            TransactionResult(ResultStatus.REJECTED, BigInteger.ZERO)
+        )
+
+    private fun giveAccount(accounts: Accounts, address: Address, amount: BigInteger): Accounts {
+        return accounts.updateBalance(address, accounts.balanceOf(address) + amount)
+    }
+
+    private fun chargeAccount(accounts: Accounts, address: Address, amount: BigInteger): Accounts {
+        return accounts.updateBalance(address, accounts.balanceOf(address) - amount)
+    }
+
+    private fun consumeGasLimitAndFailResult(
+        worldState: WorldState,
+        transaction: TransactionMessage
+    ): Pair<WorldState, TransactionResult> {
+        return Pair(
+            worldState.copy(accounts = deductAllSenderGas(worldState.accounts, transaction)),
+            TransactionResult(ResultStatus.FAILED, transaction.gasLimit)
+        )
+    }
+
+    private fun updateCodeIfCreated(
         finalisedAccounts: Accounts,
-        transaction: TransactionMessage,
-        executionResult: ExecutionContext,
+        isCreate: Boolean,
+        code: List<Byte>,
         recipient: Address
     ): Accounts =
-        if (transaction.to != null) {
+        if (isCreate) {
             val c = finalisedAccounts.contractAt(recipient) ?: Contract()
-            val newContract = c.copy(code = executionResult.lastReturnData)
+            val newContract = c.copy(code = code)
             finalisedAccounts.updateContract(recipient, newContract)
-        } else finalisedAccounts
+        } else
+            finalisedAccounts
 
     private fun applyRefundsAndSuicides(executionResult: ExecutionContext): Accounts =
         removeSuicidedAccounts(
@@ -109,7 +142,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         }
 
     /**
-     * update sender balance to deduct call value and intrinsic gas cost
+     * update sender balance to deduct call value
      */
     private fun deductFromSender(accounts: Accounts, transaction: TransactionMessage): Accounts {
         val senderBalance = accounts.balanceOf(transaction.from)
@@ -142,6 +175,12 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         return GasCost.Transaction.costBigInt + createCost + dataCost
     }
 
+    private fun contractCreationCost(transaction: TransactionMessage, executionResult: ExecutionContext): BigInteger =
+        if (transaction.to == null)
+            GasCost.CodeDeposit.costBigInt * executionResult.lastReturnData.size.toBigInteger() * transaction.gasPrice
+        else
+            BigInteger.ZERO
+
     private fun createExecutionContext(
         worldState: WorldState,
         timestamp: Instant,
@@ -166,13 +205,15 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             if (isContractCreation(transactionMessage)) transactionMessage.data
             else emptyList()
 
+        val instrinsicGas = instrinsicGas(transactionMessage)
+
         val callContext = CallContext(
             caller = transactionMessage.from,
             callData = callData,
             type = CallType.INITIAL,
             value = transactionMessage.value,
             code = code,
-            gas = transactionMessage.gasLimit,
+            gas = transactionMessage.gasLimit - instrinsicGas,
             contractAddress = recipient,
             storageAddress = recipient
         )
@@ -187,7 +228,8 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             coinBase = coinbase,
             callStack = listOf(callContext),
             accounts = worldState.accounts,
-            previousBlocks = previousBlocks
+            previousBlocks = previousBlocks,
+            gasUsed = instrinsicGas
         )
     }
 

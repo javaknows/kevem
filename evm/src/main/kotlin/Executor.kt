@@ -8,6 +8,7 @@ import java.math.BigInteger
 
 // TODO - don't accept certain operations depending on fork version configured
 // TODO - move stack overflow check to start (add on opcode stack delta)
+// TODO - handle gasPrice (currently assume it is 1)
 
 class Executor(private val gasCostCalculator: GasCostCalculator) {
     tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
