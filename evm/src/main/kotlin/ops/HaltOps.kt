@@ -7,7 +7,7 @@ import java.math.BigInteger
 object HaltOps {
     fun stop(context: ExecutionContext): ExecutionContext = with(context) {
         val caller = currentCallCtx.caller
-        val refund = currentCallCtx.gasRemaining
+        val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)
@@ -30,7 +30,7 @@ object HaltOps {
         val (returnData, newMemory) = memory.read(dataLocation, dataSize)
 
         val caller = currentCallCtx.caller
-        val refund = currentCallCtx.gasRemaining
+        val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, oldCtx ->
             val data = coerceByteListToSize(returnData, oldCtx.returnSize)
@@ -87,7 +87,7 @@ object HaltOps {
         val completed = context.callStack.size == 1
 
         val caller = currentCallCtx.caller
-        val refund = currentCallCtx.gasRemaining
+        val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
 
         val callStack = updateLastCallCtxIfPresent(callingContext.callStack) { ctx ->
             val data = coerceByteListToSize(returnData, oldCtx.returnSize)
@@ -112,7 +112,7 @@ object HaltOps {
         val sendFundsToAddress = a.toAddress()
 
         val caller = currentCallCtx.caller
-        val refund = currentCallCtx.gasRemaining
+        val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)

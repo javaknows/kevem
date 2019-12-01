@@ -29,17 +29,19 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
                 else {
                     val finalisedAccounts = applyRefundsAndSuicides(execResult)
 
-                    val gasUsed = contractCreationGas + execResult.gasUsed
-                    //val gasRefund = transaction.gasLimit - gasUsed
-                    val xAccounts = chargeAccount(finalisedAccounts, transaction.from, contractCreationGas)
+                    val contractCreationGasCharge = contractCreationGas * transaction.gasPrice
+                    val accountsAfterFinalCharge = chargeAccount(finalisedAccounts, transaction.from, contractCreationGasCharge)
 
                     val accountsWithNewContractCode =
                         updateCodeIfCreated(
-                            xAccounts,
+                            accountsAfterFinalCharge,
                             transaction.to != null,
                             execResult.lastReturnData,
                             recipient
                         )
+
+                    val gasUsed = contractCreationGas + execResult.gasUsed
+
                     Pair(
                         newWorldState.copy(accounts = accountsWithNewContractCode),
                         TransactionResult(
@@ -68,7 +70,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         transaction: TransactionMessage
     ): Pair<WorldState, TransactionResult> {
         return Pair(
-            worldState.copy(accounts = deductAllSenderGas(worldState.accounts, transaction)),
+            worldState.copy(accounts = consumeGasLimit(worldState.accounts, transaction)),
             TransactionResult(ResultStatus.FAILED, transaction.gasLimit)
         )
     }
@@ -124,8 +126,8 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         // TODO - fail if exists already?
     }
 
-    private fun deductAllSenderGas(accounts: Accounts, transaction: TransactionMessage): Accounts {
-        val newBalance = accounts.balanceOf(transaction.from) - transaction.gasLimit
+    private fun consumeGasLimit(accounts: Accounts, transaction: TransactionMessage): Accounts {
+        val newBalance = accounts.balanceOf(transaction.from) - (transaction.gasLimit * transaction.gasPrice)
         return accounts.updateBalance(transaction.from, newBalance)
     }
 
