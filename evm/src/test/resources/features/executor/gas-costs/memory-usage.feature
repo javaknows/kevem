@@ -15,23 +15,10 @@ Feature: Gas costs for memory use
 
     Examples:
       | name                                                | length | gas  | notes                  |
-      | one word of memory is used                          | 0x1    | 8    | 5 (base) + 3 + 0       |
-      | upper bound of 1 word of memory is used             | 0x20   | 8    | 5 (base) + 3 + 0       |
-      | lower bound of 2 words of memory is used            | 0x21   | 14   | 8 (base) + 6 + 0       |
-      | very high memeory hitting non-zero quadratic factor | 0x2100 | 1722 | 794 (base) + 792 + 136 |
-
-  Scenario Outline: <name>
-    Given the stack contains elements [0x0, 0x0, <length>]
-    When opcode CALLDATACOPY is executed
-    Then <gas> gas is now used
-
-    Examples:
-      | name                       | length | gas | notes            |
-      | one word of memory is used | 0x1    | 8   | 5 (base) + 3 + 0 |
-      #| upper bound of 1 word of memory is used             | 0x20   | 8    | 5 (base) + 3 + 0       |
-      #| lower bound of 2 words of memory is used            | 0x21   | 14   | 8 (base) + 6 + 0       |
-      #| very high memeory hitting non-zero quadratic factor | 0x2100 | 1722 | 794 (base) + 792 + 136 |
-
+      | one word of memory is used                          | 0x1    | 9    | 6 (base) + 3 + 0       |
+      | upper bound of 1 word of memory is used             | 0x20   | 9    | 6 (base) + 3 + 0       |
+      | lower bound of 2 words of memory is used            | 0x21   | 15   | 9 (base) + 6 + 0       |
+      | very high memeory hitting non-zero quadratic factor | 0x2100 | 1723 | 795 (base) + 792 + 136 |
 
   Scenario: MLOAD uses charges for one word of memory if not previously accessed
     Given the stack contains elements [0x0]

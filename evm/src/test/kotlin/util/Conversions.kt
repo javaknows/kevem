@@ -11,7 +11,7 @@ internal fun toBigInteger(number: String) =
     else BigInteger(number)
 
 internal fun byteCodeOrDataFromNamesOrHex(byteCodeNames: String): List<Byte> =
-    byteCodeNames.split(",")
+    byteCodeNames.split("[, ]".toRegex())
         .map { it.trim() }
         .map {
             if (it.startsWith("0x")) Byte(it)

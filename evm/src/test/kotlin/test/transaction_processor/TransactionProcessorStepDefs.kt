@@ -57,7 +57,7 @@ class TransactionProcessorStepDefs : En {
                 toBigInteger(row[2]),
                 toBigInteger(row[3]),
                 toBigInteger(row[4]),
-                toByteList(row[5]),
+                toCodeList(row[5]),
                 toBigInteger(row[6])
             )
         }
@@ -98,10 +98,31 @@ class TransactionProcessorStepDefs : En {
             assertThat(worldStateResult!!.accounts.balanceOf(address)).isEqualTo(balance)
         }
 
-        Then("transaction used (.*) gas") {g: String ->
+        Then("transaction used (.*) gas") { g: String ->
             val gas = toBigInteger(g)
 
             assertThat(transactionResult!!.gasUsed).isEqualTo(gas)
         }
+
+        Then("a contract with address (.*) was created") { a: String ->
+            val address = Address(a)
+
+            assertThat(transactionResult!!.created).isEqualTo(address)
+        }
+
+        Then("the code at address (.*) is now (.*)") { a: String, c: String ->
+            val address = Address(a)
+            val code = toByteList(c)
+
+            val actual = worldStateResult!!.accounts.contractAt(address)!!.code
+            assertThat(actual).isEqualTo(code)
+        }
     }
+
+    private fun toCodeList(code: String): List<Byte> =
+        if (code.startsWith("["))
+            byteCodeOrDataFromNamesOrHex(code.replace("[\\[\\]]".toRegex(), ""))
+        else
+            toByteList(code)
+
 }

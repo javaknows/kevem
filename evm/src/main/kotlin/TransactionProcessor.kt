@@ -10,6 +10,7 @@ import com.gammadex.kevin.evm.numbers.generateAddressFromSenderAndNonce
 typealias ProcessResult = Pair<WorldState, TransactionResult>
 
 // TODO - consider block gas limit
+// TODO - pass around account instead of wordState
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
     fun process(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult =
@@ -75,9 +76,10 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         return ProcessResult(
             newWorldState.copy(accounts = accountsWithNewContractCode),
             TransactionResult(
-                ResultStatus.COMPLETE,
-                gasUsed,
-                execResult.logs
+                status = ResultStatus.COMPLETE,
+                gasUsed = gasUsed,
+                logs = execResult.logs,
+                created = if (isContractCreation(tx)) recipient else null
             )
         )
     }

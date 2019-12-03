@@ -98,7 +98,7 @@ class BaseGasCostCalculator(
     private fun dataCopyCost(executionContext: ExecutionContext): BigInteger {
         val (_, _, size) = executionContext.currentCallCtx.stack.peekWords(3)
 
-        return GasCost.Base.costBigInt + GasCost.Copy.costBigInt * numWordsRoundedUp(size.toBigInt())
+        return GasCost.VeryLow.costBigInt + GasCost.Copy.costBigInt * numWordsRoundedUp(size.toBigInt())
     }
 
     /**

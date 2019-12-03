@@ -463,6 +463,11 @@ data class TransactionMessage(
     val nonce: BigInteger
 )
 
-enum class ResultStatus {FAILED, COMPLETE, REJECTED}
+enum class ResultStatus { FAILED, COMPLETE, REJECTED }
 
-data class TransactionResult(val status: ResultStatus, val gasUsed: BigInteger, val logs: List<Log> = emptyList())
+data class TransactionResult(
+    val status: ResultStatus,
+    val gasUsed: BigInteger,
+    val logs: List<Log> = emptyList(),
+    val created: Address? = null
+)

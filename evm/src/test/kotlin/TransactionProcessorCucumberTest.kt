@@ -9,6 +9,7 @@ import org.junit.runner.RunWith
     plugin = ["pretty"],
     features = ["src/test/resources/features/transaction_processor"],
     tags = ["not @Ignore"],
+    //tags = ["@Only"],
     glue=["com.gammadex.kevin.evm.test.transaction_processor"]
 
 )

@@ -6,7 +6,7 @@ Feature: Gas costs for copy operations
     And 0x0 is pushed onto the stack
     And 0x0 is pushed onto the stack
     When opcode <opcode> is executed
-    Then 5 gas is now used
+    Then 6 gas is now used
 
     Examples:
       | opcode         |
@@ -19,7 +19,7 @@ Feature: Gas costs for copy operations
     And 0x0 is pushed onto the stack
     And 0x0 is pushed onto the stack
     When opcode <opcode> is executed
-    Then 8 gas is now used
+    Then 9 gas is now used
 
     Examples:
       | opcode         |
