@@ -43,8 +43,9 @@ object CreateContractOps {
         newStack: Stack,
         context: ExecutionContext
     ): ExecutionContext {
-        val (callerBalance, callerAddress) = with(currentCallCtx) {
-            Pair(accounts.balanceOf(caller), caller)
+        val (currentBalance, currentAddress) = with(currentCallCtx) {
+            val current  = contractAddress ?: throw RuntimeException("can't determine contract address")
+            Pair(accounts.balanceOf(current), current)
         }
 
         return when {
@@ -52,18 +53,17 @@ object CreateContractOps {
                 val message = "There is already a contract at $atAddress"
                 HaltOps.fail(context, EvmError(ErrorCode.CONTRACT_EXISTS, message))
             }
-            callerBalance < v.toBigInt() -> {
-                val message = "$callerAddress has balance of $callerBalance but attempted to send $v"
+            currentBalance < v.toBigInt() -> {
+                val message = "$currentAddress has balance of $currentBalance but attempted to send $v"
                 HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
             }
             else -> {
                 val (newContractCode, newMemory) = memory.read(p, s)
                 val contract = Contract(newContractCode)
                 val balance = v.toBigInt()
-                val sender = context.currentCallCtx.caller
                 val newEvmState = accounts
                     .updateBalanceAndContract(atAddress, balance, contract)
-                    .updateBalance(sender, accounts.balanceOf(sender).subtract(balance))
+                    .updateBalance(currentAddress, accounts.balanceOf(currentAddress).subtract(balance))
 
                 val newStack2 = newStack.pushWord(atAddress.toWord())
 

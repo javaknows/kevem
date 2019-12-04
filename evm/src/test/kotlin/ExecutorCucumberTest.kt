@@ -9,6 +9,7 @@ import org.junit.runner.RunWith
     plugin = ["pretty"],
     features = ["src/test/resources/features/executor"],
     tags = ["not @Ignore"],
+    //tags = ["@Only"],
     glue=["com.gammadex.kevin.evm.test.executor"]
 
 )
