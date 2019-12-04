@@ -106,6 +106,12 @@ class TransactionProcessorStepDefs : En {
             assertThat(worldStateResult!!.accounts.balanceOf(address)).isEqualTo(balance)
         }
 
+        Then("account (0x[a-zA-Z0-9]+) does not exist") { a: String ->
+            val address = Address(a)
+
+            assertThat(worldStateResult!!.accounts.accountExists(address)).isEqualTo(false)
+        }
+
         Then("transaction used (.*) gas") { g: String ->
             val gas = toBigInteger(g)
 

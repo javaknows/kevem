@@ -11,7 +11,6 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 
 // TODO - consider block gas limit
 // TODO - pass around account instead of wordState
-// TODO - test failed contract creation code execution
 // TODO - define behaviour for two suicides of same contract in same tx
 // TODO - test CREATE calls inside contract creation tx
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
@@ -138,7 +137,9 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         val (recipient, newWorldState2) =
             if (isContractCreation(transaction)) {
                 val contractAddress = createContractAddress(newWorldState, transaction)
-                val newAccounts = newWorldState.accounts.updateContract(contractAddress, Contract())
+                val newAccounts = newWorldState.accounts
+                    .updateContract(contractAddress, Contract())
+                    .updateNonce(contractAddress, BigInteger.ONE)
                 Pair(contractAddress, newWorldState.copy(accounts = newAccounts))
             } else Pair(transaction.to!!, newWorldState)
 
