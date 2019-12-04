@@ -10,11 +10,10 @@ import com.gammadex.kevin.evm.numbers.generateAddressFromSenderAndNonce
 typealias ProcessResult = Pair<WorldState, TransactionResult>
 
 // TODO - consider block gas limit
-// TODO - pass around account instead of wordState
 // TODO - define behaviour for two suicides of same contract in same tx
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
-    fun process(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult =
+    internal fun process(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult =
         if (isValid(worldState, tx)) {
             val ws = incrementSenderNonce(worldState, tx.from)
             processValidTx(ws, tx, timestamp)

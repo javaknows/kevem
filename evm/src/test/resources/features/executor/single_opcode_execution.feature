@@ -248,6 +248,30 @@ Feature: Single Opcode Execution
     Then data in storage at location 9 of current contract is now 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee
     And 9 bytes of memory from position 0 is empty
 
+  Scenario: clearing storage triggers refund for tx origin
+    Given 0x123456 is in storage at location 0x9 of current contract
+    And transaction origin is 0xBB
+    And 0x0 is pushed onto the stack
+    And 0x9 is pushed onto the stack
+    When opcode SSTORE is executed
+    Then account 0xBB has a refund of 15000
+
+  Scenario: overwriting zero with zero storage triggers no refund
+    Given 0x0 is in storage at location 0x9 of current contract
+    And transaction origin is 0xBB
+    And 0x0 is pushed onto the stack
+    And 0x9 is pushed onto the stack
+    When opcode SSTORE is executed
+    Then account 0xBB has a refund of 0
+
+  Scenario: overwriting zero with non-zero storage triggers no refund
+    Given 0x0 is in storage at location 0x9 of current contract
+    And transaction origin is 0xBB
+    And 0x1 is pushed onto the stack
+    And 0x9 is pushed onto the stack
+    When opcode SSTORE is executed
+    Then account 0xBB has a refund of 0
+
   Scenario: can jump to a location in code with JUMP
     Given contract code is [JUMP, DUP1, DUP1, JUMPDEST, SSTORE, GAS]
     And 0x3 is pushed onto the stack
