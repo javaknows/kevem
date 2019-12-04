@@ -11,13 +11,23 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 
 // TODO - consider block gas limit
 // TODO - pass around account instead of wordState
+// TODO - test failed contract creation code execution
+// TODO - test when contract creation gas is over limit
+// TODO - test suicides + suicide refunds
+// TODO - test CREATE calls inside contract creation tx
+// TODO - increment account nonce
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
     fun process(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult =
-        if (isValid(worldState, tx))
-            processValidTx(worldState, tx, timestamp)
-        else
+        if (isValid(worldState, tx)) {
+            val ws = incrementSenderNonce(worldState, tx.from)
+            processValidTx(ws, tx, timestamp)
+        } else
             rejectInvalidTx(worldState)
+
+    private fun incrementSenderNonce(worldState: WorldState, sender: Address) = worldState.apply {
+        return copy(accounts = accounts.incrementNonce(sender))
+    }
 
     private fun processValidTx(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult {
         val (newWorldState, recipient) = updateBalancesAndCreateInitialContractIfRequired(worldState, tx)
@@ -143,7 +153,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
 
     private fun createContractAddress(worldState: WorldState, transaction: TransactionMessage): Address {
         val nonce = worldState.accounts.nonceOf(transaction.from)
-        return generateAddressFromSenderAndNonce(transaction.from, nonce)
+        return generateAddressFromSenderAndNonce(transaction.from, nonce - BigInteger.ONE)
         // TODO - fail if exists already?
     }
 

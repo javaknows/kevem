@@ -27,7 +27,6 @@ Feature: Transaction Processing
     And account 0x5E4DE7 now has balance 99999999999958000
     # 99999999999957900 = 100000000000000000 - (2 * 21000)
 
-  @Only
   Scenario: Gas cost for a small contract
     Given a transaction with contents:
       | from     | to | value | gasPrice | gasLimit | data                                                                               | nonce |
