@@ -12,10 +12,8 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 // TODO - consider block gas limit
 // TODO - pass around account instead of wordState
 // TODO - test failed contract creation code execution
-// TODO - test when contract creation gas is over limit
 // TODO - test suicides + suicide refunds
 // TODO - test CREATE calls inside contract creation tx
-// TODO - increment account nonce
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
     fun process(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult =

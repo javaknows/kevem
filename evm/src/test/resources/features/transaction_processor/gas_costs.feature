@@ -1,6 +1,4 @@
-Feature: Transaction Processing
-
-  Check that a transaction can be processed
+Feature: Gas Costs In Transaction Processing
 
   Background: Account has plenty funds
     Given account 0x5E4DE7 has nonce 0
@@ -45,3 +43,11 @@ Feature: Transaction Processing
     # contract creation base fee: 32000
     # contract creation data size fee: = 200 * 1 = 200
     #  200 + 32000 + 3 + 6 + 15 + 756 + 21000 = 53980
+
+
+  Scenario: Check transaction fails when contract creation gas takes gas used over limit
+    Given a transaction with contents:
+      | from     | to | value | gasPrice | gasLimit | data                                                                               | nonce |
+      | 0x5E4DE7 |    | 0     | 1        | 53979    | [PUSH1 0x01 DUP1 PUSH1 0x0C PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN INVALID ADDRESS] | 0     |
+    When the transaction is executed
+    Then the result status is now FAILED
