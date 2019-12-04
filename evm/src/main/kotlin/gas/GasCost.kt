@@ -8,12 +8,6 @@ enum class Refund(val wei: Int) {
     StorageClear(15000)
 }
 
-enum class GasCategory {
-    Formula,
-    MemoryUsage,
-    Simple
-}
-
 enum class GasCost(val cost: Int) {
     Zero(0),
     Base(2),

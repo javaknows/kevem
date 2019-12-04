@@ -1,6 +1,7 @@
 package com.gammadex.kevin.evm.ops
 
 import com.gammadex.kevin.evm.coerceByteListToSize
+import com.gammadex.kevin.evm.gas.Refund
 import com.gammadex.kevin.evm.model.*
 import java.math.BigInteger
 
@@ -112,7 +113,7 @@ object HaltOps {
         val sendFundsToAddress = a.toAddress()
 
         val caller = currentCallCtx.caller
-        val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
+        val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice + Refund.SelfDestruct.wei.toBigInteger()
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)

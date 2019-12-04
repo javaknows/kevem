@@ -12,7 +12,7 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 // TODO - consider block gas limit
 // TODO - pass around account instead of wordState
 // TODO - test failed contract creation code execution
-// TODO - test suicides + suicide refunds
+// TODO - define behaviour for two suicides of same contract in same tx
 // TODO - test CREATE calls inside contract creation tx
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 

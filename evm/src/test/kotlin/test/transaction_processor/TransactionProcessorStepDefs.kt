@@ -125,6 +125,16 @@ class TransactionProcessorStepDefs : En {
             val actual = worldStateResult!!.accounts.contractAt(address)!!.code
             assertThat(actual).isEqualTo(code)
         }
+
+        Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([xA-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
+            val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
+            val newAddress = Address(address)
+            val newContract = Contract(byteCode)
+
+            worldState = worldState.run {
+                copy(accounts = accounts.updateContract(newAddress, newContract))
+            }
+        }
     }
 
     private fun toCodeList(code: String): List<Byte> =
