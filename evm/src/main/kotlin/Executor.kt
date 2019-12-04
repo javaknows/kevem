@@ -7,15 +7,13 @@ import com.gammadex.kevin.evm.ops.*
 import java.math.BigInteger
 
 // TODO - don't accept certain operations depending on fork version configured
-// TODO - move stack overflow check to start (add on opcode stack delta)
 
 class Executor(private val gasCostCalculator: GasCostCalculator) {
     tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
         if (executionCtx.completed) executionCtx
         else executeAll(executeNextOpcode(executionCtx))
 
-    // TODO - make this private - public because convenient for testing
-    fun executeNextOpcode(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
+    internal fun executeNextOpcode(executionCtx: ExecutionContext): ExecutionContext = with(executionCtx) {
         if (isEndOfContract(currentCallContextOrNull))
             HaltOps.stop(executionCtx)
         else {
@@ -28,6 +26,9 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
                 )
                 isStackUnderflow(opcode, currentCallCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STACK_UNDERFLOW, "Stack not deep enough for $opcode")
+                )
+                isStackOverflow(opcode, currentCallCtx) -> HaltOps.fail(
+                    executionCtx, EvmError(ErrorCode.STACK_OVERFLOW, "Stack overflow")
                 )
                 isModifyInStaticCall(opcode, executionCtx) -> HaltOps.fail(
                     executionCtx, EvmError(ErrorCode.STATE_CHANGE_STATIC_CALL, "$opcode not allowed in static call")
@@ -63,6 +64,9 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
 
     private fun isStackUnderflow(opcode: Opcode?, callCtx: CallContext) =
         Opcode.numArgs(opcode) > callCtx.stack.size()
+
+    private fun isStackOverflow(opcode: Opcode?, callCtx: CallContext) =
+        (callCtx.stack.size() - Opcode.numArgs(opcode) + Opcode.numReturn(opcode)) > 1024
 
     private fun isEndOfContract(callCtx: CallContext?) =
         callCtx != null && callCtx.currentLocation !in callCtx.code.indices
@@ -212,14 +216,8 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
             }
         }
 
-        return if (isStackOverflow(updatedContext))
-            HaltOps.fail(updatedContext, EvmError(ErrorCode.STACK_OVERFLOW, "Stack overflow"))
-        else
-            incrementLocation(updatedContext, opcode)
+        return incrementLocation(updatedContext, opcode)
     }
-
-    private fun isStackOverflow(executionCtx: ExecutionContext) =
-        executionCtx.callStack.isNotEmpty() && executionCtx.currentCallCtx.stack.size() > 1024
 
     private fun incrementLocation(executionCtx: ExecutionContext, opcode: Opcode?): ExecutionContext =
         when {

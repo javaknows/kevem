@@ -179,6 +179,8 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
 
         fun numArgs(opcode: Opcode?) = opcode?.numArgs ?: 0
 
+        fun numReturn(opcode: Opcode?) = opcode?.numReturn ?: 0
+
         fun fromName(name: String): Opcode? = values().find { it.name == name.toUpperCase() }
 
         fun fromCode(code: Byte): Opcode? = values().find { it.code == code }
