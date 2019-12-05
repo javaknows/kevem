@@ -41,7 +41,12 @@ class TransactionProcessorStepDefs : En {
         Address("0x1"), Address("0x2"), BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, emptyList(), BigInteger.ZERO
     )
 
-    private var timestamp: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
+    private var currentBlock = Block(
+        number = BigInteger.TWO,
+        difficulty = BigInteger.TWO,
+        gasLimit = BigInteger("1000000000000000000000000000000"),
+        timestamp = Instant.parse("2006-12-04T10:15:30.00Z")
+    )
 
     private var worldStateResult: WorldState? = null
 
@@ -88,7 +93,7 @@ class TransactionProcessorStepDefs : En {
 
         When("the transaction is executed") {
             val tp = TransactionProcessor(executor, coinbase)
-            val (ws, tr) = tp.process(worldState, transaction, timestamp)
+            val (ws, tr) = tp.process(worldState, transaction, currentBlock)
 
             worldStateResult = ws
             transactionResult = tr

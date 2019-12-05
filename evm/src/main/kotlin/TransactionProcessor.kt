@@ -13,10 +13,10 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 // TODO - define behaviour for two suicides of same contract in same tx
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
-    internal fun process(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult =
+    internal fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
         if (isValid(worldState, tx)) {
             val ws = incrementSenderNonce(worldState, tx.from)
-            processValidTx(ws, tx, timestamp)
+            processValidTx(ws, tx, currentBlock)
         } else
             rejectInvalidTx(worldState)
 
@@ -24,11 +24,11 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         return copy(accounts = accounts.incrementNonce(sender))
     }
 
-    private fun processValidTx(worldState: WorldState, tx: TransactionMessage, timestamp: Instant): ProcessResult {
+    private fun processValidTx(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult {
         val (newWorldState, recipient) = updateBalancesAndCreateInitialContractIfRequired(worldState, tx)
 
         val execResult = executor.executeAll(
-            createExecutionCtx(newWorldState, timestamp, tx, recipient)
+            createExecutionCtx(newWorldState, currentBlock, tx, recipient)
         )
 
         return if (execResult.lastCallError == EvmError.None) {
@@ -203,7 +203,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
 
     private fun createExecutionCtx(
         worldState: WorldState,
-        timestamp: Instant,
+        currentBlock: Block,
         tx: TransactionMessage,
         recipient: Address
     ): ExecutionContext {
@@ -211,13 +211,6 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         val code =
             if (tx.to != null) worldState.accounts.codeAt(tx.to)
             else tx.data
-
-        val block = worldState.blocks.last().let { lastBlock ->
-            lastBlock.copy(
-                number = lastBlock.number + BigInteger.ONE,
-                timestamp = timestamp
-            )
-        }
 
         val transaction = Transaction(tx.from, tx.gasPrice)
 
@@ -244,7 +237,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             .toMap()
 
         return ExecutionContext(
-            currentBlock = block,
+            currentBlock = currentBlock,
             currentTransaction = transaction,
             coinBase = coinbase,
             callStack = listOf(callContext),
