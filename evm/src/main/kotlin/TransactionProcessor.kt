@@ -1,5 +1,6 @@
 package com.gammadex.kevin.evm
 
+import com.gammadex.kevin.common.Logger
 import com.gammadex.kevin.evm.gas.GasCost
 import com.gammadex.kevin.evm.model.*
 import java.math.BigInteger
@@ -11,7 +12,10 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 // TODO - consider block gas limit
 // TODO - define behaviour for two suicides of same contract in same tx
 // TODO - proper transaction hash generation
-class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
+class TransactionProcessor(
+    private val executor: Executor,
+    private val log: Logger = Logger.createLogger(TransactionProcessor::class)
+) {
 
     internal fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
         if (isValid(worldState, tx)) {
@@ -41,7 +45,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         worldState: WorldState,
         transaction: TransactionMessage
     ) = ProcessResult(
-        worldState, TransactionResult(ResultStatus.REJECTED, BigInteger.ZERO, hash = transactionHash(transaction))
+        worldState, TransactionResult(ResultStatus.REJECTED, BigInteger.ZERO)
     )
 
     private fun finaliseSuccessfulExecution(
@@ -87,8 +91,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
                 status = ResultStatus.COMPLETE,
                 gasUsed = gasUsed,
                 logs = execResult.logs,
-                created = if (isContractCreation(tx)) recipient else null,
-                hash = transactionHash(tx)
+                created = if (isContractCreation(tx)) recipient else null
             )
         )
     }
@@ -105,7 +108,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
     ): Pair<WorldState, TransactionResult> {
         return Pair(
             worldState.copy(accounts = consumeGasLimit(worldState.accounts, transaction)),
-            TransactionResult(ResultStatus.FAILED, transaction.gasLimit, hash = transactionHash(transaction))
+            TransactionResult(ResultStatus.FAILED, transaction.gasLimit)
         )
     }
 
@@ -177,9 +180,18 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
 
     private fun isValid(worldState: WorldState, transaction: TransactionMessage): Boolean =
         when {
-            transaction.nonce != worldState.accounts.nonceOf(transaction.from) -> false
-            intrinsicGas(transaction) > transaction.gasLimit -> false
-            upFrontCost(transaction) >= worldState.accounts.balanceOf(transaction.from) -> false
+            transaction.nonce != worldState.accounts.nonceOf(transaction.from) -> {
+                log.info("nonce is invalid - ${transaction.nonce} but expected ${worldState.accounts.nonceOf(transaction.from)}")
+                false
+            }
+            intrinsicGas(transaction) > transaction.gasLimit -> {
+                log.info("instrinsic gas ${intrinsicGas(transaction)} is greater than transaction gas ${transaction.gasLimit}")
+                false
+            }
+            upFrontCost(transaction) >= worldState.accounts.balanceOf(transaction.from) -> {
+                log.info("up front cost ${upFrontCost(transaction)} is greater than account balance of ${worldState.accounts.balanceOf(transaction.from)}")
+                false
+            }
             else -> true
         }
 
@@ -212,15 +224,11 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         recipient: Address
     ): ExecutionContext {
 
-        val code =
-            if (tx.to != null) worldState.accounts.codeAt(tx.to)
-            else tx.data
-
         val transaction = Transaction(tx.from, tx.gasPrice)
 
-        val callData =
-            if (isContractCreation(tx)) tx.data
-            else emptyList()
+        val (code, callData) =
+            if (tx.to != null) Pair(worldState.accounts.codeAt(tx.to), tx.data)
+            else Pair(tx.data, emptyList())
 
         val intrinsicGas = intrinsicGas(tx)
 
@@ -243,7 +251,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
         return ExecutionContext(
             currentBlock = currentBlock,
             currentTransaction = transaction,
-            coinBase = coinbase,
+            coinBase = worldState.coinbase,
             callStack = listOf(callContext),
             accounts = worldState.accounts,
             previousBlocks = previousBlocks,
@@ -252,7 +260,4 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
     }
 
     private fun isContractCreation(transaction: TransactionMessage) = transaction.to == null
-
-    private fun transactionHash(tx: TransactionMessage) =
-        keccak256(keccak256(keccak256(tx.data).data + tx.from.toWord().data).data).data
 }

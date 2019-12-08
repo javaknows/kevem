@@ -1,5 +1,8 @@
+include 'common'
 include 'evm'
 include 'compat:generated'
 include 'compat:runner'
+include 'rpc'
+include 'web3'
 
 rootProject.name = 'kevin'

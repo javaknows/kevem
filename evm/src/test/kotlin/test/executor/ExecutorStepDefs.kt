@@ -6,6 +6,7 @@ import com.gammadex.kevin.evm.gas.*
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.lang.*
 import com.gammadex.kevin.evm.model.Byte
+import com.gammadex.kevin.evm.toByteList
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat

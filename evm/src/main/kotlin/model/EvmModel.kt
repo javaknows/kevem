@@ -446,11 +446,7 @@ data class ExecutionContext(
     }
 }
 
-data class WorldState(val blocks: List<MinedBlock>, val accounts: Accounts)
-
-data class MessageCall(val value: BigInteger)
-
-enum class MessageType { CONTRACT_CREATION, CALL }
+data class WorldState(val blocks: List<MinedBlock>, val accounts: Accounts, val coinbase: Address)
 
 data class TransactionMessage(
     val from: Address,
@@ -459,7 +455,8 @@ data class TransactionMessage(
     val gasPrice: BigInteger,
     val gasLimit: BigInteger,
     val data: List<Byte> = emptyList(),
-    val nonce: BigInteger
+    val nonce: BigInteger,
+    val hash: List<Byte> = emptyList() // TODO - this doesn't really fit here - maybe move it
 )
 
 enum class ResultStatus { FAILED, COMPLETE, REJECTED }
@@ -469,7 +466,7 @@ data class TransactionResult(
     val gasUsed: BigInteger,
     val logs: List<Log> = emptyList(),
     val created: Address? = null,
-    val hash: List<Byte>
+    val returnData: List<Byte> = emptyList() // CALL only
 )
 
 data class MinedTransaction(
@@ -481,5 +478,5 @@ data class MinedBlock(
     val block: Block,
     val gasUsed: BigInteger,
     val hash: List<Byte>,
-    val transactions: List<MinedTransaction> = emptyList()
+    val transactions: List<MinedTransaction> = emptyList() // TODO - index should be BigInteger
 )

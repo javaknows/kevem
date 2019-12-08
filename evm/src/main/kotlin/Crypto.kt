@@ -11,3 +11,7 @@ fun keccak256(input: List<Byte>): Word {
 
     return Word.coerceFrom(Hex.toHexString(digest))
 }
+
+// SECP-256k1
+
+//ECDSAPUBKEY, ECDSASIGN and ECDSARECOVER

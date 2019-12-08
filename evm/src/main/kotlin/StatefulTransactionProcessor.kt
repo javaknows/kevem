@@ -26,6 +26,14 @@ class StatefulTransactionProcessor(
             worldState
         }
 
+
+    fun call(tx: TransactionMessage): TransactionResult {
+        val (_, result) = transactionProcessor.process(getWorldState(), tx, worldState.blocks.last().block)
+        // TODO - should use previous world state
+
+        return result
+    }
+
     private fun processAndUpdateWorldState(tx: TransactionMessage): TransactionResult {
         val block = createBlock()
         val (newWorldState, result) = transactionProcessor.process(worldState, tx, block)

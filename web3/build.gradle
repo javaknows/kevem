@@ -7,16 +7,17 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-test-junit5"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
-    implementation "org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}"
+    implementation "org.web3j:core:${web3Version}"
+    implementation project(":rpc")
+    implementation project(":evm")
     implementation project(":common")
     testCompile "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitParamsVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitParamsVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitParamsVersion}"
-    testImplementation "io.cucumber:cucumber-java8:${cucumberVersion}"
-    testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
     testCompile "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
     testCompile "org.assertj:assertj-core:${assertjVersion}"
+    testCompile project(":compat:generated")
 }
 
 compileKotlin {

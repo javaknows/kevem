@@ -26,8 +26,6 @@ class TransactionProcessorStepDefs : En {
         )
     )
 
-    private var coinbase: Address = Address("0xFFEEDD")
-
     private var worldState: WorldState = WorldState(
         listOf(
             MinedBlock(
@@ -40,7 +38,9 @@ class TransactionProcessorStepDefs : En {
                 BigInteger.TWO,
                 keccak256(Word.coerceFrom(BigInteger.ONE).data).data
             )
-        ), Accounts()
+        ),
+        Accounts(),
+        Address("0xFFEEDD")
     )
 
     private var transaction: TransactionMessage = TransactionMessage(
@@ -100,7 +100,7 @@ class TransactionProcessorStepDefs : En {
         }
 
         When("the transaction is executed") {
-            val tp = TransactionProcessor(executor, coinbase)
+            val tp = TransactionProcessor(executor)
             val (ws, tr) = tp.process(worldState, transaction, currentBlock)
 
             worldStateResult = ws
@@ -108,7 +108,7 @@ class TransactionProcessorStepDefs : En {
         }
 
         When("the transaction is executed via stateful transaction processor") {
-            val tp = TransactionProcessor(executor, coinbase)
+            val tp = TransactionProcessor(executor)
             val stp = StatefulTransactionProcessor(tp, clock, worldState)
 
             val tr = stp.process(transaction)
