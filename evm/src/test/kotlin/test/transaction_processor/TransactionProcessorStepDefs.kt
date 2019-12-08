@@ -1,9 +1,6 @@
 package com.gammadex.kevin.evm.test.transaction_processor
 
-import com.gammadex.kevin.evm.Executor
-import com.gammadex.kevin.evm.Opcode
-import com.gammadex.kevin.evm.StatefulTransactionProcessor
-import com.gammadex.kevin.evm.TransactionProcessor
+import com.gammadex.kevin.evm.*
 import com.gammadex.kevin.evm.gas.*
 import com.gammadex.kevin.evm.model.*
 import com.gammadex.kevin.evm.lang.*
@@ -33,11 +30,15 @@ class TransactionProcessorStepDefs : En {
 
     private var worldState: WorldState = WorldState(
         listOf(
-            Block(
-                number = BigInteger.ONE,
-                difficulty = BigInteger.ONE,
-                gasLimit = BigInteger("1000000000000000000000000000000"),
-                timestamp = Instant.parse("2006-12-03T10:15:30.00Z")
+            MinedBlock(
+                Block(
+                    number = BigInteger.ONE,
+                    difficulty = BigInteger.ONE,
+                    gasLimit = BigInteger("1000000000000000000000000000000"),
+                    timestamp = Instant.parse("2006-12-03T10:15:30.00Z")
+                ),
+                BigInteger.TWO,
+                keccak256(Word.coerceFrom(BigInteger.ONE).data).data
             )
         ), Accounts()
     )
@@ -173,8 +174,9 @@ class TransactionProcessorStepDefs : En {
                 toBigInteger(if (row[2] == "any") "1" else row[2]),
                 if (row[3].isNullOrBlank()) clock.instant() else Instant.parse(row[3])
             )
+            val minedBlock = MinedBlock(block, BigInteger.ZERO, emptyList())
 
-            worldState = worldState.copy(blocks = listOf(block))
+            worldState = worldState.copy(blocks = listOf(minedBlock))
         }
 
         Then("the mined block now has:") { dataTable: DataTable ->
@@ -187,7 +189,8 @@ class TransactionProcessorStepDefs : En {
             val numLogs = toBigInteger(row[4])
             val numTransactions = toBigInteger(row[5])
 
-            val lastBlock = worldStateResult!!.blocks.last()
+            val lastMinedBlock = worldStateResult!!.blocks.last()
+            val lastBlock = lastMinedBlock.block
             assertThat(number).isEqualTo(lastBlock.number)
             assertThat(difficulty).isEqualTo(lastBlock.difficulty)
             assertThat(gasLimit).isEqualTo(lastBlock.gasLimit)

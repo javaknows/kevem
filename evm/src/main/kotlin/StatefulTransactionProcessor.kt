@@ -34,9 +34,10 @@ class StatefulTransactionProcessor(
     }
 
     private fun createBlock(): Block =
-        worldState.blocks.last().let { lastBlock ->
-            lastBlock.copy(
-                number = lastBlock.number + BigInteger.ONE,
+        worldState.blocks.last().let { lastMinedBlock ->
+            val block = lastMinedBlock.block
+            block.copy(
+                number = block.number + BigInteger.ONE,
                 timestamp = clock.instant()
             )
         }
@@ -48,6 +49,8 @@ class StatefulTransactionProcessor(
         worldState: WorldState
     ): WorldState {
         val newBlock = block.copy(transactions = block.transactions + MinedTransaction(tx, result))
-        return worldState.copy(blocks = worldState.blocks + newBlock)
+        val hash = keccak256(Word.coerceFrom(block.number).data)
+        val newMinedBlock = MinedBlock(newBlock, result.gasUsed, hash.data)
+        return worldState.copy(blocks = worldState.blocks + newMinedBlock)
     }
 }

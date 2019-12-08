@@ -448,7 +448,7 @@ data class ExecutionContext(
     }
 }
 
-data class WorldState(val blocks: List<Block>, val accounts: Accounts)
+data class WorldState(val blocks: List<MinedBlock>, val accounts: Accounts)
 
 data class MessageCall(val value: BigInteger)
 
@@ -477,4 +477,10 @@ data class TransactionResult(
 data class MinedTransaction(
     val message: TransactionMessage,
     val result: TransactionResult
+)
+
+data class MinedBlock(
+    val block: Block,
+    val gasUsed: BigInteger,
+    val hash: List<Byte>
 )

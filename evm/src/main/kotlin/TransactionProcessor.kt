@@ -236,7 +236,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
 
         val previousBlocks = worldState.blocks
             .takeLast(256)
-            .map { Pair(it.number, Word.coerceFrom(it.number)) } // TODO - should be a real block hash
+            .map { Pair(it.block.number, Word.coerceFrom(it.hash)) }
             .toMap()
 
         return ExecutionContext(
