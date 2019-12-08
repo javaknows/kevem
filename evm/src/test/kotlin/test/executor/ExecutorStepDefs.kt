@@ -687,7 +687,8 @@ class ExecutorStepDefs : En {
             ),
             currentTransaction = Transaction(
                 origin = Address("0xFFEEDD"),
-                gasPrice = BigInteger.ONE
+                gasPrice = BigInteger.ONE,
+                hash = emptyList()
             ),
             coinBase = Address("0xFFEEDD"),
             logs = emptyList(),

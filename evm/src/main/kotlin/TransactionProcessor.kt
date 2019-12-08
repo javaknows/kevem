@@ -3,7 +3,6 @@ package com.gammadex.kevin.evm
 import com.gammadex.kevin.evm.gas.GasCost
 import com.gammadex.kevin.evm.model.*
 import java.math.BigInteger
-import java.time.Instant
 import com.gammadex.kevin.evm.model.Byte
 import com.gammadex.kevin.evm.numbers.generateAddressFromSenderAndNonce
 
@@ -18,7 +17,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             val ws = incrementSenderNonce(worldState, tx.from)
             processValidTx(ws, tx, currentBlock)
         } else
-            rejectInvalidTx(worldState)
+            rejectInvalidTx(worldState, tx)
 
     private fun incrementSenderNonce(worldState: WorldState, sender: Address) = worldState.apply {
         return copy(accounts = accounts.incrementNonce(sender))
@@ -37,8 +36,11 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             consumeGasLimitAndFailResult(worldState, tx)
     }
 
-    private fun rejectInvalidTx(worldState: WorldState) = ProcessResult(
-        worldState, TransactionResult(ResultStatus.REJECTED, BigInteger.ZERO)
+    private fun rejectInvalidTx(
+        worldState: WorldState,
+        transaction: TransactionMessage
+    ) = ProcessResult(
+        worldState, TransactionResult(ResultStatus.REJECTED, BigInteger.ZERO, hash = transactionHash(transaction))
     )
 
     private fun finaliseSuccessfulExecution(
@@ -84,7 +86,8 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
                 status = ResultStatus.COMPLETE,
                 gasUsed = gasUsed,
                 logs = execResult.logs,
-                created = if (isContractCreation(tx)) recipient else null
+                created = if (isContractCreation(tx)) recipient else null,
+                hash = transactionHash(tx)
             )
         )
     }
@@ -101,7 +104,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
     ): Pair<WorldState, TransactionResult> {
         return Pair(
             worldState.copy(accounts = consumeGasLimit(worldState.accounts, transaction)),
-            TransactionResult(ResultStatus.FAILED, transaction.gasLimit)
+            TransactionResult(ResultStatus.FAILED, transaction.gasLimit, hash = transactionHash(transaction))
         )
     }
 
@@ -212,7 +215,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             if (tx.to != null) worldState.accounts.codeAt(tx.to)
             else tx.data
 
-        val transaction = Transaction(tx.from, tx.gasPrice)
+        val transaction = Transaction(tx.from, tx.gasPrice, transactionHash(tx))
 
         val callData =
             if (isContractCreation(tx)) tx.data
@@ -248,4 +251,8 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
     }
 
     private fun isContractCreation(transaction: TransactionMessage) = transaction.to == null
+
+    // TODO - this hashing is made up
+    private fun transactionHash(tx: TransactionMessage) =
+        keccak256(keccak256(keccak256(tx.data).data + tx.from.toWord().data).data).data
 }

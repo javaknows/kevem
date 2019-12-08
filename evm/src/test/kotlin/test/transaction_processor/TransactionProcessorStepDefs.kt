@@ -2,6 +2,7 @@ package com.gammadex.kevin.evm.test.transaction_processor
 
 import com.gammadex.kevin.evm.Executor
 import com.gammadex.kevin.evm.Opcode
+import com.gammadex.kevin.evm.StatefulTransactionProcessor
 import com.gammadex.kevin.evm.TransactionProcessor
 import com.gammadex.kevin.evm.gas.*
 import com.gammadex.kevin.evm.model.*
@@ -14,7 +15,11 @@ import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
 import com.gammadex.kevin.evm.util.*
+import java.time.ZoneId
 
+/**
+ * Step definitions for TransactionProcessor and StatefulTransactionProcessor
+ */
 class TransactionProcessorStepDefs : En {
 
     private val executor = Executor(
@@ -47,6 +52,8 @@ class TransactionProcessorStepDefs : En {
         gasLimit = BigInteger("1000000000000000000000000000000"),
         timestamp = Instant.parse("2006-12-04T10:15:30.00Z")
     )
+
+    private var clock: Clock = Clock.fixed(Instant.parse("2006-12-05T15:15:30.00Z"), ZoneId.of("UTC"))
 
     private var worldStateResult: WorldState? = null
 
@@ -99,6 +106,16 @@ class TransactionProcessorStepDefs : En {
             transactionResult = tr
         }
 
+        When("the transaction is executed via stateful transaction processor") {
+            val tp = TransactionProcessor(executor, coinbase)
+            val stp = StatefulTransactionProcessor(tp, clock, worldState)
+
+            val tr = stp.process(transaction)
+
+            worldStateResult = stp.getWorldState()
+            transactionResult = tr
+        }
+
         Then("the result status is now (.*)") { s: String ->
             val status = ResultStatus.valueOf(s)
             assertThat(transactionResult!!.status).isEqualTo(status)
@@ -145,6 +162,42 @@ class TransactionProcessorStepDefs : En {
             worldState = worldState.run {
                 copy(accounts = accounts.updateContract(newAddress, newContract))
             }
+        }
+
+        Given("the previous block is:") { dataTable: DataTable ->
+            val row: List<String> = dataTable.asLists().drop(1).first()
+
+            val block = Block(
+                toBigInteger(if (row[0] == "any") "1" else row[0]),
+                toBigInteger(if (row[1] == "any") "1" else row[1]),
+                toBigInteger(if (row[2] == "any") "1" else row[2]),
+                if (row[3].isNullOrBlank()) clock.instant() else Instant.parse(row[3])
+            )
+
+            worldState = worldState.copy(blocks = listOf(block))
+        }
+
+        Then("the mined block now has:") { dataTable: DataTable ->
+            val row: List<String> = dataTable.asLists().drop(1).first()
+
+            val number = toBigInteger(row[0])
+            val difficulty = toBigInteger(row[1])
+            val gasLimit = toBigInteger(row[2])
+            val timestamp = Instant.parse(row[3])
+            val numLogs = toBigInteger(row[4])
+            val numTransactions = toBigInteger(row[5])
+
+            val lastBlock = worldStateResult!!.blocks.last()
+            assertThat(number).isEqualTo(lastBlock.number)
+            assertThat(difficulty).isEqualTo(lastBlock.difficulty)
+            assertThat(gasLimit).isEqualTo(lastBlock.gasLimit)
+            assertThat(timestamp).isEqualTo(lastBlock.timestamp)
+            assertThat(numLogs).isEqualTo(lastBlock.logs.size)
+            assertThat(numTransactions).isEqualTo(lastBlock.transactions.size)
+        }
+
+        Given("the current time is (.*)") { time: String ->
+            clock = Clock.fixed(Instant.parse(time), ZoneId.of("UTC"))
         }
     }
 

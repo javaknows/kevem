@@ -356,12 +356,14 @@ data class Block(
     val difficulty: BigInteger,
     val gasLimit: BigInteger,
     val timestamp: Instant,
-    val logs: List<Log> = emptyList()
+    val logs: List<Log> = emptyList(),
+    val transactions: List<MinedTransaction> = emptyList()
 )
 
 data class Transaction(
     val origin: Address,
-    val gasPrice: BigInteger
+    val gasPrice: BigInteger,
+    val hash: List<Byte>
 )
 
 data class Log(
@@ -381,7 +383,7 @@ data class ExecutionContext(
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val lastCallError: EvmError = EvmError.None,
     val refunds: Map<Address, BigInteger> = emptyMap(),
-    val suicidedAccounts: List<Address> = emptyList(), // TODO - implement me
+    val suicidedAccounts: List<Address> = emptyList(),
     val gasUsed: BigInteger = BigInteger.ZERO
 ) {
     val currentCallCtx: CallContext
@@ -469,5 +471,11 @@ data class TransactionResult(
     val status: ResultStatus,
     val gasUsed: BigInteger,
     val logs: List<Log> = emptyList(),
-    val created: Address? = null
+    val created: Address? = null,
+    val hash: List<Byte>
+)
+
+data class MinedTransaction(
+    val message: TransactionMessage,
+    val result: TransactionResult
 )

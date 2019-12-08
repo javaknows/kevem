@@ -11,6 +11,6 @@ import org.junit.runner.RunWith
     tags = ["not @Ignore"],
     //tags = ["@Only"],
     glue=["com.gammadex.kevin.evm.test.transaction_processor"]
-
 )
+// TODO - possibly get rid of this in favour of only StatefulTransactionProcessorCucumberTest
 class TransactionProcessorCucumberTest
