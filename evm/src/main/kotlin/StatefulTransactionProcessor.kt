@@ -8,6 +8,7 @@ import java.time.Clock
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+// TODO - generate block hash properly
 class StatefulTransactionProcessor(
     private val transactionProcessor: TransactionProcessor,
     private val clock: Clock,
@@ -49,8 +50,10 @@ class StatefulTransactionProcessor(
         worldState: WorldState
     ): WorldState {
         val newBlock = block.copy(transactions = block.transactions + MinedTransaction(tx, result))
-        val hash = keccak256(Word.coerceFrom(block.number).data)
+        val hash = blockHash(block)
         val newMinedBlock = MinedBlock(newBlock, result.gasUsed, hash.data)
         return worldState.copy(blocks = worldState.blocks + newMinedBlock)
     }
+
+    private fun blockHash(block: Block) = keccak256(Word.coerceFrom(block.number).data)
 }

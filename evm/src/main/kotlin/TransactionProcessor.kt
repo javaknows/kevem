@@ -10,6 +10,7 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 
 // TODO - consider block gas limit
 // TODO - define behaviour for two suicides of same contract in same tx
+// TODO - proper transaction hash generation
 class TransactionProcessor(private val executor: Executor, private val coinbase: Address) {
 
     internal fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
@@ -252,7 +253,6 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
 
     private fun isContractCreation(transaction: TransactionMessage) = transaction.to == null
 
-    // TODO - this hashing is made up
     private fun transactionHash(tx: TransactionMessage) =
         keccak256(keccak256(keccak256(tx.data).data + tx.from.toWord().data).data).data
 }
