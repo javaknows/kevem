@@ -215,7 +215,7 @@ class TransactionProcessor(private val executor: Executor, private val coinbase:
             if (tx.to != null) worldState.accounts.codeAt(tx.to)
             else tx.data
 
-        val transaction = Transaction(tx.from, tx.gasPrice, transactionHash(tx))
+        val transaction = Transaction(tx.from, tx.gasPrice)
 
         val callData =
             if (isContractCreation(tx)) tx.data

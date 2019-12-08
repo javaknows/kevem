@@ -45,8 +45,7 @@ internal fun baseExecutionContext(
         ),
         currentTransaction = Transaction(
             origin = Address(CALLER),
-            gasPrice = GAS_PRICE,
-            hash = emptyList()
+            gasPrice = GAS_PRICE
         ),
         coinBase = Address("0xFFEEDD"),
         callStack = listOf(call),

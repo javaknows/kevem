@@ -362,8 +362,7 @@ data class Block(
 
 data class Transaction(
     val origin: Address,
-    val gasPrice: BigInteger,
-    val hash: List<Byte>
+    val gasPrice: BigInteger
 )
 
 data class Log(
