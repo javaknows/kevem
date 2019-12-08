@@ -186,8 +186,7 @@ class TransactionProcessorStepDefs : En {
             val difficulty = toBigInteger(row[1])
             val gasLimit = toBigInteger(row[2])
             val timestamp = Instant.parse(row[3])
-            val numLogs = toBigInteger(row[4])
-            val numTransactions = toBigInteger(row[5])
+            val numTransactions = toBigInteger(row[4])
 
             val lastMinedBlock = worldStateResult!!.blocks.last()
             val lastBlock = lastMinedBlock.block
@@ -195,8 +194,7 @@ class TransactionProcessorStepDefs : En {
             assertThat(difficulty).isEqualTo(lastBlock.difficulty)
             assertThat(gasLimit).isEqualTo(lastBlock.gasLimit)
             assertThat(timestamp).isEqualTo(lastBlock.timestamp)
-            assertThat(numLogs).isEqualTo(lastBlock.logs.size)
-            assertThat(numTransactions).isEqualTo(lastBlock.transactions.size)
+            assertThat(numTransactions).isEqualTo(lastMinedBlock.transactions.size)
         }
 
         Given("the current time is (.*)") { time: String ->

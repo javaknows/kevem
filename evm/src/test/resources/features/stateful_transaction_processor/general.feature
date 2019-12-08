@@ -15,5 +15,5 @@ Feature: Nonces When Transaction Processing
       | 0x5E4DE7 |    | 69    | 1        | 3000000  |      | 0     |
     When the transaction is executed via stateful transaction processor
     Then the mined block now has:
-      | number | difficulty | gasLimit | timestamp               | numLogs | numTransactions |
-      | 2      | 1          | 100000   | 2007-12-03T10:15:30.00Z | 0       | 1               |
+      | number | difficulty | gasLimit | timestamp               | numTransactions |
+      | 2      | 1          | 100000   | 2007-12-03T10:15:30.00Z | 1               |

@@ -49,9 +49,8 @@ class StatefulTransactionProcessor(
         result: TransactionResult,
         worldState: WorldState
     ): WorldState {
-        val newBlock = block.copy(transactions = block.transactions + MinedTransaction(tx, result))
         val hash = blockHash(block)
-        val newMinedBlock = MinedBlock(newBlock, result.gasUsed, hash.data)
+        val newMinedBlock = MinedBlock(block, result.gasUsed, hash.data, listOf(MinedTransaction(tx, result)))
         return worldState.copy(blocks = worldState.blocks + newMinedBlock)
     }
 

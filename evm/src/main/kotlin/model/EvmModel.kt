@@ -355,9 +355,7 @@ data class Block(
     val number: BigInteger,
     val difficulty: BigInteger,
     val gasLimit: BigInteger,
-    val timestamp: Instant,
-    val logs: List<Log> = emptyList(),
-    val transactions: List<MinedTransaction> = emptyList()
+    val timestamp: Instant
 )
 
 data class Transaction(
@@ -482,5 +480,6 @@ data class MinedTransaction(
 data class MinedBlock(
     val block: Block,
     val gasUsed: BigInteger,
-    val hash: List<Byte>
+    val hash: List<Byte>,
+    val transactions: List<MinedTransaction> = emptyList()
 )
