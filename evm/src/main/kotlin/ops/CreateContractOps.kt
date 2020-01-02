@@ -1,10 +1,10 @@
-package com.gammadex.kevin.evm.ops
+package org.kevm.evm.ops
 
-import com.gammadex.kevin.evm.keccak256
-import com.gammadex.kevin.evm.model.*
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.numbers.generateAddress
-import com.gammadex.kevin.evm.numbers.generateAddressFromSenderAndNonce
+import org.kevm.evm.keccak256
+import org.kevm.evm.model.*
+import org.kevm.evm.model.Byte
+import org.kevm.evm.numbers.generateAddress
+import org.kevm.evm.numbers.generateAddressFromSenderAndNonce
 import java.math.BigInteger
 
 // TODO - create a compatibility pack around this

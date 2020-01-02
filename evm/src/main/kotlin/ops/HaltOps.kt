@@ -1,8 +1,8 @@
-package com.gammadex.kevin.evm.ops
+package org.kevm.evm.ops
 
-import com.gammadex.kevin.evm.coerceByteListToSize
-import com.gammadex.kevin.evm.gas.Refund
-import com.gammadex.kevin.evm.model.*
+import org.kevm.evm.coerceByteListToSize
+import org.kevm.evm.gas.Refund
+import org.kevm.evm.model.*
 import java.math.BigInteger
 
 object HaltOps {

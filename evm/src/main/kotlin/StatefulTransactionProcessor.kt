@@ -1,8 +1,8 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
-import com.gammadex.kevin.evm.locking.readLock
-import com.gammadex.kevin.evm.locking.writeLock
-import com.gammadex.kevin.evm.model.*
+import org.kevm.evm.locking.readLock
+import org.kevm.evm.locking.writeLock
+import org.kevm.evm.model.*
 import java.math.BigInteger
 import java.time.Clock
 import java.util.concurrent.locks.ReadWriteLock

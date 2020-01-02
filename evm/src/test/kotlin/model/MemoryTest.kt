@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.model.Memory
+import org.kevm.evm.model.Byte
+import org.kevm.evm.model.Memory
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat

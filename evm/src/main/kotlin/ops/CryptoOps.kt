@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm.ops
+package org.kevm.evm.ops
 
-import com.gammadex.kevin.evm.keccak256
-import com.gammadex.kevin.evm.model.ExecutionContext
+import org.kevm.evm.keccak256
+import org.kevm.evm.model.ExecutionContext
 
 object CryptoOps {
     fun sha3(context: ExecutionContext): ExecutionContext = with(context) {

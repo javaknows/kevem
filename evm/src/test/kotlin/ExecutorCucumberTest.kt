@@ -1,4 +1,4 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
 import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions
@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
     features = ["src/test/resources/features/executor"],
     tags = ["not @Ignore"],
     //tags = ["@Only"],
-    glue=["com.gammadex.kevin.evm.test.executor"]
+    glue=["org.kevm.evm.test.executor"]
 
 )
 class ExecutorCucumberTest

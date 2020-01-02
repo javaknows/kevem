@@ -1,19 +1,19 @@
-package com.gammadex.kevin.web3.test
+package org.kevm.web3.test
 
-import com.gammadex.kevin.evm.Executor
-import com.gammadex.kevin.evm.StatefulTransactionProcessor
-import com.gammadex.kevin.evm.TransactionProcessor
-import com.gammadex.kevin.evm.gas.*
-import com.gammadex.kevin.evm.model.*
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.toByteList
-import com.gammadex.kevin.rpc.AppConfig
-import com.gammadex.kevin.rpc.LocalAccounts
-import com.gammadex.kevin.rpc.StandardEvmOperations
-import com.gammadex.kevin.rpc.StandardRPC
-import com.gammadex.kevin.web3.KevinWeb3Service
-import com.gammadex.kevin.web3.StandardRPCProvider
-import com.gammadex.kevin.web3.modules.EthAdapter
+import org.kevm.evm.Executor
+import org.kevm.evm.StatefulTransactionProcessor
+import org.kevm.evm.TransactionProcessor
+import org.kevm.evm.gas.*
+import org.kevm.evm.model.*
+import org.kevm.evm.model.Byte
+import org.kevm.evm.toByteList
+import org.kevm.rpc.AppConfig
+import org.kevm.rpc.LocalAccounts
+import org.kevm.rpc.StandardEvmOperations
+import org.kevm.rpc.StandardRPC
+import org.kevm.web3.KevmWeb3Service
+import org.kevm.web3.StandardRPCProvider
+import org.kevm.web3.modules.EthAdapter
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.tx.RawTransactionManager
@@ -94,8 +94,8 @@ object Web3TestContext {
         val rpcProviders = listOf(
             StandardRPCProvider(ethAdapter)
         )
-        val kevinWeb3Service = KevinWeb3Service(rpcProviders)
+        val kevmWeb3Service = KevmWeb3Service(rpcProviders)
 
-        return Web3j.build(kevinWeb3Service)
+        return Web3j.build(kevmWeb3Service)
     }
 }

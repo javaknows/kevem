@@ -1,6 +1,6 @@
-package com.gammadex.kevin.evm.model
+package org.kevm.evm.model
 
-import com.gammadex.kevin.evm.*
+import org.kevm.evm.*
 import java.math.BigInteger
 import java.time.Instant
 import kotlin.math.max

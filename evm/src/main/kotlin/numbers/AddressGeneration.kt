@@ -1,9 +1,9 @@
-package com.gammadex.kevin.evm.numbers
+package org.kevm.evm.numbers
 
-import com.gammadex.kevin.evm.keccak256
-import com.gammadex.kevin.evm.model.Address
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.model.Word
+import org.kevm.evm.keccak256
+import org.kevm.evm.model.Address
+import org.kevm.evm.model.Byte
+import org.kevm.evm.model.Word
 import java.math.BigInteger
 
 fun generateAddress(address: List<Byte>, salt: List<Byte>, codeData: List<Byte>): Address =

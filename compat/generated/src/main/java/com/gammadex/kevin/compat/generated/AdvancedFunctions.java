@@ -1,4 +1,4 @@
-package com.gammadex.kevin.compat.generated;
+package org.kevm.compat.generated;
 
 import java.math.BigInteger;
 import java.util.Arrays;

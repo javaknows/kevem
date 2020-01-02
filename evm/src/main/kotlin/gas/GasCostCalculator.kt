@@ -1,8 +1,8 @@
-package com.gammadex.kevin.evm.gas
+package org.kevm.evm.gas
 
-import com.gammadex.kevin.evm.Opcode
-import com.gammadex.kevin.evm.model.Address
-import com.gammadex.kevin.evm.model.ExecutionContext
+import org.kevm.evm.Opcode
+import org.kevm.evm.model.Address
+import org.kevm.evm.model.ExecutionContext
 import java.math.BigInteger
 
 class GasCostCalculator(

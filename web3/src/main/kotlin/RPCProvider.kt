@@ -1,4 +1,4 @@
-package com.gammadex.kevin.web3
+package org.kevm.web3
 
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response

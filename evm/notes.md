@@ -27,10 +27,3 @@ https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18
 
 * Refund recpient for nested calls - is it the tx.origin or sender?
 * Suicide called twice in same transaction 
-
-
-
-
-    private fun toKevinBytes(bytes: List<kotlin.Byte>) = bytes.map { it.toInt() and 0xFF }.map { Byte(it) }
-
-    private fun toKotlinBytes(bytes: List<Byte>): List<kotlin.Byte> = bytes.map { it.javaByte() }Conv

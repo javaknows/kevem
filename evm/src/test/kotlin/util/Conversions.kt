@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm.util
+package org.kevm.evm.util
 
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.Opcode
+import org.kevm.evm.model.Byte
+import org.kevm.evm.Opcode
 import java.math.BigInteger
 
 fun toInt(number: String) = toBigInteger(number).toInt()

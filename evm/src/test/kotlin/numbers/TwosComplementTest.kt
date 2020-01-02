@@ -1,8 +1,8 @@
-package com.gammadex.kevin.evm.numbers
+package org.kevm.evm.numbers
 
-import com.gammadex.kevin.evm.model.Word
-import com.gammadex.kevin.evm.numbers.fromTwosComplement
-import com.gammadex.kevin.evm.numbers.toTwosComplement
+import org.kevm.evm.model.Word
+import org.kevm.evm.numbers.fromTwosComplement
+import org.kevm.evm.numbers.toTwosComplement
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigInteger

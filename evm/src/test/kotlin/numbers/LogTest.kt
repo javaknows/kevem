@@ -1,4 +1,4 @@
-package com.gammadex.kevin.evm.numbers
+package org.kevm.evm.numbers
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test

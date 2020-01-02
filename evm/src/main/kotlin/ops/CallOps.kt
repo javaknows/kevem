@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm.ops
+package org.kevm.evm.ops
 
-import com.gammadex.kevin.evm.lang.*
-import com.gammadex.kevin.evm.model.*
+import org.kevm.evm.lang.*
+import org.kevm.evm.model.*
 import java.math.BigInteger
 
 data class CallArguments(

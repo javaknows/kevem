@@ -1,4 +1,4 @@
-package com.gammadex.kevin.common
+package org.kevm.common
 
 import kotlin.reflect.KClass
 

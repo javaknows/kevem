@@ -1,8 +1,8 @@
-package com.gammadex.kevin.web3.modules
+package org.kevm.web3.modules
 
-import com.gammadex.kevin.evm.bytesToString
-import com.gammadex.kevin.evm.toStringHexPrefix
-import com.gammadex.kevin.rpc.*
+import org.kevm.evm.bytesToString
+import org.kevm.evm.toStringHexPrefix
+import org.kevm.rpc.*
 import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.methods.request.*
 import org.web3j.protocol.core.methods.request.EthFilter
@@ -14,7 +14,7 @@ import java.math.BigInteger
 import org.web3j.protocol.core.methods.response.Transaction as Web3TransactionResponse
 
 /**
- * Adapts to/from Web3 objects to Kevin objects
+ * Adapts to/from Web3 objects to KEV-M objects
  */
 class EthAdapter(private val standardRPC: StandardRPC) {
 

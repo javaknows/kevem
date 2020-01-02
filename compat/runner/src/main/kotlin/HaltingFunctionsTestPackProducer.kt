@@ -1,8 +1,8 @@
-package com.gammadex.kevin.compat.runner
+package org.kevm.compat.runner
 
-import com.gammadex.kevin.compat.generated.AdvancedFunctions
-import com.gammadex.kevin.compat.generated.Delegating
-import com.gammadex.kevin.compat.generated.HaltFunctions
+import org.kevm.compat.generated.AdvancedFunctions
+import org.kevm.compat.generated.Delegating
+import org.kevm.compat.generated.HaltFunctions
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.response.Log

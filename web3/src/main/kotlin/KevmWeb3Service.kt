@@ -1,7 +1,7 @@
-package com.gammadex.kevin.web3
+package org.kevm.web3
 
-import com.gammadex.kevin.rpc.CategorisedRpcException
-import com.gammadex.kevin.rpc.RpcException
+import org.kevm.rpc.CategorisedRpcException
+import org.kevm.rpc.RpcException
 import io.reactivex.Flowable
 import org.web3j.protocol.Web3jService
 import org.web3j.protocol.core.Request
@@ -9,7 +9,7 @@ import org.web3j.protocol.core.Response
 import org.web3j.protocol.websocket.events.Notification
 import java.util.concurrent.CompletableFuture
 
-class KevinWeb3Service(private val providers: List<RPCProvider>) : Web3jService {
+class KevmWeb3Service(private val providers: List<RPCProvider>) : Web3jService {
 
     override fun <T : Response<*>> send(request: Request<*, out Response<*>>, responseType: Class<T>): T {
         val result = try {

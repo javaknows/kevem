@@ -1,6 +1,6 @@
-package com.gammadex.kevin.compat.runner
+package org.kevm.compat.runner
 
-import com.gammadex.kevin.compat.generated.NumberFunctions
+import org.kevm.compat.generated.NumberFunctions
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.RemoteCall

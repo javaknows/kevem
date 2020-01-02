@@ -1,6 +1,6 @@
-package com.gammadex.kevin.web3
+package org.kevm.web3
 
-import com.gammadex.kevin.web3.modules.EthAdapter
+import org.kevm.web3.modules.EthAdapter
 import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response

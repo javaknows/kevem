@@ -1,12 +1,12 @@
-package com.gammadex.kevin.evm.gas
+package org.kevm.evm.gas
 
-import com.gammadex.kevin.evm.Opcode
-import com.gammadex.kevin.evm.model.ExecutionContext
-import com.gammadex.kevin.evm.Opcode.*
-import com.gammadex.kevin.evm.numbers.BigIntMath
-import com.gammadex.kevin.evm.numbers.logn
+import org.kevm.evm.Opcode
+import org.kevm.evm.model.ExecutionContext
+import org.kevm.evm.Opcode.*
+import org.kevm.evm.numbers.BigIntMath
+import org.kevm.evm.numbers.logn
 import java.math.BigInteger
-import com.gammadex.kevin.evm.ops.CallOps
+import org.kevm.evm.ops.CallOps
 
 class BaseGasCostCalculator(
     private val callGasCostCalc: CallGasCostCalc

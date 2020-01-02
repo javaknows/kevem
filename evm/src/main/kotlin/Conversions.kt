@@ -1,6 +1,6 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
-import com.gammadex.kevin.evm.model.Byte
+import org.kevm.evm.model.Byte
 import java.math.BigInteger
 
 fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))

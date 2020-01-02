@@ -1,13 +1,13 @@
-package com.gammadex.kevin.web3
+package org.kevm.web3
 
-import com.gammadex.kevin.evm.model.*
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.toByteList
-import com.gammadex.kevin.rpc.AppConfig
-import com.gammadex.kevin.rpc.LocalAccount
-import com.gammadex.kevin.rpc.LocalAccounts
-import com.gammadex.kevin.rpc.toBigInteger
-import com.gammadex.kevin.web3.test.Web3TestContext
+import org.kevm.evm.model.*
+import org.kevm.evm.model.Byte
+import org.kevm.evm.toByteList
+import org.kevm.rpc.AppConfig
+import org.kevm.rpc.LocalAccount
+import org.kevm.rpc.LocalAccounts
+import org.kevm.rpc.toBigInteger
+import org.kevm.web3.test.Web3TestContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt as Web3Transa
 /**
  * Call supported RPC methods to make sure we get a result
  */
-class KevinWeb3ServiceCallsTest {
+class KevmWeb3ServiceCallsTest {
 
     var web3 = Web3TestContext.createTestWeb3()
     var txManager = Web3TestContext.txManager(web3)

@@ -1,9 +1,9 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
-import com.gammadex.kevin.evm.gas.GasCostCalculator
-import com.gammadex.kevin.evm.model.*
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.ops.*
+import org.kevm.evm.gas.GasCostCalculator
+import org.kevm.evm.model.*
+import org.kevm.evm.model.Byte
+import org.kevm.evm.ops.*
 import java.math.BigInteger
 
 // TODO - don't accept certain operations depending on fork version configured

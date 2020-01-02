@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
-import com.gammadex.kevin.evm.model.Byte
-import com.gammadex.kevin.evm.model.Word
+import org.kevm.evm.model.Byte
+import org.kevm.evm.model.Word
 import org.bouncycastle.util.encoders.Hex
 import org.bouncycastle.jcajce.provider.digest.Keccak
 

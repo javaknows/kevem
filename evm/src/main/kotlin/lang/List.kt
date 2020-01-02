@@ -1,4 +1,4 @@
-package com.gammadex.kevin.evm.lang
+package org.kevm.evm.lang
 
 operator fun <T> List<T>.component6(): T = get(5)
 

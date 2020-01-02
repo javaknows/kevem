@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm.ops
+package org.kevm.evm.ops
 
-import com.gammadex.kevin.evm.Opcode
-import com.gammadex.kevin.evm.model.*
+import org.kevm.evm.Opcode
+import org.kevm.evm.model.*
 
 object JumpOps {
 

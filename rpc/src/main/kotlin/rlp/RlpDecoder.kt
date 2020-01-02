@@ -1,4 +1,4 @@
-package com.gammadex.kevin.rpc.rlp
+package org.kevm.rpc.rlp
 
 /**
  * RLP decoder as per  https://github.com/ethereum/wiki/wiki/RLP

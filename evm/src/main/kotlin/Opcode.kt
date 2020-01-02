@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm
+package org.kevm.evm
 
-import com.gammadex.kevin.evm.gas.GasCost
-import com.gammadex.kevin.evm.model.Byte
+import org.kevm.evm.gas.GasCost
+import org.kevm.evm.model.Byte
 
 enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numBytes: Int, val cost: GasCost) {
     STOP(0x00, 0, 0, 1, GasCost.Zero),

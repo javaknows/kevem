@@ -1,4 +1,4 @@
-package com.gammadex.kevin.evm.gas
+package org.kevm.evm.gas
 
 import java.math.BigInteger
 

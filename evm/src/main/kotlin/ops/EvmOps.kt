@@ -1,7 +1,7 @@
-package com.gammadex.kevin.evm.ops
+package org.kevm.evm.ops
 
-import com.gammadex.kevin.evm.model.ExecutionContext
-import com.gammadex.kevin.evm.model.Log
+import org.kevm.evm.model.ExecutionContext
+import org.kevm.evm.model.Log
 
 object EvmOps {
     fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {

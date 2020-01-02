@@ -1,9 +1,9 @@
-package com.gammadex.kevin.rpc
+package org.kevm.rpc
 
-import com.gammadex.kevin.evm.locking.readLock
-import com.gammadex.kevin.evm.locking.writeLock
-import com.gammadex.kevin.evm.model.Address
-import com.gammadex.kevin.evm.model.Byte
+import org.kevm.evm.locking.readLock
+import org.kevm.evm.locking.writeLock
+import org.kevm.evm.model.Address
+import org.kevm.evm.model.Byte
 import org.web3j.abi.datatypes.Bool
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock

@@ -1,4 +1,4 @@
-package com.gammadex.kevin.rpc
+package org.kevm.rpc
 
 data class RequestDTO<T>(val jsonrpc: String, val id: Int, val params: List<T>)
 

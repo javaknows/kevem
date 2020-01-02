@@ -19,5 +19,5 @@ generate() {
     done
 }
 
-generate ${base_path}/src/main/solidity ${base_path}/src/main/resources/com/gammadex/kevin/compat ${base_path}/src/main/java com.gammadex.kevin.compat.generated
-generate ${base_path}/src/main/solidity/sample ${base_path}/src/main/resources/com/gammadex/kevin/compat/sample ${base_path}/src/main/java com.gammadex.kevin.compat.generated.sample
+generate ${base_path}/src/main/solidity ${base_path}/src/main/resources/org/kevm/compat ${base_path}/src/main/java org.kevm.compat.generated
+generate ${base_path}/src/main/solidity/sample ${base_path}/src/main/resources/org/kevm/compat/sample ${base_path}/src/main/java org.kevm.compat.generated.sample

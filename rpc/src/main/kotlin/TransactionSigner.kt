@@ -1,10 +1,10 @@
-package com.gammadex.kevin.rpc
+package org.kevm.rpc
 
-import com.gammadex.kevin.evm.bytesToString
+import org.kevm.evm.bytesToString
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.TransactionEncoder
-import com.gammadex.kevin.evm.model.Byte
+import org.kevm.evm.model.Byte
 
 // TODO - remove this use of web3 when possible
 class TransactionSigner {

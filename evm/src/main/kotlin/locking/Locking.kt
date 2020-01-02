@@ -1,4 +1,4 @@
-package com.gammadex.kevin.evm.locking
+package org.kevm.evm.locking
 
 import java.util.concurrent.locks.ReadWriteLock
 

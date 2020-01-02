@@ -1,10 +1,10 @@
-package com.gammadex.kevin.evm.gas
+package org.kevm.evm.gas
 
-import com.gammadex.kevin.evm.Opcode
-import com.gammadex.kevin.evm.Opcode.*
-import com.gammadex.kevin.evm.model.ExecutionContext
-import com.gammadex.kevin.evm.model.Stack
-import com.gammadex.kevin.evm.ops.CallOps
+import org.kevm.evm.Opcode
+import org.kevm.evm.Opcode.*
+import org.kevm.evm.model.ExecutionContext
+import org.kevm.evm.model.Stack
+import org.kevm.evm.ops.CallOps
 import java.lang.Integer.max
 import java.math.BigInteger
 
