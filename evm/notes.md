@@ -16,12 +16,9 @@ https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18
 
 * null vs empty data from return, revert
 * precompiled contracts
-* all operations don't work for large numbers
+* not all operations work for large numbers
 * EIPS around gas costs
 * in JSON-RPC fail if block number is too large for type as per parity
-* transaction signing (including in JSON-RPC)
-* sendTransaction, call, estimateGas in StandardRPC
-* rlp encoding - 
 
 ## Compatibiliy / Correctness Tests Needed
 
