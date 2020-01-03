@@ -4,5 +4,6 @@ include 'compat:generated'
 include 'compat:runner'
 include 'rpc'
 include 'web3'
+include 'dsl'
 
 rootProject.name = 'kevm'

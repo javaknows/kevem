@@ -212,6 +212,10 @@ class Accounts(private val addresses: Map<Address, Account> = emptyMap()) {
     fun accountExists(address: Address) = address in addresses.keys
 
     fun removeAccount(address: Address) = Accounts(addresses - address)
+
+    fun updateAccount(address: Address, account: Account): Accounts {
+        return Accounts(addresses + Pair(address, account))
+    }
 }
 
 // TODO - indexes/lengths should be BigInteger

@@ -10,16 +10,19 @@ import org.kevm.evm.toStringHexPrefix
 import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.Sign
 import java.math.BigInteger
+import java.time.Instant
 
 data class AppConfig(
     val chainId: Int = 0,
     val peerCount: Int = 0,
-    val coinbase: String,
+    val coinbase: String = "0x0",
     val hashRate: BigInteger = BigInteger.ZERO,
     val clientVersion: String = "KEVM TestRPC", // TODO - generate real client version
-    val difficulty: BigInteger = BigInteger.ZERO,
+    val difficulty: BigInteger = BigInteger.ZERO, // 17,171,480,576
     val extraData: Word = Word.Zero,
-    val gasPrice: BigInteger = BigInteger("20000000000")
+    val gasPrice: BigInteger = BigInteger("20000000000"),
+    val blockGasLimit: BigInteger =  BigInteger("1000000000000000000000000000000"),
+    val genesisBlockTimestamp: Instant = Instant.parse("2015-06-30T03:26:28.00Z")
 )
 
 class RpcException(msg: String) : KevmException(msg)
