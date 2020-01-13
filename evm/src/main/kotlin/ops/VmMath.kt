@@ -61,14 +61,7 @@ object VmMath {
             coerceFrom(mul.mod(w3.toBigInt()))
         }
 
-    /**
-     * TODO - support large numbers here
-     */
-    fun exp(w1: Word, w2: Word): Word = when {
-        w1.toBigInt() == BigInteger.ONE -> w1
-        w2.toBigInt() > BigInteger.valueOf(Int.MAX_VALUE.toLong()) -> Word.Zero
-        else -> coerceFrom(w1.toBigInt().pow(w2.toBigInt().toInt()))
-    }
+    fun exp(w1: Word, w2: Word): Word = coerceFrom(w1.toBigInt().modPow(w2.toBigInt(), BigInteger.valueOf(2).pow(256)))
 
     fun signExtend(w1: Word, w2: Word): Word =
         if (w1.toBigInt() > BigInteger("31")) w2
