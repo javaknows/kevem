@@ -1,5 +1,6 @@
 package org.kevm.evm
 
+import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.locking.readLock
 import org.kevm.evm.locking.writeLock
 import org.kevm.evm.model.*
@@ -62,5 +63,6 @@ class StatefulTransactionProcessor(
         return worldState.copy(blocks = worldState.blocks + newMinedBlock)
     }
 
-    private fun blockHash(block: Block) = keccak256(Word.coerceFrom(block.number).data)
+    private fun blockHash(block: Block) =
+        keccak256(Word.coerceFrom(block.number).data)
 }

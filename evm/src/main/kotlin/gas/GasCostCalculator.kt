@@ -1,9 +1,15 @@
 package org.kevm.evm.gas
 
 import org.kevm.evm.Opcode
+import org.kevm.evm.bytesToBigInteger
 import org.kevm.evm.model.Address
+import org.kevm.evm.model.Byte
+import org.kevm.evm.model.Byte.Companion.padRightToSize
 import org.kevm.evm.model.ExecutionContext
+import org.kevm.evm.numbers.BigIntMath.max
+import org.kevm.evm.ops.CallArguments
 import java.math.BigInteger
+import kotlin.math.ceil
 
 class GasCostCalculator(
     private val baseGasCostCalculator: BaseGasCostCalculator,
@@ -68,4 +74,48 @@ class CallGasCostCalc {
      * L(n) in the yellow papaer (298)
      */
     private fun allButOne64th(num: BigInteger) = num - num / BigInteger("64")
+}
+
+class PredefinedContractGasCostCalc {
+    fun calcGasCost(args: CallArguments, executionCtx: ExecutionContext): BigInteger {
+        val (data, _) = executionCtx.memory.read(args.inLocation, args.inSize)
+        val numBytes = data.size
+        val numWords = BigInteger.valueOf(ceil(numBytes / 32.toDouble()).toLong())
+
+        // TODO - move gas cost magic numbers to gas enum
+        return when (args.address.value.toInt()) {
+            1 -> BigInteger("3000")
+            2 -> BigInteger("60") + BigInteger("12") * numWords
+            3 -> BigInteger("600") + BigInteger("120") * numWords
+            4 -> BigInteger("15") + BigInteger("3") * numWords
+            5 -> expModGasCost(data)
+            6 -> BigInteger("500")
+            7 -> BigInteger("40000")
+            8 -> snarkvGasCost(numBytes)
+            else -> TODO()
+        }
+    }
+
+    private fun expModGasCost(data: List<Byte>): BigInteger {
+        val (bSize, eSize, mSize) = padRightToSize(data, 96).chunked(32).map { bytesToBigInteger(it) }
+        val eSizeFactor = max(eSize, BigInteger.ONE)
+        val mbSizeFactor = max(mSize, bSize)
+        val mbSizeFactorSq = mbSizeFactor * mbSizeFactor
+
+        val fFactor = when {
+            mbSizeFactor <= BigInteger("64") ->
+                mbSizeFactorSq
+            mbSizeFactor <= BigInteger("1024") ->
+                (mbSizeFactorSq / BigInteger("4")) + BigInteger("96") * mbSizeFactor - BigInteger("3072")
+            else ->
+                (mbSizeFactorSq / BigInteger("16")) + BigInteger("480") * mbSizeFactor - BigInteger("199680")
+        }
+
+        return (fFactor * eSizeFactor) / GasCost.QuadDivisor.costBigInt
+    }
+
+    private fun snarkvGasCost(numBytes: Int): BigInteger {
+        val numSnarkPairs = (numBytes / 192).toBigInteger()
+        return (BigInteger("80000") * numSnarkPairs) + BigInteger("100000")
+    }
 }

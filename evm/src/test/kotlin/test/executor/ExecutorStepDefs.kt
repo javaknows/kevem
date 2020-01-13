@@ -21,7 +21,7 @@ class ExecutorStepDefs : En {
 
     private val executor = Executor(
         GasCostCalculator(
-            BaseGasCostCalculator(CallGasCostCalc()),
+            BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
             MemoryUsageGasCostCalculator(MemoryUsageGasCalc())
         )
     )

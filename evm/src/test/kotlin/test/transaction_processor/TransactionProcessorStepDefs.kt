@@ -3,11 +3,11 @@ package org.kevm.evm.test.transaction_processor
 import org.kevm.evm.*
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
-import org.kevm.evm.lang.*
 import org.kevm.evm.model.Byte
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
+import org.kevm.evm.crypto.keccak256
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -21,7 +21,7 @@ class TransactionProcessorStepDefs : En {
 
     private val executor = Executor(
         GasCostCalculator(
-            BaseGasCostCalculator(CallGasCostCalc()),
+            BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
             MemoryUsageGasCostCalculator(MemoryUsageGasCalc())
         )
     )

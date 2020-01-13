@@ -7,9 +7,11 @@ import org.kevm.evm.numbers.BigIntMath
 import org.kevm.evm.numbers.logn
 import java.math.BigInteger
 import org.kevm.evm.ops.CallOps
+import org.kevm.evm.PrecompiledContractExecutor as Precompiled
 
 class BaseGasCostCalculator(
-    private val callGasCostCalc: CallGasCostCalc
+    private val callGasCostCalc: CallGasCostCalc,
+    private val predefinedContractGasCostCalc: PredefinedContractGasCostCalc
 ) {
 
     fun baseCost(opcode: Opcode, executionContext: ExecutionContext): BigInteger =
@@ -40,9 +42,11 @@ class BaseGasCostCalculator(
         val callArgs = CallOps.peekCallArgsFromStack(executionContext.stack, withValue)
 
         return with(callArgs) {
-            val (callCost, _) = callGasCostCalc.calcCallCostAndCallGas(value, address, gas, executionContext)
-
-            callCost
+            if (Precompiled.isPrecompiledContractCall(address)) {
+                predefinedContractGasCostCalc.calcGasCost(callArgs, executionContext)
+            } else {
+                callGasCostCalc.calcCallCostAndCallGas(value, address, gas, executionContext).first
+            }
         }
     }
 

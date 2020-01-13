@@ -1,6 +1,6 @@
 package org.kevm.evm.ops
 
-import org.kevm.evm.keccak256
+import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.model.ExecutionContext
 
 object CryptoOps {

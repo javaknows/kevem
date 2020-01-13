@@ -690,7 +690,7 @@ Feature: Single Opcode Execution
 
   Scenario Outline: Can call any of the read-only opcodes in static context <opcode>
     Given the current call type is STATICCALL
-    And the stack contains elements [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7]
+    And the stack contains elements [0x1, 0x20, 0x3, 0x4, 0x5, 0x6, 0x7]
     When opcode <opcode> is executed
     Then there is no last error
 

@@ -13,6 +13,8 @@ fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))
 
 fun bytesToBigInteger(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16)
 
+fun bytesToInt(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16).toInt()
+
 fun bytesToString(bytes: List<Byte>) = hexPrefix(bytes.joinToString("") { it.toStringNoHexPrefix() })
 
 fun Int.toStringHexPrefix() = hexPrefix(toString(16))
@@ -24,6 +26,8 @@ fun stripHexPrefix(num: String) = num.replaceFirst("0x", "")
 fun hexPrefix(num: String) = "0x$num"
 
 fun coerceByteListToSize(data: List<Byte>, size: Int) = data.take(size) + Byte.Zero.repeat(size - data.size)
+
+fun coerceByteListToSizePre(data: List<Byte>, size: Int) =  Byte.Zero.repeat(size - data.size) + data.take(size)
 
 fun BigInteger.toStringHexPrefix() = hexPrefix(toString(16))
 

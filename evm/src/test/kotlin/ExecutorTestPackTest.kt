@@ -14,7 +14,7 @@ class ExecutorTestPackTest {
 
     private val underTest = Executor(
         GasCostCalculator(
-            BaseGasCostCalculator(CallGasCostCalc()),
+            BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
             MemoryUsageGasCostCalculator(MemoryUsageGasCalc())
         )
     )

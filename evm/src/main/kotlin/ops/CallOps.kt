@@ -1,8 +1,14 @@
 package org.kevm.evm.ops
 
+import org.kevm.evm.crypto.*
+import org.kevm.evm.model.Byte
 import org.kevm.evm.lang.*
 import org.kevm.evm.model.*
+import org.kevm.evm.model.Byte.Companion.trimAndPadLeft
+import org.kevm.evm.model.Byte.Companion.trimAndPadRight
+import org.kevm.evm.precompiled.expmod
 import java.math.BigInteger
+import org.kevm.evm.PrecompiledContractExecutor as Precompiled
 
 data class CallArguments(
     val gas: BigInteger,
@@ -34,35 +40,76 @@ object CallOps {
     fun callCode(context: ExecutionContext): ExecutionContext = with(context) {
         val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = true)
 
-        with(callArguments) {
-            val nextCallerAddress =
-                currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
-            val callerBalance = accounts.balanceOf(nextCallerAddress)
+        return if (Precompiled.isPrecompiledContractCall(callArguments.address))
+            Precompiled.doPrecompiled(context, callArguments)
+        else {
+            with(callArguments) {
+                val nextCallerAddress =
+                    currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
+                val callerBalance = accounts.balanceOf(nextCallerAddress)
 
-            if (callerBalance < value) {
-                val message = "$nextCallerAddress has balance of $callerBalance but attempted to send $value"
-                HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
-            } else {
-                val (destBalance, _) = accounts.balanceAndContractAt(address)
-                val newEvmState = accounts
-                    .updateBalance(address, destBalance + value)
+                if (callerBalance < value) {
+                    val message = "$nextCallerAddress has balance of $callerBalance but attempted to send $value"
+                    HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
+                } else {
+                    val (destBalance, _) = accounts.balanceAndContractAt(address)
+                    val newEvmState = accounts
+                        .updateBalance(address, destBalance + value)
 
-                val startBalance = newEvmState.balanceOf(nextCallerAddress)
-                val newEvmState2 = newEvmState
-                    .updateBalance(nextCallerAddress, startBalance - value)
+                    val startBalance = newEvmState.balanceOf(nextCallerAddress)
+                    val newEvmState2 = newEvmState
+                        .updateBalance(nextCallerAddress, startBalance - value)
+
+                    val (callData, newMemory) = memory.read(inLocation, inSize)
+                    val newCall = CallContext(
+                        nextCallerAddress,
+                        callData,
+                        CallType.CALLCODE,
+                        value,
+                        accounts.codeAt(callArguments.address),
+                        context,
+                        gas,
+                        outLocation,
+                        outSize,
+                        contractAddress = currentCallCtx.contractAddress,
+                        storageAddress = currentCallCtx.storageAddress
+                    )
+
+                    val updatedCtx = updateCurrentCallCtx(
+                        stack = newStack,
+                        memory = newMemory
+                    )
+
+                    updatedCtx.copy(
+                        callStack = updatedCtx.callStack + newCall,
+                        accounts = newEvmState2
+                    )
+                }
+            }
+        }
+    }
+
+    fun delegateCall(context: ExecutionContext): ExecutionContext = with(context) {
+        val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = false)
+
+        return if (Precompiled.isPrecompiledContractCall(callArguments.address))
+            Precompiled.doPrecompiled(context, callArguments)
+        else {
+            with(callArguments) {
+                val code = accounts.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
 
                 val (callData, newMemory) = memory.read(inLocation, inSize)
                 val newCall = CallContext(
-                    nextCallerAddress,
+                    currentCallCtx.caller,
                     callData,
-                    CallType.CALLCODE,
-                    value,
-                    accounts.codeAt(callArguments.address),
+                    CallType.DELEGATECALL,
+                    currentCallCtx.value,
+                    code,
                     context,
                     gas,
                     outLocation,
                     outSize,
-                    contractAddress = currentCallCtx.contractAddress,
+                    contractAddress = callArguments.address,
                     storageAddress = currentCallCtx.storageAddress
                 )
 
@@ -72,46 +119,19 @@ object CallOps {
                 )
 
                 updatedCtx.copy(
-                    callStack = updatedCtx.callStack + newCall,
-                    accounts = newEvmState2
+                    callStack = updatedCtx.callStack + newCall
                 )
             }
         }
     }
 
-    fun delegateCall(context: ExecutionContext): ExecutionContext = with(context) {
-        val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = false)
-
-        with(callArguments) {
-            val code = accounts.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
-
-            val (callData, newMemory) = memory.read(inLocation, inSize)
-            val newCall = CallContext(
-                currentCallCtx.caller,
-                callData,
-                CallType.DELEGATECALL,
-                currentCallCtx.value,
-                code,
-                context,
-                gas,
-                outLocation,
-                outSize,
-                contractAddress = callArguments.address,
-                storageAddress = currentCallCtx.storageAddress
-            )
-
-            val updatedCtx = updateCurrentCallCtx(
-                stack = newStack,
-                memory = newMemory
-            )
-
-            updatedCtx.copy(
-                callStack = updatedCtx.callStack + newCall
-            )
-        }
-    }
-
     private fun doCall(context: ExecutionContext, args: CallArguments, callType: CallType): ExecutionContext =
+        if (Precompiled.isPrecompiledContractCall(args.address))
+            Precompiled.doPrecompiled(context, args)
+        else
+            doCallX(context, args, callType)
+
+    private fun doCallX(context: ExecutionContext, args: CallArguments, callType: CallType): ExecutionContext =
         with(context) {
             with(args) {
                 val nextCaller =

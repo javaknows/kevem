@@ -2,7 +2,6 @@ package org.kevm.evm.gas
 
 import java.math.BigInteger
 
-
 enum class Refund(val wei: Int) {
     SelfDestruct(24000),
     StorageClear(15000)
@@ -42,7 +41,8 @@ enum class GasCost(val cost: Int) {
     Copy(3),
     Log(375),
     LogData(8),
-    LogTopic(375);
+    LogTopic(375),
+    QuadDivisor(20);
 
     val costBigInt: BigInteger
         get() = cost.toBigInteger()

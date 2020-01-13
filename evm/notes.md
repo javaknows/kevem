@@ -16,11 +16,10 @@ https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18
 
 * null vs empty data from return, revert
 * precompiled contracts
-* not all operations work for large numbers
 * EIPS around gas costs
 * in JSON-RPC fail if block number is too large for type as per parity
 
 ## Compatibiliy / Correctness Tests Needed
 
-* Refund recpient for nested calls - is it the tx.origin or sender?
+* Refund recipient for nested calls - is it the tx.origin or sender?
 * Suicide called twice in same transaction 

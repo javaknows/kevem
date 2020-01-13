@@ -2,7 +2,7 @@ package org.kevm.rpc
 
 import org.kevm.common.KevmException
 import org.kevm.evm.bytesToString
-import org.kevm.evm.keccak256
+import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.model.*
 import org.kevm.evm.model.Byte
 import org.kevm.evm.toByteList

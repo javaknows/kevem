@@ -1,11 +1,8 @@
 package org.kevm.evm.ops
 
-import org.kevm.evm.keccak256
 import org.kevm.evm.model.*
-import org.kevm.evm.model.Byte
 import org.kevm.evm.numbers.generateAddress
 import org.kevm.evm.numbers.generateAddressFromSenderAndNonce
-import java.math.BigInteger
 
 // TODO - create a compatibility pack around this
 object CreateContractOps {

@@ -28,7 +28,7 @@ object Web3ServiceCreator {
         val tp = TransactionProcessor(
             Executor(
                 GasCostCalculator(
-                    BaseGasCostCalculator(CallGasCostCalc()),
+                    BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
                     MemoryUsageGasCostCalculator(
                         MemoryUsageGasCalc()
                     )

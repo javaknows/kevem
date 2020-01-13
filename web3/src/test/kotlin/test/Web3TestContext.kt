@@ -43,7 +43,7 @@ object Web3TestContext {
         blocks: List<MinedBlock> = emptyList()
     ): Web3j {
         val gasCostCalculator = GasCostCalculator(
-            BaseGasCostCalculator(CallGasCostCalc()),
+            BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
             MemoryUsageGasCostCalculator(
                 MemoryUsageGasCalc()
             )

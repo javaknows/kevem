@@ -28,6 +28,30 @@ data class Byte(val value: Int) {
     companion object {
         val Zero = Byte(0)
         val One = Byte(1)
+
+        fun padRightToSize(list: List<Byte>, size: Int, pad: Byte = Zero): List<Byte> {
+            return list + pad.repeat(size - list.size)
+        }
+
+        fun padRightToMultipleOf(list: List<Byte>, multiple: Int, pad: Byte = Zero): List<Byte> {
+            val over = list.size % multiple != 0
+            val targetSize = multiple * ((multiple / list.size) + if (over) 1 else 0)
+            return list + pad.repeat(targetSize - list.size)
+        }
+
+        fun padLeftToSize(list: List<Byte>, size: Int, pad: Byte = Zero): List<Byte> {
+            return pad.repeat(size - list.size) + list
+        }
+
+        fun trimAndPadRight(list: List<Byte>, size: Int, pad: Byte = Zero): List<Byte> {
+            val trimmed = list.take(size)
+            return trimmed + pad.repeat(size - trimmed.size)
+        }
+
+        fun trimAndPadLeft(list: List<Byte>, size: Int, pad: Byte = Zero): List<Byte> {
+            val trimmed = list.take(size)
+            return pad.repeat(size - trimmed.size) + trimmed
+        }
     }
 }
 

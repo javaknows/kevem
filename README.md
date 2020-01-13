@@ -7,7 +7,7 @@
 
 This is an standalone implementation of the [Ethereum Virtual Machine](https://www.ethereum.org/) written in Kotlin.
 
-It is a test EVM in the style of [Ganache](https://www.trufflesuite.com/ganache) written natively for the JVM in Kotlin. 
+It is a test EVM client in the style of [Ganache](https://www.trufflesuite.com/ganache) written natively for the JVM in Kotlin. 
 
 It allows running web3j tests completely in-process without using a separate Ganache instance.
 
