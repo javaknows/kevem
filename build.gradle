@@ -8,6 +8,10 @@ ext {
     bouncycastleVersion = '1.61'
     web3Version = '4.5.9'
     cucumberVersion = '4.7.2'
+    apacheCxfVersion = '3.3.5'
+    jakartaVersion = '2.1.6'
+    jacksonJsonProviderVersion = '2.10.2.1'
+    jacksonModuleKotlin = '2.10.2'
 }
 
 allprojects {

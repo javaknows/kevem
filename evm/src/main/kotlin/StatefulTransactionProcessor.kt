@@ -27,6 +27,10 @@ class StatefulTransactionProcessor(
             worldState
         }
 
+    fun setWorldState(worldState: WorldState) =
+        writeLock(lock) {
+            this.worldState = worldState
+        }
 
     fun call(tx: TransactionMessage): TransactionResult {
         val (_, result) = transactionProcessor.process(getWorldState(), tx, worldState.blocks.last().block)
