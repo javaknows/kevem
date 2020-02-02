@@ -1,6 +1,6 @@
 package org.kevm.web3
 
-import org.kevm.web3.modules.EthAdapter
+import org.kevm.web3.modules.StandardRpcAdapter
 import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
@@ -8,7 +8,7 @@ import org.web3j.protocol.core.methods.request.Transaction
 import kotlin.reflect.KClass
 
 @Suppress("IMPLICIT_CAST_TO_ANY", "UNCHECKED_CAST")
-class StandardRPCProvider(private val adapter: EthAdapter): RPCProvider {
+class StandardRPCProvider(private val adapter: StandardRpcAdapter): RPCProvider {
 
     private fun <T : Any> nonNullParam(params: List<Any>, index: Int, type: KClass<T>): T
             = params.getOrNull(index) as T

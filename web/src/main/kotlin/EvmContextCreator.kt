@@ -1,4 +1,6 @@
-package org.kevm.dsl
+package org.kevm.web
+
+import org.kevm.web.module.EvmContext
 
 import org.kevm.evm.Executor
 import org.kevm.evm.StatefulTransactionProcessor
@@ -10,21 +12,17 @@ import org.kevm.rpc.AppConfig
 import org.kevm.rpc.LocalAccounts
 import org.kevm.rpc.StandardEvmOperations
 import org.kevm.rpc.StandardRPC
-import org.kevm.web3.KevmWeb3Service
-import org.kevm.web3.StandardRPCProvider
-import org.kevm.web3.modules.StandardRpcAdapter
-import org.web3j.protocol.Web3j
 import java.math.BigInteger
 import java.time.Clock
 
-object Web3ServiceCreator {
+object EvmContextCreator {
 
-    fun createWeb3(
-        config: AppConfig,
+    fun create(
+        config: AppConfig = AppConfig(),
         localAccounts: LocalAccounts = LocalAccounts(),
         accounts: Accounts = Accounts(),
-        clock: Clock
-    ): Web3j {
+        clock: Clock = Clock.systemUTC()
+    ): EvmContext {
         val tp = TransactionProcessor(
             Executor(
                 GasCostCalculator(
@@ -36,31 +34,26 @@ object Web3ServiceCreator {
             )
         )
 
-        val providers = listOf(
-            StandardRPCProvider(
-                StandardRpcAdapter(
-                    StandardRPC(
-                        StandardEvmOperations(
-                            StatefulTransactionProcessor(
-                                tp,
-                                clock,
-                                WorldState(
-                                    listOf(createGenisisBlock(config)),
-                                    accounts,
-                                    Address(config.coinbase)
-                                )
-                            )
-                        ),
-                        config,
-                        localAccounts
+        val standardRPC = StandardRPC(
+            StandardEvmOperations(
+                StatefulTransactionProcessor(
+                    tp,
+                    clock,
+                    WorldState(
+                        listOf(createGenisisBlock(config)),
+                        accounts,
+                        Address(config.coinbase)
                     )
                 )
-            )
+            ),
+            config,
+            localAccounts
         )
 
-        return Web3j.build(KevmWeb3Service(providers))
+        return EvmContext(standardRPC)
     }
 
+    // TODO - copy / paste job
     private fun createGenisisBlock(config: AppConfig): MinedBlock {
         return MinedBlock(
             block = Block(

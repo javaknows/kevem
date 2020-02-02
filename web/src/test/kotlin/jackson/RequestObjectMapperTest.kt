@@ -6,7 +6,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-import org.kevm.web.RpcRequest
+import org.kevm.web.module.RpcRequest
 
 class TestClientVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<String>>(jsonrpc, method, id, emptyList())

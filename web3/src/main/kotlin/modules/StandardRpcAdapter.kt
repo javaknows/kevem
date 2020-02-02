@@ -16,7 +16,7 @@ import org.web3j.protocol.core.methods.response.Transaction as Web3TransactionRe
 /**
  * Adapts to/from Web3 objects to KEV-M objects
  */
-class EthAdapter(private val standardRPC: StandardRPC) {
+class StandardRpcAdapter(private val standardRPC: StandardRPC) {
 
     fun ethGetTransactionCount(address: String, block: String?): EthGetTransactionCount {
         return EthGetTransactionCount().apply {
