@@ -7,8 +7,8 @@ import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider
 import org.kevm.evm.locking.locked
 import org.kevm.web.jackson.RequestObjectMapper
 import org.kevm.web.module.WebModule
+import org.kevm.web.module.NetModule
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.system.exitProcess
 
 class Server {
     private val runningLock = ReentrantLock()
@@ -17,7 +17,7 @@ class Server {
 
     private var running = false; // guarded by runningLock
 
-    private var jaxRsServer: org.apache.cxf.endpoint.Server? = null
+    private var jaxRsServer: org.apache.cxf.endpoint.Server? = null // guarded by runningLock
 
     fun start(port: Int, keepAlive: Boolean = false) {
         locked(runningLock) {
@@ -44,13 +44,15 @@ class Server {
 
     private fun createServer(port: Int): Server {
         return JAXRSServerFactoryBean().apply {
-            providers = listOf<Any>(JacksonJsonProvider(RequestObjectMapper().create(WebModule.supported())))
+            providers = listOf<Any>(JacksonJsonProvider(RequestObjectMapper().create(
+                WebModule.supported() + NetModule.supported()
+            )))
             address = "http://localhost:$port/"
 
             setResourceClasses(KevmWebRpcService::class.java)
             setResourceProvider(
                 KevmWebRpcService::class.java, SingletonResourceProvider(
-                    KevmWebRpcService(listOf(WebModule), EvmContextCreator.create())
+                    KevmWebRpcService(listOf(WebModule, NetModule), EvmContextCreator.create())
                 )
             )
         }.create()

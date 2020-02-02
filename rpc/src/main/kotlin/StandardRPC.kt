@@ -14,6 +14,7 @@ import java.time.Instant
 
 data class AppConfig(
     val chainId: Int = 0,
+    val netVersion: Int = 1,
     val peerCount: Int = 0,
     val coinbase: String = "0x0",
     val hashRate: BigInteger = BigInteger.ZERO,
@@ -43,7 +44,7 @@ class StandardRPC(
 
     fun web3sha3(data: String): String = bytesToString(keccak256(toByteList(data)).data)
 
-    fun netVersion(): String = config.chainId.toStringHexPrefix()
+    fun netVersion(): String = config.netVersion.toString(10)
 
     fun netPeerCount(): String = config.peerCount.toStringHexPrefix()
 

@@ -1,0 +1,5 @@
+web3_clientVersion
+web3_sha3
+net_version
+net_listening
+net_peerCount

@@ -72,7 +72,7 @@ class KevmWeb3ServiceCallsTest {
     fun `can get net version`() {
         val result = web3.netVersion().send().result
 
-        assertThat(result).isEqualTo("0x2")
+        assertThat(result).isEqualTo("5")
     }
 
     @Test

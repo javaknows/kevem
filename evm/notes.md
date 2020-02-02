@@ -15,7 +15,6 @@ https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18
 ## Missing Features
 
 * null vs empty data from return, revert
-* precompiled contracts
 * EIPS around gas costs
 * in JSON-RPC fail if block number is too large for type as per parity
 

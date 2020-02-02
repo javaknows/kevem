@@ -36,6 +36,7 @@ object Web3TestContext {
     fun createTestWeb3(
         config: AppConfig = AppConfig(
             chainId = 2,
+            netVersion = 5,
             coinbase = "0xC014BA5E"
         ),
         localAccounts: LocalAccounts = LocalAccounts(),

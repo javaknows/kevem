@@ -55,10 +55,10 @@ class RpcServerIntegrationTest {
         private val mapper = jacksonObjectMapper()
 
         @JvmStatic
-        fun requestsAndResponses() = listOf(
-            "web3_clientVersion",
-            "web3_sha3"
-        ).map { loadData(it) }
+        fun requestsAndResponses() = load("RpcServerIntegrationTest/testList.txt")
+            .split("\n")
+            .map{ it.trim() }
+            .map { loadData(it) }
 
         private fun loadData(name: String): RequestAndResponse {
             val request = load("RpcServerIntegrationTest/$name/request.json")
