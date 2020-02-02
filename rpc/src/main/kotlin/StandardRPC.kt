@@ -22,7 +22,7 @@ data class AppConfig(
     val difficulty: BigInteger = BigInteger.ZERO, // 17,171,480,576
     val extraData: Word = Word.Zero,
     val gasPrice: BigInteger = BigInteger("20000000000"),
-    val blockGasLimit: BigInteger =  BigInteger("1000000000000000000000000000000"),
+    val blockGasLimit: BigInteger = BigInteger("1000000000000000000000000000000"),
     val genesisBlockTimestamp: Instant = Instant.parse("2015-06-30T03:26:28.00Z")
 )
 
@@ -97,23 +97,24 @@ class StandardRPC(
     fun ethGetCode(address: String, block: String?): String {
         val a = toAddress(address)
         val b = BlockReference.fromString(block)
-        return standardEvmOperations.getCode(a, b).toString()
+        return bytesToString(standardEvmOperations.getCode(a, b))
     }
 
     fun ethSign(address: String, data: String): String {
         val account = getUnlockedAccount(address)
         val dataBytes = toByteList(data).map { it.javaByte() }.toByteArray()
 
-        val privateKey = BigInteger(account.privateKey.map { it.toStringNoHexPrefix() }.joinToString())
+        val privateKey = BigInteger(account.privateKey.map { it.toStringNoHexPrefix() }.joinToString(""), 16)
         val publicKey = Sign.publicKeyFromPrivate(privateKey)
         val keyPair = ECKeyPair(privateKey, publicKey)
 
-        val signed = Sign.signMessage(dataBytes, keyPair)
+        val signed = Sign.signPrefixedMessage(dataBytes, keyPair)
 
-        val s = zeroPadTruncate(signed.r.toList(), 32) + zeroPadTruncate(signed.s.toList(), 32) + signed.v.toList()
+        val s = zeroPadTruncate(signed.r.toList(), 32) +
+                zeroPadTruncate(signed.s.toList(), 32) +
+                signed.v.map{ (it.toInt() - 27).toByte() }.toList() // not sure if subtracting the 27 is correct here
 
-        // TODO - sort this out
-        return s.toString()
+        return bytesToString(s.map { Byte(it.toInt() and 0xFF) })
     }
 
     private fun zeroPadTruncate(bytes: List<kotlin.Byte>, length: Int): List<kotlin.Byte> {
@@ -293,17 +294,26 @@ class StandardRPC(
     }
 
     fun ethGetLogs(filter: GetLogsParamDTO): List<LogDTO> {
-        val from =  BlockReference.fromString(filter.fromBlock)
-        val to =  BlockReference.fromString(filter.toBlock)
+        val from = BlockReference.fromString(filter.fromBlock)
+        val to = BlockReference.fromString(filter.toBlock)
         val address = filter.address?.mapNotNull { toAddressOrNull(it) }
-        val topics = filter.topics?.map{ Word.coerceFrom(it) }
+        val topics = filter.topics?.map { Word.coerceFrom(it) }
         val blockHash = if (filter.blockHash != null) Word.coerceFrom(filter.blockHash).data else null
 
         val logs = standardEvmOperations.getLogs(from, to, address, topics, blockHash)
 
         return logs.map { log ->
             // TODO - add all the tx and block values
-            LogDTO(false, "0x0", "0x0",  "0x0", "0x0", "0x0", "0x0", bytesToString(log.data), log.topics.map { it.toStringNoHexPrefix() })
+            LogDTO(
+                false,
+                "0x0",
+                "0x0",
+                "0x0",
+                "0x0",
+                "0x0",
+                "0x0",
+                bytesToString(log.data),
+                log.topics.map { it.toStringNoHexPrefix() })
         }
     }
 

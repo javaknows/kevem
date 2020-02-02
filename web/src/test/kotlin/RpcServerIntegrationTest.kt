@@ -43,9 +43,9 @@ class RpcServerIntegrationTest {
 
     private fun assertSameEntries(actualBody: Map<*, *>, expectedBody: Map<*, *>) {
         assertThat(actualBody.keys).isEqualTo(expectedBody.keys)
-        actualBody.forEach { entry ->
+        expectedBody.forEach { entry ->
             val (key, value) = entry
-            assertThat(expectedBody[key]).isEqualTo(value)
+            assertThat(actualBody[key]).isEqualTo(value)
         }
     }
 
