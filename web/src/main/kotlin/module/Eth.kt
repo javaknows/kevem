@@ -1,5 +1,7 @@
 package org.kevm.web.module
 
+import org.kevm.rpc.SendTransactionParamDTO
+
 class EthProtocolVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<Int>>(jsonrpc, method, id, emptyList())
 
@@ -240,6 +242,18 @@ private val EthSign = Method.create("eth_sign", EthSignRequest::class, EthSignRe
     EthSignResponse(request, balance)
 }
 
+class EthSendTransactionRequest(jsonrpc: String, method: String, id: Long, params: List<SendTransactionParamDTO>) :
+    RpcRequest<List<SendTransactionParamDTO>>(jsonrpc, method, id, params)
+
+class EthSendTransactionResponse(request: EthSendTransactionRequest, result: String) :
+    RpcResponse<String>(request, result)
+
+private val EthSendTransaction = Method.create("eth_sendTransaction", EthSendTransactionRequest::class, EthSendTransactionResponse::class) { request, context ->
+    val transaction = request.params[0]
+    val balance = context.standardRpc.ethSendTransaction(transaction)
+    EthSendTransactionResponse(request, balance)
+}
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -258,7 +272,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetUncleCountByBlockHash,
     EthGetUncleCountByBlockNumber,
     EthGetCode,
-    EthSign
+    EthSign,
+    EthSendTransaction
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)
