@@ -3,3 +3,11 @@ web3_sha3
 net_version
 net_listening
 net_peerCount
+net_version
+eth_protocolVersion
+eth_syncing
+eth_coinbase
+eth_mining
+eth_hashrate
+eth_gasPrice
+eth_accounts

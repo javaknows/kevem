@@ -38,7 +38,15 @@ class RpcServerIntegrationTest {
         val actualBody = mapper.readValue(response, Map::class.java)
         val expectedBody = mapper.readValue(example.response, Map::class.java)
 
-        assertThat(actualBody).isEqualTo(expectedBody)
+        assertSameEntries(actualBody, expectedBody)
+    }
+
+    private fun assertSameEntries(actualBody: Map<*, *>, expectedBody: Map<*, *>) {
+        assertThat(actualBody.keys).isEqualTo(expectedBody.keys)
+        actualBody.forEach { entry ->
+            val (key, value) = entry
+            assertThat(expectedBody[key]).isEqualTo(value)
+        }
     }
 
     private fun executeRequest(example: RequestAndResponse): String? {
@@ -57,7 +65,7 @@ class RpcServerIntegrationTest {
         @JvmStatic
         fun requestsAndResponses() = load("RpcServerIntegrationTest/testList.txt")
             .split("\n")
-            .map{ it.trim() }
+            .map { it.trim() }
             .map { loadData(it) }
 
         private fun loadData(name: String): RequestAndResponse {

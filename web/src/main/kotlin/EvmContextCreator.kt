@@ -8,18 +8,20 @@ import org.kevm.evm.TransactionProcessor
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.evm.toByteList
-import org.kevm.rpc.AppConfig
-import org.kevm.rpc.LocalAccounts
-import org.kevm.rpc.StandardEvmOperations
-import org.kevm.rpc.StandardRPC
+import org.kevm.rpc.*
 import java.math.BigInteger
 import java.time.Clock
 
 object EvmContextCreator {
 
     fun create(
-        config: AppConfig = AppConfig(),
-        localAccounts: LocalAccounts = LocalAccounts(),
+        config: AppConfig = AppConfig(
+            coinbase = "0xc94770007dda54cF92009BFF0dE90c06F603a09f",
+            hashRate = toBigInteger("0x123")
+        ),
+        localAccounts: LocalAccounts = LocalAccounts(
+            listOf(LocalAccount(Address("0xc94770007dda54cF92009BFF0dE90c06F603a09f"), emptyList(), true))
+        ),
         accounts: Accounts = Accounts(),
         clock: Clock = Clock.systemUTC()
     ): EvmContext {
