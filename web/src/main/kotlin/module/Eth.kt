@@ -1,6 +1,8 @@
 package org.kevm.web.module
 
+import org.kevm.rpc.SendCallParamDTO
 import org.kevm.rpc.SendTransactionParamDTO
+import org.kevm.web.jackson.ObjectTransformer
 
 class EthProtocolVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<Int>>(jsonrpc, method, id, emptyList())
@@ -267,6 +269,19 @@ private val EthSendRawTransaction =
         EthSendRawTransactionResponse(request, balance)
     }
 
+class EthCallRequest(jsonrpc: String, method: String, id: Long, params: List<Any>) :
+    RpcRequest<List<Any>>(jsonrpc, method, id, params)
+
+class EthCallResponse(request: EthCallRequest, result: String) :
+    RpcResponse<String>(request, result)
+
+private val EthCall = Method.create("eth_call", EthCallRequest::class, EthCallResponse::class) { request, context ->
+    val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
+    val block = request.params[1] as String
+    val data = context.standardRpc.ethCall(call, block)
+    EthCallResponse(request, data)
+}
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -287,7 +302,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetCode,
     EthSign,
     EthSendTransaction,
-    EthSendRawTransaction
+    EthSendRawTransaction,
+    EthCall
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)

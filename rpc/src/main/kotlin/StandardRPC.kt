@@ -166,7 +166,7 @@ class StandardRPC(
         return bytesToString(hash)
     }
 
-    fun ethCall(transaction: SendCallParamDTO, block: String?): List<Byte> {
+    fun ethCall(transaction: SendCallParamDTO, block: String?): String {
         val gas =
             if (transaction.gas == null) standardEvmOperations.pendingBlockGasLimit()
             else toBigInteger(transaction.gas)
@@ -182,7 +182,7 @@ class StandardRPC(
             emptyList()
         )
 
-        return standardEvmOperations.call(tx, BlockReference.fromString(block))
+        return bytesToString(standardEvmOperations.call(tx, BlockReference.fromString(block)))
     }
 
     fun ethEstimateGas(transaction: SendCallParamDTO, block: String = "latest"): String {

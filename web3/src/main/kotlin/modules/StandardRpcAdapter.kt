@@ -163,7 +163,7 @@ class StandardRpcAdapter(private val standardRPC: StandardRPC) {
             transaction.data
         )
 
-        val callResult = bytesToString(standardRPC.ethCall(call, defaultBlockParameter))
+        val callResult = standardRPC.ethCall(call, defaultBlockParameter)
 
         return EthCall().apply { result = callResult }
     }

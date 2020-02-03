@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "method": "eth_call",
+  "params": [
+    {
+      "from": "0x4e7d932c0f12cfe14295b86824b37bb1062bc29e",
+      "to": "0xc94770007dda54cF92009BFF0dE90c06F603a09f",
+      "gas": "0x0",
+      "gasPrice": "0x0",
+      "value": "0x0",
+      "data": "0x0"
+    },
+    "latest"
+  ],
+  "id": 1
+}
