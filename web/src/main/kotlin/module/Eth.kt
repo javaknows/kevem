@@ -254,6 +254,19 @@ private val EthSendTransaction = Method.create("eth_sendTransaction", EthSendTra
     EthSendTransactionResponse(request, balance)
 }
 
+class EthSendRawTransactionRequest(jsonrpc: String, method: String, id: Long, params: List<String>) :
+    RpcRequest<List<String>>(jsonrpc, method, id, params)
+
+class EthSendRawTransactionResponse(request: EthSendRawTransactionRequest, result: String) :
+    RpcResponse<String>(request, result)
+
+private val EthSendRawTransaction =
+    Method.create("eth_sendRawTransaction", EthSendRawTransactionRequest::class, EthSendRawTransactionResponse::class) { request, context ->
+        val data = request.params[0]
+        val balance = context.standardRpc.ethSendRawTransaction(data)
+        EthSendRawTransactionResponse(request, balance)
+    }
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -273,7 +286,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetUncleCountByBlockNumber,
     EthGetCode,
     EthSign,
-    EthSendTransaction
+    EthSendTransaction,
+    EthSendRawTransaction
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)

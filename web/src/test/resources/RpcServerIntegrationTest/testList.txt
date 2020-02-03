@@ -22,3 +22,4 @@ eth_getUncleCountByBlockNumber
 eth_getCode
 eth_sign
 eth_sendTransaction
+eth_sendRawTransaction
