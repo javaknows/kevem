@@ -3,6 +3,7 @@ package org.kevm.web.module
 import org.kevm.rpc.BlockDTO
 import org.kevm.rpc.SendCallParamDTO
 import org.kevm.rpc.SendTransactionParamDTO
+import org.kevm.rpc.TransactionDTO
 import org.kevm.web.jackson.ObjectTransformer
 
 class EthProtocolVersionRequest(jsonrpc: String, method: String, id: Long) :
@@ -338,8 +339,46 @@ private val EthGetBlockByNumber = Method.create(
 ) { request, context ->
     val hash = request.params[0] as String
     val fullTransactionObjects = request.params[1] as Boolean
-    val data = context.standardRpc.ethGetBlockByNumber(hash, fullTransactionObjects)
-    EthGetBlockByNumberResponse(request, data)
+    val block = context.standardRpc.ethGetBlockByNumber(hash, fullTransactionObjects)
+    EthGetBlockByNumberResponse(request, block)
+}
+
+class EthGetTransactionByHashRequest(jsonrpc: String, method: String, id: Long, params: List<String>) :
+    RpcRequest<List<String>>(jsonrpc, method, id, params)
+
+class EthGetTransactionByHashResponse(request: EthGetTransactionByHashRequest, result: TransactionDTO?) :
+    RpcResponse<TransactionDTO?>(request, result)
+
+private val EthGetTransactionByHash = Method.create("eth_getTransactionByHash", EthGetTransactionByHashRequest::class, EthGetTransactionByHashResponse::class) { request, context ->
+    val hash = request.params[0]
+    val transaction = context.standardRpc.ethGetTransactionByHash(hash)
+    EthGetTransactionByHashResponse(request, transaction)
+}
+
+class EthGetTransactionByBlockHashAndIndexRequest(jsonrpc: String, method: String, id: Long, params: List<Any>) :
+    RpcRequest<List<Any>>(jsonrpc, method, id, params)
+
+class EthGetTransactionByBlockHashAndIndexResponse(request: EthGetTransactionByBlockHashAndIndexRequest, result: TransactionDTO?) :
+    RpcResponse<TransactionDTO?>(request, result)
+
+private val EthGetTransactionByBlockHashAndIndex = Method.create("eth_getTransactionByBlockHashAndIndex", EthGetTransactionByBlockHashAndIndexRequest::class, EthGetTransactionByBlockHashAndIndexResponse::class) { request, context ->
+    val hash = request.params[0] as String
+    val position = request.params[1] as String // TODO - check if string data type is compatible with
+    val transaction = context.standardRpc.ethGetTransactionByBlockHashAndIndex(hash, position)
+    EthGetTransactionByBlockHashAndIndexResponse(request, transaction)
+}
+
+class EthGetTransactionByBlockNumberAndIndexRequest(jsonrpc: String, method: String, id: Long, params: List<Any>) :
+    RpcRequest<List<Any>>(jsonrpc, method, id, params)
+
+class EthGetTransactionByBlockNumberAndIndexResponse(request: EthGetTransactionByBlockNumberAndIndexRequest, result: TransactionDTO?) :
+    RpcResponse<TransactionDTO?>(request, result)
+
+private val EthGetTransactionByBlockNumberAndIndex = Method.create("eth_getTransactionByBlockNumberAndIndex", EthGetTransactionByBlockNumberAndIndexRequest::class, EthGetTransactionByBlockNumberAndIndexResponse::class) { request, context ->
+    val hash = request.params[0] as String
+    val position = request.params[1] as String // TODO - check if string data type is compatible with
+    val transaction = context.standardRpc.ethGetTransactionByBlockNumberAndIndex(hash, position)
+    EthGetTransactionByBlockNumberAndIndexResponse(request, transaction)
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -366,7 +405,10 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthCall,
     EthEstimateGas,
     EthGetBlockByHash,
-    EthGetBlockByNumber
+    EthGetBlockByNumber,
+    EthGetTransactionByHash,
+    EthGetTransactionByBlockHashAndIndex,
+    EthGetTransactionByBlockNumberAndIndex
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)
