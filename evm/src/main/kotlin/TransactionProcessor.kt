@@ -2,6 +2,8 @@ package org.kevm.evm
 
 import org.kevm.common.Logger
 import org.kevm.evm.gas.GasCost
+import org.kevm.evm.gas.TransactionGasCalculator
+import org.kevm.evm.gas.TransactionValidator
 import org.kevm.evm.model.*
 import java.math.BigInteger
 import org.kevm.evm.model.Byte
@@ -14,11 +16,13 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 // TODO - proper transaction hash generation
 class TransactionProcessor(
     private val executor: Executor,
+    private val txValidator: TransactionValidator = TransactionValidator(),
+    private val txGasCalculator: TransactionGasCalculator = TransactionGasCalculator(),
     private val log: Logger = Logger.createLogger(TransactionProcessor::class)
 ) {
 
     internal fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
-        if (isValid(worldState, tx)) {
+        if (txValidator.isValid(worldState, tx)) {
             val ws = incrementSenderNonce(worldState, tx.from)
             processValidTx(ws, tx, currentBlock)
         } else
@@ -55,7 +59,7 @@ class TransactionProcessor(
         recipient: Address,
         newWorldState: WorldState
     ): ProcessResult {
-        val contractCreationGas = contractCreationCost(tx, execResult)
+        val contractCreationGas = txGasCalculator.contractCreationCost(tx, execResult)
 
         return if (contractCreationGas + execResult.gasUsed > tx.gasLimit)
             consumeGasLimitAndFailResult(worldState, tx)
@@ -136,7 +140,7 @@ class TransactionProcessor(
         transaction: TransactionMessage
     ): Pair<WorldState, Address> {
         val newWorldState = worldState.copy(
-            accounts = deductFromAccount(worldState.accounts, transaction.from, upFrontCost(transaction))
+            accounts = deductFromAccount(worldState.accounts, transaction.from, txGasCalculator.upFrontCost(transaction))
         )
 
         val (recipient, newWorldState2) =
@@ -178,44 +182,7 @@ class TransactionProcessor(
             acc.updateBalance(address, newBalance)
         }
 
-    private fun isValid(worldState: WorldState, transaction: TransactionMessage): Boolean =
-        when {
-            transaction.nonce != worldState.accounts.nonceOf(transaction.from) -> {
-                log.info("nonce is invalid - ${transaction.nonce} but expected ${worldState.accounts.nonceOf(transaction.from)}")
-                false
-            }
-            intrinsicGas(transaction) > transaction.gasLimit -> {
-                log.info("instrinsic gas ${intrinsicGas(transaction)} is greater than transaction gas ${transaction.gasLimit}")
-                false
-            }
-            upFrontCost(transaction) >= worldState.accounts.balanceOf(transaction.from) -> {
-                log.info("up front cost ${upFrontCost(transaction)} is greater than account balance of ${worldState.accounts.balanceOf(transaction.from)}")
-                false
-            }
-            else -> true
-        }
 
-    private fun upFrontCost(transaction: TransactionMessage) =
-        transaction.value + (transaction.gasLimit * transaction.gasPrice)
-
-    // gas cost required to consider transaction valid
-    private fun intrinsicGas(transaction: TransactionMessage): BigInteger {
-        val createCost =
-            if (isContractCreation(transaction)) GasCost.TxCreate.costBigInt
-            else BigInteger.ZERO
-
-        val dataCost = transaction.data
-            .map { if (it == Byte.Zero) GasCost.TxDataZero.costBigInt else GasCost.TxDataNonZero.costBigInt }
-            .fold(BigInteger.ZERO) { acc, n -> acc + n }
-
-        return GasCost.Transaction.costBigInt + createCost + dataCost
-    }
-
-    private fun contractCreationCost(transaction: TransactionMessage, executionResult: ExecutionContext): BigInteger =
-        if (transaction.to == null)
-            GasCost.CodeDeposit.costBigInt * executionResult.lastReturnData.size.toBigInteger() * transaction.gasPrice
-        else
-            BigInteger.ZERO
 
     private fun createExecutionCtx(
         worldState: WorldState,
@@ -230,7 +197,7 @@ class TransactionProcessor(
             if (tx.to != null) Pair(worldState.accounts.codeAt(tx.to), tx.data)
             else Pair(tx.data, emptyList())
 
-        val intrinsicGas = intrinsicGas(tx)
+        val intrinsicGas = txGasCalculator.intrinsicGas(tx)
 
         val callContext = CallContext(
             caller = tx.from,
