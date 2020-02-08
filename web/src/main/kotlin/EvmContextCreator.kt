@@ -107,7 +107,13 @@ object EvmContextCreator {
                     ),
                     TransactionResult(
                         status = ResultStatus.COMPLETE,
-                        gasUsed = BigInteger.ONE
+                        gasUsed = BigInteger.ONE,
+                        logs = listOf(
+                            Log(
+                                emptyList(),
+                                listOf(Word.coerceFrom("0x000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b"))
+                            )
+                        )
                     )
                 )
             )

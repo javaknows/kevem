@@ -44,7 +44,7 @@ eth_getCompilers
 # eth_uninstallFilter
 # eth_getFilterChanges
 # eth_getFilterLogs
-# eth_getLogs
+eth_getLogs
 # eth_getWork
 # eth_submitWork
 # eth_submitHashrate

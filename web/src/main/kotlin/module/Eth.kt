@@ -1,9 +1,6 @@
 package org.kevm.web.module
 
-import org.kevm.rpc.BlockDTO
-import org.kevm.rpc.SendCallParamDTO
-import org.kevm.rpc.SendTransactionParamDTO
-import org.kevm.rpc.TransactionDTO
+import org.kevm.rpc.*
 import org.kevm.web.jackson.ObjectTransformer
 
 class EthProtocolVersionRequest(jsonrpc: String, method: String, id: Long) :
@@ -415,6 +412,17 @@ private val EthGetCompilers = Method.create("eth_getCompilers", EthGetCompilersR
     EthGetCompilersResponse(request, compilers)
 }
 
+class EthGetLogsRequest(jsonrpc: String, method: String, id: Long, params: List<GetLogsParamDTO>) :
+    RpcRequest<List<GetLogsParamDTO>>(jsonrpc, method, id, params)
+
+class EthGetLogsResponse(request: EthGetLogsRequest, result: List<LogDTO>) :
+    RpcResponse<List<LogDTO>>(request, result)
+
+private val EthGetLogs = Method.create("eth_getLogs", EthGetLogsRequest::class, EthGetLogsResponse::class) { request, context ->
+    val logs = context.standardRpc.ethGetLogs(request.params[0])
+    EthGetLogsResponse(request, logs)
+}
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -445,7 +453,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetTransactionByBlockNumberAndIndex,
     EthGetTransactionReceipt,
     EthPendingTransactions,
-    EthGetCompilers
+    EthGetCompilers,
+    EthGetLogs
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)
