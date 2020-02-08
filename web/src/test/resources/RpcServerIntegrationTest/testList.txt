@@ -24,4 +24,4 @@ eth_sign
 eth_sendTransaction
 eth_sendRawTransaction
 eth_call
-#eth_estimateGas
+eth_estimateGas

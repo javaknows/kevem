@@ -278,7 +278,7 @@ class EthCallResponse(request: EthCallRequest, result: String) :
 private val EthCall = Method.create("eth_call", EthCallRequest::class, EthCallResponse::class) { request, context ->
     val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
     val block = request.params[1] as String
-    val data = context.standardRpc.ethEstimateGas(call, block)
+    val data = context.standardRpc.ethCall(call, block)
     EthCallResponse(request, data)
 }
 
@@ -291,7 +291,7 @@ class EthEstimateGasResponse(request: EthEstimateGasRequest, result: String) :
 private val EthEstimateGas = Method.create("eth_estimateGas", EthEstimateGasRequest::class, EthEstimateGasResponse::class) { request, context ->
     val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
     val block = request.params[1] as String
-    val data = context.standardRpc.ethCall(call, block)
+    val data = context.standardRpc.ethEstimateGas(call, block)
     EthEstimateGasResponse(request, data)
 }
 
