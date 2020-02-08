@@ -404,6 +404,16 @@ private val EthPendingTransactions = Method.create("eth_pendingTransactions", Et
     EthPendingTransactionsResponse(request, transaction)
 }
 
+class EthGetCompilersRequest(jsonrpc: String, method: String, id: Long, params: List<Void>) :
+    RpcRequest<List<Void>>(jsonrpc, method, id, params)
+
+class EthGetCompilersResponse(request: EthGetCompilersRequest, result: List<String>) :
+    RpcResponse<List<String>>(request, result)
+
+private val EthGetCompilers = Method.create("eth_getCompilers", EthGetCompilersRequest::class, EthGetCompilersResponse::class) { request, context ->
+    val compilers = context.standardRpc.ethGetCompilers()
+    EthGetCompilersResponse(request, compilers)
+}
 
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
@@ -434,7 +444,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetTransactionByBlockHashAndIndex,
     EthGetTransactionByBlockNumberAndIndex,
     EthGetTransactionReceipt,
-    EthPendingTransactions
+    EthPendingTransactions,
+    EthGetCompilers
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)
