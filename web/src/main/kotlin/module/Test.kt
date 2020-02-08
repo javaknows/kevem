@@ -38,11 +38,24 @@ private val TestRewindToBlock =
         TestRewindToBlockResponse(request, isSuccess)
     }
 
+class TestModifyTimestampRequest(jsonrpc: String, method: String, id: Long, params: List<Long>) :
+    RpcRequest<List<Long>>(jsonrpc, method, id, params)
+
+class TestModifyTimestampResponse(request: TestModifyTimestampRequest, result: Boolean) : RpcResponse<Boolean>(request, result)
+
+private val TestModifyTimestamp =
+    Method.create("test_modifyTimestamp", TestModifyTimestampRequest::class, TestModifyTimestampResponse::class) { request, context ->
+        val timestamp = request.params[0]
+        val isSuccess = context.testRpc.modifyTimestamp(timestamp)
+        TestModifyTimestampResponse(request, isSuccess)
+    }
+
 @Suppress("UNCHECKED_CAST")
 private val methods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     TestSetChainParams,
     TestMineBlocks,
-    TestRewindToBlock
+    TestRewindToBlock,
+    TestModifyTimestamp
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val TestModule = Module(methods)

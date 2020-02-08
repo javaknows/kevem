@@ -10,7 +10,11 @@ import org.kevm.evm.model.Address
 import org.kevm.evm.model.Byte
 import org.kevm.evm.model.TransactionMessage
 import test.TestObjects
+import java.lang.RuntimeException
 import java.math.BigInteger
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 
 private val Zero = BigInteger.ZERO
 private val One = BigInteger.ONE
@@ -75,6 +79,18 @@ class StatefulTransactionProcessorTest {
         underTest.revertToBlock(One)
 
         assertThat(underTest.getWorldState().blocks.last().block.number).isEqualTo(One)
+    }
+
+    @Test
+    internal fun `check mined blocks have timestamp from clock`() {
+        val instant = Instant.parse("2015-06-30T03:26:28.00Z")
+        val fixedClock = Clock.fixed(instant, ZoneId.systemDefault())
+        underTest.setClock(fixedClock)
+
+        mine(initForTwoTransfers())
+
+        val block = underTest.getWorldState().blocks.last().block
+        assertThat(block.timestamp).isEqualTo(instant)
     }
 
     private fun assertTxWasMined(hash: List<Byte>) {

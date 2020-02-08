@@ -12,10 +12,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import org.kevm.evm.model.Byte
 
 // TODO - generate block hash properly
+/**
+ * Thread safe - all state guarded by lock
+ */
 class StatefulTransactionProcessor(
     private val transactionProcessor: TransactionProcessor,
-    private val clock: Clock,
-    private var worldState: WorldState, // var - guarded by "lock"
+    private var clock: Clock,
+    private var worldState: WorldState,
     private var pendingTransactions: List<TransactionMessage> = emptyList(),
     private var previousStates: List<WorldState> = emptyList(),
     private var autoMine: Boolean = true
@@ -41,6 +44,10 @@ class StatefulTransactionProcessor(
 
     fun setAutoMine(autoMine: Boolean) = writeLock(lock) {
         this.autoMine = autoMine
+    }
+
+    fun setClock(clock: Clock) = writeLock(lock) {
+        this.clock = clock
     }
 
     // TODO - should use previous world state

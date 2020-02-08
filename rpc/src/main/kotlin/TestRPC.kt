@@ -5,7 +5,9 @@ import org.kevm.evm.model.*
 import org.kevm.evm.model.Byte
 import org.kevm.evm.toByteList
 import java.math.BigInteger
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneOffset
 
 class TestRPC(val evm: StatefulTransactionProcessor) {
 
@@ -69,6 +71,12 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
 
     fun revertToBlock(number: BigInteger): Boolean {
         evm.revertToBlock(number)
+        return true
+    }
+
+    fun modifyTimestamp(timestamp: Long): Boolean {
+        val fixedClock = Clock.fixed(Instant.ofEpochMilli(timestamp), ZoneOffset.UTC)
+        evm.setClock(fixedClock)
         return true
     }
 }

@@ -66,3 +66,4 @@ eth_getLogs
 test_setChainParams
 test_mineBlocks
 test_rewindToBlock
+test_modifyTimestamp
