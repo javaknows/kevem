@@ -393,6 +393,18 @@ private val EthGetTransactionReceipt = Method.create("eth_getTransactionReceipt"
     EthGetTransactionReceiptResponse(request, transaction)
 }
 
+class EthPendingTransactionsRequest(jsonrpc: String, method: String, id: Long, params: List<Void>) :
+    RpcRequest<List<Void>>(jsonrpc, method, id, params)
+
+class EthPendingTransactionsResponse(request: EthPendingTransactionsRequest, result: List<TransactionDTO>) :
+    RpcResponse<List<TransactionDTO>>(request, result)
+
+private val EthPendingTransactions = Method.create("eth_pendingTransactions", EthPendingTransactionsRequest::class, EthPendingTransactionsResponse::class) { request, context ->
+    val transaction = context.standardRpc.ethPendingTransactions()
+    EthPendingTransactionsResponse(request, transaction)
+}
+
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -421,7 +433,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetTransactionByHash,
     EthGetTransactionByBlockHashAndIndex,
     EthGetTransactionByBlockNumberAndIndex,
-    EthGetTransactionReceipt
+    EthGetTransactionReceipt,
+    EthPendingTransactions
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)

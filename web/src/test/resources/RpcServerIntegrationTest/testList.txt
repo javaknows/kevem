@@ -31,7 +31,7 @@ eth_getTransactionByHash
 eth_getTransactionByBlockHashAndIndex
 eth_getTransactionByBlockNumberAndIndex
 eth_getTransactionReceipt
-# eth_pendingTransactions
+eth_pendingTransactions
 # eth_getUncleByBlockHashAndIndex
 # eth_getUncleByBlockNumberAndIndex
 # eth_getCompilers
