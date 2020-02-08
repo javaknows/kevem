@@ -34,10 +34,10 @@ private val NetPeerCount =
     }
 
 @Suppress("UNCHECKED_CAST")
-private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
+private val methods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     NetVersion,
     NetListening,
     NetPeerCount
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
-val NetModule = Module(webMethods)
+val NetModule = Module(methods)

@@ -144,9 +144,9 @@ class StandardRPC(
         val tx = TransactionMessage(
             account.address,
             toAddressOrNull(transaction.to),
-            toBigIntegerNullZero(transaction.value),
+            toBigIntegerOrZero(transaction.value),
             toBigInteger(transaction.gasPrice),
-            toBigIntegerNullZero(transaction.gas),
+            toBigIntegerOrZero(transaction.gas),
             toByteList(transaction.data),
             nonce,
             hash.data
@@ -174,7 +174,7 @@ class StandardRPC(
         val tx = TransactionMessage(
             Address(transaction.from),
             toAddressOrNull(transaction.to),
-            toBigIntegerNullZero(transaction.value),
+            toBigIntegerOrZero(transaction.value),
             toBigInteger(transaction.gasPrice),
             gas,
             toByteList(transaction.data),
@@ -193,7 +193,7 @@ class StandardRPC(
         val tx = TransactionMessage(
             Address(transaction.from),
             toAddressOrNull(transaction.to),
-            toBigIntegerNullZero(transaction.value),
+            toBigIntegerOrZero(transaction.value),
             toBigInteger(transaction.gasPrice),
             gas,
             toByteList(transaction.data),

@@ -43,7 +43,7 @@ class Server {
     }
 
     private fun createServer(port: Int): Server {
-        val modules = listOf(WebModule, NetModule, EthModule)
+        val modules = listOf(WebModule, NetModule, EthModule, TestModule)
 
         return JAXRSServerFactoryBean().apply {
             providers = listOf<Any>(JacksonJsonProvider(RequestObjectMapper().create(

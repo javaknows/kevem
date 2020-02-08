@@ -64,23 +64,27 @@ object EvmContextCreator {
             )
         )
 
-        val standardRPC = StandardRPC(
+        val statefulTransactionProcessor = StatefulTransactionProcessor(
+            tp, clock, WorldState(
+                listOf(createGenisisBlock(config)),
+                accounts,
+                Address(config.coinbase)
+            )
+        )
+
+        val standardRpc = StandardRPC(
             StandardEvmOperations(
-                StatefulTransactionProcessor(
-                    tp,
-                    clock,
-                    WorldState(
-                        listOf(createGenisisBlock(config)),
-                        accounts,
-                        Address(config.coinbase)
-                    )
-                )
+                statefulTransactionProcessor
             ),
             config,
             localAccounts
         )
 
-        return EvmContext(standardRPC)
+        val testRpc = TestRPC(
+            statefulTransactionProcessor
+        )
+
+        return EvmContext(standardRpc, testRpc)
     }
 
     // TODO - copy / paste job

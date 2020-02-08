@@ -12,6 +12,11 @@ https://github.com/ethereum/wiki/wiki/RLP
 ## Gas Cost Spreadsheet
 https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18pNU/
 
+## RPC methods
+
+main - https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_getfilterchanges
+test - https://github.com/ethereum/retesteth/wiki/RPC-Methods
+
 ## Missing Features
 
 * null vs empty data from return, revert

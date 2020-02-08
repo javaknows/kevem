@@ -1,9 +1,13 @@
 package org.kevm.web.module
 
 import org.kevm.rpc.StandardRPC
+import org.kevm.rpc.TestRPC
 import kotlin.reflect.KClass
 
-class EvmContext(val standardRpc: StandardRPC)
+class EvmContext(
+    val standardRpc: StandardRPC,
+    val testRpc: TestRPC
+)
 
 open class RpcRequest<T>(
     val jsonrpc: String,

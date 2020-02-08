@@ -9,11 +9,12 @@ import java.time.Instant
 
 class TestRPC(val evm: StatefulTransactionProcessor) {
 
-    fun setChainParams(genesisConfig: SetChainParamsRequestDTO) {
+    fun setChainParams(genesisConfig: SetChainParamsRequestDTO): Boolean {
         // TODO use default from somewhere else
-        val difficulty = genesisConfig.genesis.difficulty?.toBigInteger() ?: BigInteger.ONE
-        val gasLimit = genesisConfig.genesis.gasLimit?.toBigInteger() ?: BigInteger.ONE
-        val timestamp = genesisConfig.genesis.timestamp?.let { Instant.ofEpochMilli(it.toLong()) } ?: Instant.MIN
+
+        val difficulty = toBigIntegerOr(genesisConfig.genesis.difficulty,  BigInteger.ONE)
+        val gasLimit = toBigIntegerOr(genesisConfig.genesis.gasLimit,  BigInteger.ONE)
+        val timestamp = genesisConfig.genesis.timestamp?.let { Instant.ofEpochMilli(toBigInteger(it).toLong()) } ?: Instant.MIN
 
         // TODO - add author
         val minedBlock = MinedBlock(
@@ -35,7 +36,7 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
                 address,
                 Account(
                     address = address,
-                    balance = toBigIntegerNullZero(accountParam.balance),
+                    balance = toBigIntegerOrZero(accountParam.balance),
                     contract = accountParam.code?.let { c ->
                         val code = toByteList(c)
                         val storageContents = accountParam.storage?.map { s ->
@@ -44,7 +45,7 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
                         }?.toMap() ?: emptyMap()
                         Contract(code, Storage(storageContents))
                     },
-                    nonce = toBigIntegerNullZero(accountParam.nonce)
+                    nonce = toBigIntegerOrZero(accountParam.nonce)
                 )
             )
         }.toMap()
@@ -56,5 +57,7 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
         )
 
         evm.setWorldState(worldState)
+
+        return true;
     }
 }
