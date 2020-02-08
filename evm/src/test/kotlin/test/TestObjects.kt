@@ -3,11 +3,15 @@ package test
 import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.model.*
 import java.math.BigInteger
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
 
 object TestObjects {
 
-    var worldState: WorldState = WorldState(
+    val clock = Clock.fixed(Instant.parse("2006-12-05T15:15:30.00Z"), ZoneId.of("UTC"))
+
+    val worldState = WorldState(
         listOf(
             MinedBlock(
                 Block(

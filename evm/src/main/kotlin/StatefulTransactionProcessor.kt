@@ -1,5 +1,6 @@
 package org.kevm.evm
 
+import org.kevm.common.KevmException
 import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.locking.readLock
 import org.kevm.evm.locking.writeLock
@@ -8,65 +9,95 @@ import java.math.BigInteger
 import java.time.Clock
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import org.kevm.evm.model.Byte
 
 // TODO - generate block hash properly
 class StatefulTransactionProcessor(
     private val transactionProcessor: TransactionProcessor,
     private val clock: Clock,
-    private var worldState: WorldState // var - guarded by "lock"
+    private var worldState: WorldState, // var - guarded by "lock"
+    private var pendingTransactions: List<TransactionMessage> = emptyList(),
+    private var previousState: List<WorldState> = emptyList(),
+    private var autoMine: Boolean = true
 ) {
     private val lock: ReadWriteLock = ReentrantReadWriteLock()
 
-    fun process(tx: TransactionMessage): TransactionResult =
-        writeLock(lock) {
-            processAndUpdateWorldState(tx)
+    fun process(tx: TransactionMessage): TransactionReceipt = writeLock(lock) {
+        val receipt = enqueTransaction(tx)
+        if (autoMine) {
+            mine()
         }
+        receipt
+    }
 
-    fun getWorldState(): WorldState =
-        readLock(lock) {
-            worldState
-        }
+    fun getWorldState(): WorldState = readLock(lock) {
+        worldState
+    }
 
-    fun setWorldState(worldState: WorldState) =
-        writeLock(lock) {
-            this.worldState = worldState
-        }
+    fun setWorldState(worldState: WorldState) = writeLock(lock) {
+        this.worldState = worldState
+        this.previousState = emptyList()
+    }
 
-    fun call(tx: TransactionMessage): TransactionResult {
+    fun setAutoMine(autoMine: Boolean) = writeLock(lock) {
+        this.autoMine = autoMine
+    }
+
+    // TODO - should use previous world state
+    fun call(tx: TransactionMessage): TransactionResult = readLock(lock) {
         val (_, result) = transactionProcessor.process(getWorldState(), tx, worldState.blocks.last().block)
-        // TODO - should use previous world state
-
-        return result
+        result
     }
 
-    private fun processAndUpdateWorldState(tx: TransactionMessage): TransactionResult {
-        val block = createBlock()
-        val (newWorldState, result) = transactionProcessor.process(worldState, tx, block)
-        worldState = addMinedTransactionToBlock(block, tx, result, newWorldState)
+    fun enqueTransaction(tx: TransactionMessage): TransactionReceipt {
+        pendingTransactions += tx
 
-        return result
+        return TransactionReceipt(tx.hash)
     }
 
-    private fun createBlock(): Block =
-        worldState.blocks.last().let { lastMinedBlock ->
-            val block = lastMinedBlock.block
-            block.copy(
-                number = block.number + BigInteger.ONE,
-                timestamp = clock.instant()
-            )
-        }
+    fun mine(): Unit = writeLock(lock) {
+        val (newMinedBlock, newWorldState) = processTransactions(pendingTransactions, worldState)
 
-    private fun addMinedTransactionToBlock(
-        block: Block,
-        tx: TransactionMessage,
-        result: TransactionResult,
+        previousState += worldState
+        this.worldState = newWorldState.copy(blocks = newWorldState.blocks + newMinedBlock)
+    }
+
+    private fun processTransactions(
+        transactions: List<TransactionMessage>,
         worldState: WorldState
-    ): WorldState {
-        val hash = blockHash(block)
-        val newMinedBlock = MinedBlock(block, result.gasUsed, hash.data, listOf(MinedTransaction(tx, result)))
-        return worldState.copy(blocks = worldState.blocks + newMinedBlock)
+    ): Pair<MinedBlock, WorldState> = transactions.fold(Pair(createBlock(), worldState)) { acc, tx ->
+        val (b, ws) = acc
+        val (newWorldState, txResult) = transactionProcessor.process(ws, tx, b.block)
+
+        val newMinedBlock =
+            if (txResult.status == ResultStatus.COMPLETE)
+                b.copy(
+                    gasUsed = b.gasUsed + txResult.gasUsed,
+                    transactions = b.transactions + MinedTransaction(tx, txResult)
+                )
+            else b
+
+        Pair(newMinedBlock, newWorldState)
     }
 
-    private fun blockHash(block: Block) =
-        keccak256(Word.coerceFrom(block.number).data)
+    fun getTransactionResult(txHash: List<Byte>): TransactionResult = readLock(lock) {
+        worldState.blocks
+            .flatMap { it.transactions }
+            .find { it.message.hash == txHash }
+            ?.let { it: MinedTransaction -> it.result } ?: throw KevmException("unknown transaction")
+    }
+
+    private fun createBlock(): MinedBlock {
+        val currBlock = worldState.blocks.last().block
+
+        val nextBlock = currBlock.copy(
+            number = currBlock.number + BigInteger.ONE,
+            timestamp = clock.instant()
+        )
+
+        return MinedBlock(nextBlock, BigInteger.ZERO, blockHash(nextBlock.number).data, emptyList())
+    }
+
+    private fun blockHash(num: BigInteger) =
+        keccak256(Word.coerceFrom(num).data)
 }

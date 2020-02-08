@@ -86,14 +86,15 @@ class TransactionProcessorStepDefs : En {
             transactionResult = tr
         }
 
-        When("the transaction is executed via stateful transaction processor") {
+        When("the transaction is mined via stateful transaction processor") {
             val tp = TransactionProcessor(executor)
             val stp = StatefulTransactionProcessor(tp, clock, worldState)
 
-            val tr = stp.process(transaction)
+            val txReceipt = stp.enqueTransaction(transaction)
+            stp.mine()
 
             worldStateResult = stp.getWorldState()
-            transactionResult = tr
+            transactionResult = stp.getTransactionResult(txReceipt.hash)
         }
 
         Then("the result status is now (.*)") { s: String ->
