@@ -381,6 +381,18 @@ private val EthGetTransactionByBlockNumberAndIndex = Method.create("eth_getTrans
     EthGetTransactionByBlockNumberAndIndexResponse(request, transaction)
 }
 
+class EthGetTransactionReceiptRequest(jsonrpc: String, method: String, id: Long, params: List<String>) :
+    RpcRequest<List<String>>(jsonrpc, method, id, params)
+
+class EthGetTransactionReceiptResponse(request: EthGetTransactionReceiptRequest, result: TransactionDTO?) :
+    RpcResponse<TransactionDTO?>(request, result)
+
+private val EthGetTransactionReceipt = Method.create("eth_getTransactionReceipt", EthGetTransactionReceiptRequest::class, EthGetTransactionReceiptResponse::class) { request, context ->
+    val hash = request.params[0]
+    val transaction = context.standardRpc.ethGetTransactionByHash(hash)
+    EthGetTransactionReceiptResponse(request, transaction)
+}
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -408,7 +420,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetBlockByNumber,
     EthGetTransactionByHash,
     EthGetTransactionByBlockHashAndIndex,
-    EthGetTransactionByBlockNumberAndIndex
+    EthGetTransactionByBlockNumberAndIndex,
+    EthGetTransactionReceipt
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)
