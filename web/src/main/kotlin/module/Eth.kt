@@ -278,8 +278,21 @@ class EthCallResponse(request: EthCallRequest, result: String) :
 private val EthCall = Method.create("eth_call", EthCallRequest::class, EthCallResponse::class) { request, context ->
     val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
     val block = request.params[1] as String
-    val data = context.standardRpc.ethCall(call, block)
+    val data = context.standardRpc.ethEstimateGas(call, block)
     EthCallResponse(request, data)
+}
+
+class EthEstimateGasRequest(jsonrpc: String, method: String, id: Long, params: List<Any>) :
+    RpcRequest<List<Any>>(jsonrpc, method, id, params)
+
+class EthEstimateGasResponse(request: EthEstimateGasRequest, result: String) :
+    RpcResponse<String>(request, result)
+
+private val EthEstimateGas = Method.create("eth_estimateGas", EthEstimateGasRequest::class, EthEstimateGasResponse::class) { request, context ->
+    val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
+    val block = request.params[1] as String
+    val data = context.standardRpc.ethCall(call, block)
+    EthEstimateGasResponse(request, data)
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -303,7 +316,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthSign,
     EthSendTransaction,
     EthSendRawTransaction,
-    EthCall
+    EthCall,
+    EthEstimateGas
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)

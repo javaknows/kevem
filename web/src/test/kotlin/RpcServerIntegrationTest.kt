@@ -63,10 +63,16 @@ class RpcServerIntegrationTest {
         private val mapper = jacksonObjectMapper()
 
         @JvmStatic
-        fun requestsAndResponses() = load("RpcServerIntegrationTest/testList.txt")
-            .split("\n")
-            .map { it.trim() }
-            .map { loadData(it) }
+        fun requestsAndResponses(): List<RequestAndResponse> {
+            val testNames = System.getProperty("method")?.let {
+                listOf(it)
+            } ?: load("RpcServerIntegrationTest/testList.txt")
+                .split("\n")
+                .map { it.trim() }
+                .filterNot { it.startsWith("#") }
+
+            return testNames.map { loadData(it) }
+        }
 
         private fun loadData(name: String): RequestAndResponse {
             val request = load("RpcServerIntegrationTest/$name/request.json")

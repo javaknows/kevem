@@ -1,4 +1,4 @@
-web3_clientVersion
+#web3_clientVersion
 web3_sha3
 net_version
 net_listening
@@ -24,3 +24,4 @@ eth_sign
 eth_sendTransaction
 eth_sendRawTransaction
 eth_call
+#eth_estimateGas

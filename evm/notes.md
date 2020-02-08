@@ -22,3 +22,6 @@ https://docs.google.com/spreadsheets/d/1n6mRqkBz3iWcOlRem_mO09GtSKEKrAsfO7Frgx18
 
 * Refund recipient for nested calls - is it the tx.origin or sender?
 * Suicide called twice in same transaction 
+* eth_estimateGas - need examples with each field missing
+* eth_estimateGas - behaviour for pending block
+* eth_estimateGas - from the RPC docs: "As a result the returned estimate might not be enough to executed the call/transaction when the amount of gas is higher than the pending block gas limit."
