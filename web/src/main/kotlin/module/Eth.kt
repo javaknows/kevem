@@ -1,5 +1,6 @@
 package org.kevm.web.module
 
+import org.kevm.rpc.BlockDTO
 import org.kevm.rpc.SendCallParamDTO
 import org.kevm.rpc.SendTransactionParamDTO
 import org.kevm.web.jackson.ObjectTransformer
@@ -250,7 +251,11 @@ class EthSendTransactionRequest(jsonrpc: String, method: String, id: Long, param
 class EthSendTransactionResponse(request: EthSendTransactionRequest, result: String) :
     RpcResponse<String>(request, result)
 
-private val EthSendTransaction = Method.create("eth_sendTransaction", EthSendTransactionRequest::class, EthSendTransactionResponse::class) { request, context ->
+private val EthSendTransaction = Method.create(
+    "eth_sendTransaction",
+    EthSendTransactionRequest::class,
+    EthSendTransactionResponse::class
+) { request, context ->
     val transaction = request.params[0]
     val balance = context.standardRpc.ethSendTransaction(transaction)
     EthSendTransactionResponse(request, balance)
@@ -263,7 +268,11 @@ class EthSendRawTransactionResponse(request: EthSendRawTransactionRequest, resul
     RpcResponse<String>(request, result)
 
 private val EthSendRawTransaction =
-    Method.create("eth_sendRawTransaction", EthSendRawTransactionRequest::class, EthSendRawTransactionResponse::class) { request, context ->
+    Method.create(
+        "eth_sendRawTransaction",
+        EthSendRawTransactionRequest::class,
+        EthSendRawTransactionResponse::class
+    ) { request, context ->
         val data = request.params[0]
         val balance = context.standardRpc.ethSendRawTransaction(data)
         EthSendRawTransactionResponse(request, balance)
@@ -276,7 +285,7 @@ class EthCallResponse(request: EthCallRequest, result: String) :
     RpcResponse<String>(request, result)
 
 private val EthCall = Method.create("eth_call", EthCallRequest::class, EthCallResponse::class) { request, context ->
-    val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
+    val call = ObjectTransformer.transform(request.params[0] as Map<Any, Any>, SendCallParamDTO::class)
     val block = request.params[1] as String
     val data = context.standardRpc.ethCall(call, block)
     EthCallResponse(request, data)
@@ -288,11 +297,32 @@ class EthEstimateGasRequest(jsonrpc: String, method: String, id: Long, params: L
 class EthEstimateGasResponse(request: EthEstimateGasRequest, result: String) :
     RpcResponse<String>(request, result)
 
-private val EthEstimateGas = Method.create("eth_estimateGas", EthEstimateGasRequest::class, EthEstimateGasResponse::class) { request, context ->
-    val call = ObjectTransformer.transform(request.params[0] as Map<Any,Any>, SendCallParamDTO::class)
-    val block = request.params[1] as String
-    val data = context.standardRpc.ethEstimateGas(call, block)
-    EthEstimateGasResponse(request, data)
+private val EthEstimateGas =
+    Method.create("eth_estimateGas", EthEstimateGasRequest::class, EthEstimateGasResponse::class) { request, context ->
+        val call = ObjectTransformer.transform(
+            request.params[0] as Map<Any, Any>,
+            SendCallParamDTO::class
+        ) // TODO - shoud crate and use EstimateGasParamDTO with more nullable fields
+        val block = request.params[1] as String
+        val data = context.standardRpc.ethEstimateGas(call, block)
+        EthEstimateGasResponse(request, data)
+    }
+
+class EthGetBlockByHashRequest(jsonrpc: String, method: String, id: Long, params: List<Any>) :
+    RpcRequest<List<Any>>(jsonrpc, method, id, params)
+
+class EthGetBlockByHashResponse(request: EthGetBlockByHashRequest, result: BlockDTO<*>?) :
+    RpcResponse<BlockDTO<*>?>(request, result)
+
+private val EthGetBlockByHash = Method.create(
+    "eth_getBlockByHash",
+    EthGetBlockByHashRequest::class,
+    EthGetBlockByHashResponse::class
+) { request, context ->
+    val hash = request.params[0] as String
+    val fullTransactionObjects = request.params[1] as Boolean
+    val data = context.standardRpc.ethGetBlockByHash(hash, fullTransactionObjects)
+    EthGetBlockByHashResponse(request, data)
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -317,7 +347,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthSendTransaction,
     EthSendRawTransaction,
     EthCall,
-    EthEstimateGas
+    EthEstimateGas,
+    EthGetBlockByHash
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)

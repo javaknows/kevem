@@ -25,3 +25,4 @@ eth_sendTransaction
 eth_sendRawTransaction
 eth_call
 eth_estimateGas
+eth_getBlockByHash

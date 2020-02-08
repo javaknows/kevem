@@ -54,7 +54,7 @@ class Server {
             setResourceClasses(KevmWebRpcService::class.java)
             setResourceProvider(
                 KevmWebRpcService::class.java, SingletonResourceProvider(
-                    KevmWebRpcService(modules, EvmContextCreator.create())
+                    KevmWebRpcService(modules, EvmContextCreator.create()) // TODO - EvmContext should be passed in
                 )
             )
         }.create()
