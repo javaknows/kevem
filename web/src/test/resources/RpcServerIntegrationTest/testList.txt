@@ -65,3 +65,4 @@ eth_getLogs
 # shh_getMessages
 test_setChainParams
 test_mineBlocks
+test_rewindToBlock

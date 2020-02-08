@@ -17,7 +17,7 @@ class StatefulTransactionProcessor(
     private val clock: Clock,
     private var worldState: WorldState, // var - guarded by "lock"
     private var pendingTransactions: List<TransactionMessage> = emptyList(),
-    private var previousState: List<WorldState> = emptyList(),
+    private var previousStates: List<WorldState> = emptyList(),
     private var autoMine: Boolean = true
 ) {
     private val lock: ReadWriteLock = ReentrantReadWriteLock()
@@ -36,7 +36,7 @@ class StatefulTransactionProcessor(
 
     fun setWorldState(worldState: WorldState) = writeLock(lock) {
         this.worldState = worldState
-        this.previousState = emptyList()
+        this.previousStates = emptyList()
     }
 
     fun setAutoMine(autoMine: Boolean) = writeLock(lock) {
@@ -58,7 +58,7 @@ class StatefulTransactionProcessor(
     fun mine(): Unit = writeLock(lock) {
         val (newMinedBlock, newWorldState) = processTransactions(pendingTransactions, worldState)
 
-        previousState += worldState
+        previousStates += worldState
         this.worldState = newWorldState.copy(blocks = newWorldState.blocks + newMinedBlock)
     }
 
@@ -85,6 +85,19 @@ class StatefulTransactionProcessor(
             .flatMap { it.transactions }
             .find { it.message.hash == txHash }
             ?.let { it: MinedTransaction -> it.result } ?: throw KevmException("unknown transaction")
+    }
+
+    fun revertToBlock(number: BigInteger) = writeLock(lock) {
+        val worldState = previousStates.find { it.blocks.lastOrNull()?.block?.number == number }
+
+        if (worldState != null) {
+            this.worldState = worldState
+            this.previousStates = previousStates.takeWhile {
+                val maxBxBlock = it.blocks.lastOrNull()?.block?.number
+
+                (maxBxBlock == null) || maxBxBlock < number
+            }
+        }
     }
 
     private fun createBlock(): MinedBlock {

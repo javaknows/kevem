@@ -1,6 +1,7 @@
 package org.kevm.web.module
 
 import org.kevm.rpc.SetChainParamsRequestDTO
+import org.kevm.rpc.toBigInteger
 
 class TestSetChainParamsRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<SetChainParamsRequestDTO>>(jsonrpc, method, id, emptyList())
@@ -25,10 +26,23 @@ private val TestMineBlocks =
         TestMineBlocksResponse(request, isSuccess)
     }
 
+class TestRewindToBlockRequest(jsonrpc: String, method: String, id: Long, params: List<String>) :
+    RpcRequest<List<String>>(jsonrpc, method, id, params)
+
+class TestRewindToBlockResponse(request: TestRewindToBlockRequest, result: Boolean) : RpcResponse<Boolean>(request, result)
+
+private val TestRewindToBlock =
+    Method.create("test_rewindToBlock", TestRewindToBlockRequest::class, TestRewindToBlockResponse::class) { request, context ->
+        val blockNumber = request.params[0]
+        val isSuccess = context.testRpc.revertToBlock(toBigInteger(blockNumber))
+        TestRewindToBlockResponse(request, isSuccess)
+    }
+
 @Suppress("UNCHECKED_CAST")
 private val methods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     TestSetChainParams,
-    TestMineBlocks
+    TestMineBlocks,
+    TestRewindToBlock
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val TestModule = Module(methods)

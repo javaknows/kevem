@@ -66,4 +66,9 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
         evm.mine()
         return true
     }
+
+    fun revertToBlock(number: BigInteger): Boolean {
+        evm.revertToBlock(number)
+        return true
+    }
 }

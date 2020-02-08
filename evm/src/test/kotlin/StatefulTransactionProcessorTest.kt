@@ -66,6 +66,17 @@ class StatefulTransactionProcessorTest {
         assertTxWasNotMined(receipt.hash)
     }
 
+    @Test
+    internal fun `check revert to block`() {
+        val messages = initForTwoTransfers()
+        mine(messages)
+        assertThat(underTest.getWorldState().blocks.last().block.number).isEqualTo(BigInteger("2"))
+
+        underTest.revertToBlock(One)
+
+        assertThat(underTest.getWorldState().blocks.last().block.number).isEqualTo(One)
+    }
+
     private fun assertTxWasMined(hash: List<Byte>) {
         val hashes = underTest.getWorldState().blocks.flatMap { it.transactions }.map { it.message.hash }
         assertThat(hashes).contains(hash)
