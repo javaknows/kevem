@@ -64,3 +64,4 @@ eth_getLogs
 # shh_getFilterChanges
 # shh_getMessages
 test_setChainParams
+test_mineBlocks
