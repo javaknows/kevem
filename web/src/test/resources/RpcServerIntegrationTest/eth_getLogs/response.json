@@ -1,0 +1,19 @@
+{
+  "id": 74,
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "address": "0x0",
+      "blockHash": "0x0",
+      "blockNumber": "0x0",
+      "data": "0x",
+      "logIndex": "0x0",
+      "removed": false,
+      "topics": [
+        "000000000000000000000000a94f5374fce5edbc8e2a8697c15331677e6ebf0b"
+      ],
+      "transactionHash": "0x0",
+      "transactionIndex": "0x0"
+    }
+  ]
+}

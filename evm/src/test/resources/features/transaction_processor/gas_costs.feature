@@ -51,3 +51,14 @@ Feature: Gas Costs In Transaction Processing
       | 0x5E4DE7 |    | 0     | 1        | 53979    | [PUSH1 0x01 DUP1 PUSH1 0x0C PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN INVALID ADDRESS] | 0     |
     When the transaction is executed
     Then the result status is now FAILED
+
+  Scenario: Simple balance transfer with zero balance
+    Given a transaction with contents:
+      | from     | to       | value | gasPrice | gasLimit | data | nonce |
+      | 0x5E4DE7 | 0xAAAAAA | 100   | 1        | 3000000  |      | 0     |
+    When the transaction is executed
+    Then the result status is now COMPLETE
+    And account 0xAAAAAA now has balance 100
+    And transaction used 21000 gas
+    And account 0x5E4DE7 now has balance 99999999999978900
+    # 99999999999978900 = 100000000000000000 - 21000 - 100

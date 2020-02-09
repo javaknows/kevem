@@ -497,6 +497,10 @@ data class TransactionResult(
     val returnData: List<Byte> = emptyList() // CALL only
 )
 
+data class TransactionReceipt(val hash: List<Byte>) {
+    override fun toString() = bytesToString(hash)
+}
+
 data class MinedTransaction(
     val message: TransactionMessage,
     val result: TransactionResult

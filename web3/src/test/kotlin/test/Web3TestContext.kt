@@ -13,7 +13,7 @@ import org.kevm.rpc.StandardEvmOperations
 import org.kevm.rpc.StandardRPC
 import org.kevm.web3.KevmWeb3Service
 import org.kevm.web3.StandardRPCProvider
-import org.kevm.web3.modules.EthAdapter
+import org.kevm.web3.modules.StandardRpcAdapter
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.tx.RawTransactionManager
@@ -36,6 +36,7 @@ object Web3TestContext {
     fun createTestWeb3(
         config: AppConfig = AppConfig(
             chainId = 2,
+            netVersion = 5,
             coinbase = "0xC014BA5E"
         ),
         localAccounts: LocalAccounts = LocalAccounts(),
@@ -90,7 +91,7 @@ object Web3TestContext {
         val stp = StatefulTransactionProcessor(tp, clock, worldState)
         val eth = StandardEvmOperations(stp)
         val standardRPC = StandardRPC(eth, config, localAccounts)
-        val ethAdapter = EthAdapter(standardRPC)
+        val ethAdapter = StandardRpcAdapter(standardRPC)
         val rpcProviders = listOf(
             StandardRPCProvider(ethAdapter)
         )

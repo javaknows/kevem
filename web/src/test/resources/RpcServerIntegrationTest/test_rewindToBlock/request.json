@@ -1,0 +1,6 @@
+{
+  "jsonrpc": "2.0",
+  "method": "test_rewindToBlock",
+  "params": [1],
+  "id": 50
+}

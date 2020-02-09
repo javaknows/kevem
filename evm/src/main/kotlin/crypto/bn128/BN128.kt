@@ -1,6 +1,5 @@
 package org.kevm.evm.crypto.bn128
 
-import com.google.common.base.MoreObjects
 import java.math.BigInteger
 import java.util.*
 
@@ -358,7 +357,7 @@ abstract class BaseFieldPoint<U : BaseFieldPoint<U, T>, T : FieldElement<T>>(
         if (isInfinity) this as U
         else newInstance(x, -y)
 
-    override fun toString(): String = MoreObjects.toStringHelper(javaClass).add("x", x).add("y", y).toString()
+    override fun toString(): String = "{$x, $y}"
 
     override fun hashCode(): Int = Objects.hash(x, y)
 

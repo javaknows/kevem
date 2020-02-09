@@ -4,10 +4,16 @@ version '1.0-SNAPSHOT'
 ext {
     junitParamsVersion = '5.4.0'
     junitMockitoVersion = '2.24.0'
+    mockitoKotlinVersion = '2.2.0'
     assertjVersion = '3.12.2'
     bouncycastleVersion = '1.61'
     web3Version = '4.5.9'
     cucumberVersion = '4.7.2'
+    apacheCxfVersion = '3.3.5'
+    jakartaVersion = '2.1.6'
+    jacksonJsonProviderVersion = '2.10.2.1'
+    jacksonModuleKotlin = '2.10.2'
+    httpComponentsVersion= '4.5.11'
 }
 
 allprojects {

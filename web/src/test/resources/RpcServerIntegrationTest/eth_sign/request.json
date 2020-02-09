@@ -1,0 +1,9 @@
+{
+  "jsonrpc": "2.0",
+  "method": "eth_sign",
+  "params": [
+    "0x4e7d932c0f12cfe14295b86824b37bb1062bc29e",
+    "0xdeadbeaf"
+  ],
+  "id": 1
+}

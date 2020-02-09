@@ -12,6 +12,7 @@ import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
 import org.kevm.evm.util.*
+import test.TestObjects
 import java.time.ZoneId
 
 /**
@@ -26,33 +27,11 @@ class TransactionProcessorStepDefs : En {
         )
     )
 
-    private var worldState: WorldState = WorldState(
-        listOf(
-            MinedBlock(
-                Block(
-                    number = BigInteger.ONE,
-                    difficulty = BigInteger.ONE,
-                    gasLimit = BigInteger("1000000000000000000000000000000"),
-                    timestamp = Instant.parse("2006-12-03T10:15:30.00Z")
-                ),
-                BigInteger.TWO,
-                keccak256(Word.coerceFrom(BigInteger.ONE).data).data
-            )
-        ),
-        Accounts(),
-        Address("0xFFEEDD")
-    )
+    private var worldState = TestObjects.worldState
 
-    private var transaction: TransactionMessage = TransactionMessage(
-        Address("0x1"), Address("0x2"), BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, emptyList(), BigInteger.ZERO
-    )
+    private var transaction = TestObjects.tx
 
-    private var currentBlock = Block(
-        number = BigInteger.TWO,
-        difficulty = BigInteger.TWO,
-        gasLimit = BigInteger("1000000000000000000000000000000"),
-        timestamp = Instant.parse("2006-12-04T10:15:30.00Z")
-    )
+    private var currentBlock = TestObjects.block2
 
     private var clock: Clock = Clock.fixed(Instant.parse("2006-12-05T15:15:30.00Z"), ZoneId.of("UTC"))
 
@@ -107,14 +86,15 @@ class TransactionProcessorStepDefs : En {
             transactionResult = tr
         }
 
-        When("the transaction is executed via stateful transaction processor") {
+        When("the transaction is mined via stateful transaction processor") {
             val tp = TransactionProcessor(executor)
             val stp = StatefulTransactionProcessor(tp, clock, worldState)
 
-            val tr = stp.process(transaction)
+            val txReceipt = stp.enqueTransaction(transaction)
+            stp.mine()
 
             worldStateResult = stp.getWorldState()
-            transactionResult = tr
+            transactionResult = stp.getTransactionResult(txReceipt.hash)
         }
 
         Then("the result status is now (.*)") { s: String ->

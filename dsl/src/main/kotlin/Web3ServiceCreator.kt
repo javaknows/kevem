@@ -12,7 +12,7 @@ import org.kevm.rpc.StandardEvmOperations
 import org.kevm.rpc.StandardRPC
 import org.kevm.web3.KevmWeb3Service
 import org.kevm.web3.StandardRPCProvider
-import org.kevm.web3.modules.EthAdapter
+import org.kevm.web3.modules.StandardRpcAdapter
 import org.web3j.protocol.Web3j
 import java.math.BigInteger
 import java.time.Clock
@@ -38,7 +38,7 @@ object Web3ServiceCreator {
 
         val providers = listOf(
             StandardRPCProvider(
-                EthAdapter(
+                StandardRpcAdapter(
                     StandardRPC(
                         StandardEvmOperations(
                             StatefulTransactionProcessor(
