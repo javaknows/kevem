@@ -2,8 +2,8 @@
 
 *The Kotlin Ethereum Virtual Machine*
 
-[![Build Status](https://travis-ci.org/wjsrobertson/kevin.svg?branch=master)](https://travis-ci.org/wjsrobertson/kevin)
-[![Coverage Status](https://codecov.io/gh/wjsrobertson/kevin/branch/master/graph/badge.svg)](https://codecov.io/gh/wjsrobertson/kevin)
+[![Build Status](https://travis-ci.org/wjsrobertson/kevm.svg?branch=master)](https://travis-ci.org/wjsrobertson/kevm)
+[![Coverage Status](https://codecov.io/gh/wjsrobertson/kevm/branch/master/graph/badge.svg)](https://codecov.io/gh/wjsrobertson/kevm)
 
 This is an standalone implementation of the [Ethereum Virtual Machine](https://www.ethereum.org/) written in Kotlin.
 
