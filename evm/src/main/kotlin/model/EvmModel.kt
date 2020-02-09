@@ -3,6 +3,7 @@ package org.kevm.evm.model
 import org.kevm.evm.*
 import java.math.BigInteger
 import java.time.Instant
+import java.util.*
 import kotlin.math.max
 
 data class Byte(val value: Int) {
@@ -155,6 +156,13 @@ open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = S
 
     fun copy(code: List<Byte>? = null, storage: Storage? = null) =
         Contract(code ?: this.code, storage ?: this.storage)
+
+    override fun equals(other: Any?): Boolean =
+        if (other is Contract)
+            code == other.code && storage == storage
+        else false
+
+    override fun hashCode(): Int = 3 * code.hashCode() + 31 * storage.hashCode()
 }
 
 data class Account(
@@ -165,6 +173,10 @@ data class Account(
 )
 
 class Accounts(private val addresses: Map<Address, Account> = emptyMap()) {
+    constructor(addresses: List<Account>) : this(addresses.map { Pair(it.address, it) }.toMap())
+
+    fun list() = addresses.values
+
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
 
     fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
@@ -284,6 +296,13 @@ class Storage(private val data: Map<BigInteger, Word> = emptyMap()) {
 
         return Storage(newData)
     }
+
+    override fun equals(other: Any?): Boolean =
+        if (other is Storage)
+            data == other.data
+        else false
+
+    override fun hashCode(): Int = data.hashCode()
 }
 
 class Stack(private val backing: List<List<Byte>> = emptyList()) {

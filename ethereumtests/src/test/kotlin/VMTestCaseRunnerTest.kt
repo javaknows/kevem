@@ -1,0 +1,179 @@
+package org.kevm.ethereumtests
+
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
+
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.fail
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
+import org.kevm.evm.Executor
+import org.kevm.evm.crypto.sha256
+import org.kevm.evm.gas.*
+import org.kevm.evm.model.*
+import org.kevm.evm.model.Byte
+import org.kevm.evm.toByteList
+import java.lang.Exception
+import java.math.BigInteger
+import java.time.Instant
+
+@Disabled
+class VMTestCaseRunnerTest {
+
+    private val executor = createExecutor()
+
+    @DisplayName("ethereum-test VMTest pack")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource(value = ["testCases"])
+    internal fun `ethereum-test VMTest pack`(testCase: VMTestCase): Unit = with(testCase) {
+        println(testCase.toString())
+        val executionContext = createExecutionContext(testCase)
+
+        val executed = try {
+            executor.executeAll(executionContext)
+        } catch (e: Exception) {
+            fail("$testCase failed with ${e.message}", e)
+        }
+
+        if (post != null) {
+            assertPostAccountsMatch(parseAccounts(post), executed)
+        }
+        if (out != null) {
+            assertOutDataMatches(out, executed)
+        }
+        if (gas != null) {
+            assertGasMatches(gas, executionContext, executed)
+        }
+    }
+
+    private fun assertGasMatches(
+        gas: String?,
+        executionContext: ExecutionContext,
+        executed: ExecutionContext
+    ) {
+        val gasRemaining = executionContext.currentCallCtx.gas - executed.gasUsed
+        assertThat(gasRemaining).isEqualTo(toBigIntegerOrNull(gas))
+    }
+
+    companion object {
+        private val parser = VMTestCaseParser()
+
+        @JvmStatic
+        fun testCases(): List<VMTestCase> {
+            val blackList = loadFromClasspath("ethereum-tests-pack/VMTests/blacklist.txt")
+                .split("\n")
+                .map { it.trim() }
+
+            val testNames = System.getProperty("testCase")?.let {
+                listOf(it)
+            } ?: loadFromClasspath("ethereum-tests-pack/VMTests/tests.txt")
+                .split("\n")
+                .map { it.trim() }
+                .filterNot { tc -> blackList.any { b -> tc.contains(b) } }
+                .filterNot { it.startsWith("#") }
+
+            return testNames.flatMap {
+                try {
+                    listOf(parser.parse(it))
+                } catch (e: Exception) {
+                    println("failed to parse $it - ${e.message}")
+                    emptyList<VMTestCase>()
+                }
+            }
+        }
+    }
+
+    private fun assertOutDataMatches(out: String?, executed: ExecutionContext) =
+        assertThat(toByteList(out)).isEqualTo(executed.lastReturnData)
+
+    private fun assertPostAccountsMatch(accounts: Accounts, executed: ExecutionContext) =
+        accounts.list().forEach { a ->
+            val account: Account = executed.accounts.list().find { it.address == a.address }
+                ?: fail("no account with address ${a.address}")
+
+            assertThat(a).isEqualTo(account)
+        }
+
+    private fun createExecutionContext(testCase: VMTestCase): ExecutionContext = with(testCase) {
+        val accounts = parseAccounts(pre)
+
+        val nextBlock = Block(
+            number = BigInteger.ONE,
+            difficulty = toBigInteger(env.currentDifficulty),
+            gasLimit = toBigInteger(env.currentGasLimit),
+            timestamp = Instant.ofEpochMilli(toBigInteger(env.currentTimestamp).toLong())
+        )
+
+        val transaction = Transaction(
+            origin = Address(exec.origin),
+            gasPrice = toBigInteger(exec.gasPrice)
+        )
+
+        val callContext = CallContext(
+            caller = Address(exec.caller),
+            callData = toByteList(exec.data),
+            type = CallType.CALL,
+            value = toBigInteger(exec.value),
+            code = toByteList(exec.code),
+            gas = toBigInteger(exec.gas),
+            storageAddress = Address(exec.address),
+            contractAddress = Address(exec.address)
+        )
+
+        return ExecutionContext(
+            currentBlock = nextBlock,
+            currentTransaction = transaction,
+            coinBase = Address(env.currentCoinbase),
+            callStack = listOf(callContext),
+            accounts = accounts,
+            previousBlocks = mapOf(Pair(BigInteger.ONE, sha256(listOf(Byte(1)))))
+        )
+    }
+
+    private fun createExecutor(): Executor =
+        Executor(
+            GasCostCalculator(
+                BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
+                MemoryUsageGasCostCalculator(
+                    MemoryUsageGasCalc()
+                )
+            )
+        )
+
+    private fun parseAccounts(post: Map<String, TestCaseAccount>?): Accounts {
+        val accountList = post?.map { entry ->
+            val (a, d) = entry
+
+            Account(
+                Address(a),
+                toBigInteger(d.balance),
+                Contract(
+                    code = toByteList(d.code),
+                    storage = Storage(
+                        d.storage.map { e ->
+                            val (k, v) = e
+                            Pair(toBigInteger(k), Word.coerceFrom(v))
+                        }.toMap()
+                    )
+                ),
+                nonce = toBigInteger(d.nonce)
+            )
+        } ?: emptyList()
+
+        return Accounts(accountList)
+    }
+
+    // use from general location
+    private fun toBigInteger(number: String) =
+        if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
+        else BigInteger(number)
+
+    private fun cleanHexNumber(number: String) = number.replaceFirst("0x0+", "0x0").replaceFirst("0x", "")
+
+    fun toBigIntegerOrNull(number: String?) =
+        if (number == null) null
+        else if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
+        else BigInteger(number)
+
+}

@@ -48,7 +48,7 @@ object DataOps {
         val (elements, newStack) = stack.popWords(3)
         val (to, from, size) = elements.map { it.toInt() }
         val call = callStack.last()
-        val data = call.callData.drop(from).take(size)
+        val data = call.callData.drop(Math.max(from, 0)).take(size)
         val paddedData = data + Byte.Zero.repeat(size - data.size)
         val newMemory = memory.write(to, paddedData)
 

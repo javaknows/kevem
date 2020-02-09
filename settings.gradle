@@ -6,5 +6,6 @@ include 'rpc'
 include 'web3'
 include 'dsl'
 include 'web'
+include 'ethereumtests'
 
 rootProject.name = 'kevm'
