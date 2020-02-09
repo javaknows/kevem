@@ -52,8 +52,8 @@ class VMTestCaseRunnerTest {
         executionContext: ExecutionContext,
         executed: ExecutionContext
     ) {
-        val gasRemaining = executionContext.currentCallCtx.gas - executed.gasUsed
-        assertThat(gasRemaining).isEqualTo(toBigIntegerOrNull(gas))
+        val gasRemaining = (executionContext.currentCallCtx.gas - executed.gasUsed).toString(16)
+        assertThat(gasRemaining).isEqualTo(toBigIntegerOrNull(gas)?.toString(16))
     }
 
     companion object {
@@ -66,7 +66,7 @@ class VMTestCaseRunnerTest {
                 .map { it.trim() }
 
             val testNames = System.getProperty("testCase")?.let {
-                listOf(it)
+                listOf( "$it.json")
             } ?: loadFromClasspath("ethereum-tests-pack/VMTests/tests.txt")
                 .split("\n")
                 .map { it.trim() }
@@ -102,7 +102,7 @@ class VMTestCaseRunnerTest {
             number = BigInteger.ONE,
             difficulty = toBigInteger(env.currentDifficulty),
             gasLimit = toBigInteger(env.currentGasLimit),
-            timestamp = Instant.ofEpochMilli(toBigInteger(env.currentTimestamp).toLong())
+            timestamp = Instant.ofEpochSecond(1)
         )
 
         val transaction = Transaction(
