@@ -43,7 +43,7 @@ class CallGasCostCalc {
         executionCtx: ExecutionContext
     ): Pair<BigInteger, BigInteger> {
         val newAccountFee =
-            if (value > BigInteger.ZERO && !executionCtx.accounts.accountExists(to)) GasCost.NewAccount.cost
+            if (value > BigInteger.ZERO && !executionCtx.accounts.accountExists(to)) GasCost.NewAccountEip150.cost
             else 0
 
         val transferFee =

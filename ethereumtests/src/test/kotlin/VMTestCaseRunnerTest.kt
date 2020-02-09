@@ -66,7 +66,7 @@ class VMTestCaseRunnerTest {
                 .map { it.trim() }
 
             val testNames = System.getProperty("testCase")?.let {
-                listOf( "$it.json")
+                listOf("$it.json")
             } ?: loadFromClasspath("ethereum-tests-pack/VMTests/tests.txt")
                 .split("\n")
                 .map { it.trim() }
@@ -146,10 +146,8 @@ class VMTestCaseRunnerTest {
         val accountList = post?.map { entry ->
             val (a, d) = entry
 
-            Account(
-                Address(a),
-                toBigInteger(d.balance),
-                Contract(
+            val contract =
+                if (d.code != "0x") Contract(
                     code = toByteList(d.code),
                     storage = Storage(
                         d.storage.map { e ->
@@ -157,7 +155,13 @@ class VMTestCaseRunnerTest {
                             Pair(toBigInteger(k), Word.coerceFrom(v))
                         }.toMap()
                     )
-                ),
+                ) else null
+
+
+            Account(
+                Address(a),
+                toBigInteger(d.balance),
+                contract,
                 nonce = toBigInteger(d.nonce)
             )
         } ?: emptyList()

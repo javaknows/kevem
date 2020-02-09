@@ -59,8 +59,14 @@ class BaseGasCostCalculator(
 
         val accountExists = executionContext.accounts.accountExists(address)
 
-        val newAccountCharge = if (accountExists) BigInteger.ZERO else GasCost.NewAccount.costBigInt
-        return GasCost.SelfDestruct.costBigInt + newAccountCharge
+        val (selfDestructCost, newAccountCost) =
+            if (executionContext.features.isEnabled(EIP.EIP150))
+                Pair(GasCost.SelfDestructEip150, GasCost.NewAccountEip150)
+            else
+                Pair(GasCost.SelfDestructHomestead, GasCost.NewAccountHomestead)
+
+        val newAccountCharge = if (accountExists) BigInteger.ZERO else newAccountCost.costBigInt
+        return selfDestructCost.costBigInt + newAccountCharge
     }
 
     /**
