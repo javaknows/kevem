@@ -221,8 +221,8 @@ Feature: Single Opcode Execution
     And 9 bytes of memory from position 0 is empty
 
   Scenario: a byte of memory is stored from stack with MSTORE8
-    Given 0x9 is pushed onto the stack
-    And 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    Given 0xaaffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffee is pushed onto the stack
+    And 0x9 is pushed onto the stack
     When opcode MSTORE8 is executed
     Then 1 byte of memory from position 9 is 0xaa
     And 9 bytes of memory from position 0 is empty

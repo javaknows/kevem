@@ -85,7 +85,7 @@ class VMTestCaseRunnerTest {
     }
 
     private fun assertOutDataMatches(out: String?, executed: ExecutionContext) =
-        assertThat(toByteList(out)).isEqualTo(executed.lastReturnData)
+        assertThat(executed.lastReturnData).isEqualTo(toByteList(out))
 
     private fun assertPostAccountsMatch(accounts: Accounts, executed: ExecutionContext) =
         accounts.list().forEach { a ->
