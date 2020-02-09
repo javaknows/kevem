@@ -1,16 +1,32 @@
 package org.kevm.evm
 
-enum class HardFork(eip: EIP) {
+enum class HardFork(val eip: EIP) {
     Homestead(EIP.EIP606),
     SpuriousDragon(EIP.EIP607),
     TangerineWhistle(EIP.EIP608),
     Byzantium(EIP.EIP609),
     Constantinople(EIP.EIP1013),
     Istanbul(EIP.EIP1679),
-    Petersburg(EIP.EIP1716)
+    Petersburg(EIP.EIP1716);
+
+    fun eips(): List<EIP> = eaipsAcc(setOf(eip)).sorted()
+
+    tailrec fun eaipsAcc(eips: Set<EIP>, acc: List<EIP> = emptyList()): List<EIP> =
+        if (eips.isEmpty()) acc
+        else {
+            val nextEip = eips.first()
+
+            val add =
+                if (acc.contains(nextEip)) emptyList()
+                else nextEip.dependencies
+
+            val remaining = eips - nextEip
+
+            eaipsAcc(remaining + add, acc + nextEip)
+        }
 }
 
-enum class EIP(description: String, dependencies: List<EIP> = emptyList()) {
+enum class EIP(val description: String, val dependencies: List<EIP> = emptyList()) {
     EIP2("Homestead Hard-fork Changes"),
     EIP7("DELEGATECALL"),
     EIP8("devp2p Forward Compatibility Requirements for Homestead"),
@@ -31,7 +47,7 @@ enum class EIP(description: String, dependencies: List<EIP> = emptyList()) {
     EIP649("Metropolis Difficulty Bomb Delay and Block Reward Reduction"),
     EIP658("Embedding transaction status code in receipts", listOf(EIP140)),
     EIP606("Hardfork Homestead", listOf(EIP2, EIP7, EIP8)),
-    EIP779("Hardfork DAO Fork",  listOf(EIP606)),
+    EIP779("Hardfork DAO Fork", listOf(EIP606)),
     EIP1014("Skinny CREATE2"),
     EIP1052("EXTCODEHASH opcode", listOf(EIP161)),
     EIP1108("Reduce alt_bn128 precompile gas costs", listOf(EIP196, EIP197)),
@@ -43,7 +59,7 @@ enum class EIP(description: String, dependencies: List<EIP> = emptyList()) {
     EIP2200("Structured Definitions for Net Gas Metering"),
     EIP2384("Muir Glacier Difficulty Bomb Delay"),
     EIP608("Hardfork Tangerine Whistle", listOf(EIP150, EIP779)),
-    EIP607("Hardfork Spurious Dragon",  listOf(EIP155, EIP160, EIP161, EIP170, EIP608)),
+    EIP607("Hardfork Spurious Dragon", listOf(EIP155, EIP160, EIP161, EIP170, EIP608)),
     EIP609(
         "Hardfork Byzantium",
         listOf(EIP100, EIP140, EIP196, EIP197, EIP198, EIP211, EIP214, EIP607, EIP649, EIP658)

@@ -1,5 +1,6 @@
 package org.kevm.evm.gas
 
+import org.kevm.evm.EIP
 import org.kevm.evm.Opcode
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.Opcode.*
@@ -123,8 +124,12 @@ class BaseGasCostCalculator(
         val elements = executionContext.currentCallCtx.stack.peekWords(2)
         val (_, exp) = elements.map { it.toBigInt() }
 
+        val byteCost =
+            if (executionContext.features.isEnabled(EIP.EIP160)) GasCost.ExpByteEip160
+            else GasCost.ExpByteHomestead
+
         return if (exp == BigInteger.ZERO) GasCost.Exp.costBigInt
-        else GasCost.Exp.costBigInt + GasCost.ExpByte.costBigInt * (BigInteger.ONE + logn(exp, BigInteger("256")))
+        else GasCost.Exp.costBigInt + byteCost.costBigInt * (BigInteger.ONE + logn(exp, BigInteger("256")))
     }
 
     private fun numWordsRoundedUp(numBytes: BigInteger) = BigIntMath.divRoundUp(numBytes, BigInteger("32"))

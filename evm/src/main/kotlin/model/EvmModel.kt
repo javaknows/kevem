@@ -415,6 +415,12 @@ data class Log(
     val topics: List<Word> = emptyList()
 )
 
+data class Features(
+    val eips: List<EIP>
+) {
+    fun isEnabled(eip: EIP) = eips.contains(eip)
+}
+
 data class ExecutionContext(
     val currentBlock: Block,
     val currentTransaction: Transaction,
@@ -428,7 +434,8 @@ data class ExecutionContext(
     val lastCallError: EvmError = EvmError.None,
     val refunds: Map<Address, BigInteger> = emptyMap(),
     val suicidedAccounts: List<Address> = emptyList(),
-    val gasUsed: BigInteger = BigInteger.ZERO
+    val gasUsed: BigInteger = BigInteger.ZERO,
+    val features: Features = Features(HardFork.Byzantium.eips())
 ) {
     val currentCallCtx: CallContext
         get() = callStack.last()
