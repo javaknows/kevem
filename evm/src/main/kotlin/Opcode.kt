@@ -56,7 +56,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
     MLOAD(0x51, 1, 1, 1, GasCost.VeryLow),
     MSTORE(0x52, 2, 0, 1, GasCost.VeryLow),
     MSTORE8(0x53, 2, 0, 1, GasCost.VeryLow),
-    SLOAD(0x54, 1, 1, 1, GasCost.SLoad),
+    SLOAD(0x54, 1, 1, 1, GasCost.Formula),
     SSTORE(0x55, 2, 0, 1, GasCost.Formula),
     JUMP(0x56, 1, 0, 1, GasCost.Mid),
     JUMPI(0x57, 2, 0, 1, GasCost.High),

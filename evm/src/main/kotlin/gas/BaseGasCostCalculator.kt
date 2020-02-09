@@ -25,6 +25,7 @@ class BaseGasCostCalculator(
                 EXTCODECOPY -> extCodeCopyCost(executionContext)
                 RETURNDATACOPY -> dataCopyCost(executionContext)
                 SSTORE -> sStoreCost(executionContext)
+                SLOAD -> sLoadCost(executionContext)
                 LOG0 -> logCost(executionContext, 0)
                 LOG1 -> logCost(executionContext, 1)
                 LOG2 -> logCost(executionContext, 2)
@@ -96,6 +97,10 @@ class BaseGasCostCalculator(
         else
             GasCost.SReset.costBigInt
     }
+
+    private fun sLoadCost(executionContext: ExecutionContext): BigInteger =
+        if (executionContext.features.isEnabled(EIP.EIP150)) GasCost.SLoadEip150.costBigInt
+        else GasCost.SLoadHomestead.costBigInt
 
     /**
      * 700 + 3 * (number of words copied, rounded up)
