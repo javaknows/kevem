@@ -118,7 +118,7 @@ class BaseGasCostCalculator(
     private fun sha3Cost(executionContext: ExecutionContext): BigInteger {
         val (start, end) = executionContext.currentCallCtx.stack.peekWords(2)
         val numBytes = BigIntMath.max(end.toBigInt() - start.toBigInt(), BigInteger.ZERO)
-        val numWords = numWordsRoundedUp(numBytes)
+        val numWords = BigIntMath.max(BigInteger.ONE, numWordsRoundedUp(numBytes))
 
         return GasCost.Sha3.costBigInt + GasCost.Sha3Word.costBigInt * numWords
     }
