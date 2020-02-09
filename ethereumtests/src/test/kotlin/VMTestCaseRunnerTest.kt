@@ -9,6 +9,7 @@ import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.kevm.evm.Executor
+import org.kevm.evm.HardFork
 import org.kevm.evm.crypto.sha256
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
@@ -18,7 +19,6 @@ import java.lang.Exception
 import java.math.BigInteger
 import java.time.Instant
 
-@Disabled
 class VMTestCaseRunnerTest {
 
     private val executor = createExecutor()
@@ -127,7 +127,8 @@ class VMTestCaseRunnerTest {
             coinBase = Address(env.currentCoinbase),
             callStack = listOf(callContext),
             accounts = accounts,
-            previousBlocks = mapOf(Pair(BigInteger.ONE, sha256(listOf(Byte(1)))))
+            previousBlocks = mapOf(Pair(BigInteger.ONE, sha256(listOf(Byte(1))))),
+            features = Features(HardFork.Homestead.eips())
         )
     }
 
