@@ -5,7 +5,7 @@ import org.kevm.evm.Opcode
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.Opcode.*
 import org.kevm.evm.numbers.BigIntMath
-import org.kevm.evm.numbers.logn
+import org.kevm.evm.numbers.log256
 import java.math.BigInteger
 import org.kevm.evm.ops.CallOps
 import org.kevm.evm.PrecompiledContractExecutor as Precompiled
@@ -139,7 +139,7 @@ class BaseGasCostCalculator(
             else GasCost.ExpByteHomestead
 
         return if (exp == BigInteger.ZERO) GasCost.Exp.costBigInt
-        else GasCost.Exp.costBigInt + byteCost.costBigInt * (BigInteger.ONE + logn(exp, BigInteger("256")))
+        else GasCost.Exp.costBigInt + byteCost.costBigInt * (BigInteger.ONE + log256(exp))
     }
 
     private fun numWordsRoundedUp(numBytes: BigInteger) = BigIntMath.divRoundUp(numBytes, BigInteger("32"))
