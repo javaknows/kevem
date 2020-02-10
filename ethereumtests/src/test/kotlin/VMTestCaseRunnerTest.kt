@@ -120,7 +120,7 @@ class VMTestCaseRunnerTest {
             callData = BigIntegerIndexedList.fromByteString(exec.data),
             type = CallType.CALL,
             value = toBigInteger(exec.value),
-            code = toByteList(exec.code),
+            code = BigIntegerIndexedList.fromByteString(exec.code),
             gas = toBigInteger(exec.gas),
             storageAddress = Address(exec.address),
             contractAddress = Address(exec.address)

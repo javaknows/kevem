@@ -53,4 +53,18 @@ class BigIntegerIndexedListTest {
             BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO, listOf(Byte("0x01"), Byte("0x02")))
         )
     }
+
+    @Test
+    internal fun `check size is correct for empty list`() {
+        val test = BigIntegerIndexedList.emptyByteList()
+
+        assertThat( test.size() ).isEqualTo(BigInteger.ZERO)
+    }
+
+    @Test
+    internal fun `check size is correct for list with one element`() {
+        val test = BigIntegerIndexedList.fromBytes(listOf(Byte.Zero))
+
+        assertThat( test.size() ).isEqualTo(BigInteger.ONE)
+    }
 }

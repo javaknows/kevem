@@ -29,7 +29,7 @@ internal fun baseExecutionContext(
         callData = callData,
         type = CallType.INITIAL,
         value = CALL_VALUE,
-        code = contractCode,
+        code = BigIntegerIndexedList.fromBytes(contractCode),
         stack = stack,
         memory = memory,
         storageAddress = Address(CONTRACT_ADDRESS),

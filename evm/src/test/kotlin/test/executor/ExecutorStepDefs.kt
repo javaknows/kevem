@@ -76,7 +76,7 @@ class ExecutorStepDefs : En {
                 else listOf(Opcode.valueOf(opcode).code, Opcode.JUMPDEST.code)
 
             updateLastCallContext {
-                it.copy(code = code)
+                it.copy(code = BigIntegerIndexedList.fromBytes(code))
             }
 
             executeContext()
@@ -197,7 +197,7 @@ class ExecutorStepDefs : En {
         }
 
         Given("contract code is \\[([xA-Z0-9, ]+)\\]") { byteCodeNames: String ->
-            val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
+            val byteCode = BigIntegerIndexedList.fromBytes(byteCodeOrDataFromNamesOrHex(byteCodeNames))
 
             updateLastCallContext { callContext ->
                 callContext.copy(code = byteCode)
@@ -206,7 +206,7 @@ class ExecutorStepDefs : En {
 
         Given("contract code is (0x[a-zA-Z0-9]+)") { byteCode: String ->
             updateLastCallContext { callContext ->
-                callContext.copy(code = toByteList(byteCode))
+                callContext.copy(code = BigIntegerIndexedList.fromBytes(toByteList(byteCode)))
             }
         }
 
@@ -340,7 +340,7 @@ class ExecutorStepDefs : En {
 
         Given("contract code ends with (0x[a-zA-Z0-9]+)") { data: String ->
             updateLastCallContext {
-                val code = toByteList(data)
+                val code = BigIntegerIndexedList.fromByteString(data)
                 it.copy(code = code)
             }
         }
@@ -351,7 +351,7 @@ class ExecutorStepDefs : En {
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code)
                 }
 
@@ -370,7 +370,7 @@ class ExecutorStepDefs : En {
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code)
                 }
 
@@ -390,7 +390,7 @@ class ExecutorStepDefs : En {
                 val indexOfAA = toInt(it[2])
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code)
                 }
 
@@ -438,7 +438,7 @@ class ExecutorStepDefs : En {
                 val gas = it[1].toInt()
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code, gas = BigInteger("100000000"))
                 }
 
@@ -698,7 +698,7 @@ class ExecutorStepDefs : En {
                 CallContext(
                     caller = Address("0x0"),
                     callData = BigIntegerIndexedList.emptyByteList(),
-                    code = listOf(Opcode.INVALID.code),
+                    code = BigIntegerIndexedList.fromBytes(listOf(Opcode.INVALID.code)),
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,
                     stack = Stack(),

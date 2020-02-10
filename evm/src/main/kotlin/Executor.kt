@@ -17,7 +17,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
         if (isEndOfContract(currentCallContextOrNull))
             HaltOps.stop(executionCtx)
         else {
-            val byteCode = currentCallCtx.code[currentLocation]
+            val byteCode = currentCallCtx.code[currentLocation.toBigInteger()]
             val opcode = Opcode.byCode[byteCode]
 
             when {
@@ -69,7 +69,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
         (callCtx.stack.size() - Opcode.numArgs(opcode) + Opcode.numReturn(opcode)) > 1024
 
     private fun isEndOfContract(callCtx: CallContext?) =
-        callCtx != null && callCtx.currentLocation !in callCtx.code.indices
+        callCtx != null && callCtx.currentLocation !in callCtx.code.indices().map{ it.toInt() }
 
     private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode): ExecutionContext {
         val updatedContext = when (opcode) {

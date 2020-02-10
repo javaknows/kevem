@@ -204,7 +204,7 @@ class TransactionProcessor(
             callData = BigIntegerIndexedList.fromBytes(callData),
             type = CallType.INITIAL,
             value = tx.value,
-            code = code,
+            code = BigIntegerIndexedList.fromBytes(code),
             gas = tx.gasLimit - intrinsicGas,
             contractAddress = recipient,
             storageAddress = recipient

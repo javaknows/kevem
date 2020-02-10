@@ -28,9 +28,9 @@ object JumpOps {
         with(executionCtx) {
             val call = callStack.last()
 
-            if (dest !in call.code.indices) HaltOps.fail(executionCtx, error(dest))
+            if (dest !in call.code.indices().map{ it.toInt() }) HaltOps.fail(executionCtx, error(dest))
             else {
-                val nextOpCode = Opcode.byCode[call.code[dest]]
+                val nextOpCode = Opcode.byCode[call.code[dest.toBigInteger()]]
 
                 if (nextOpCode == Opcode.JUMPDEST)
                     executionCtx.updateCurrentCallCtx(stack = newStack, currentLocation = dest)

@@ -5,7 +5,7 @@ import org.kevm.evm.toByteList
 import java.math.BigInteger
 
 /**
-backed by LinkedHasMap (mutable)
+backed by LinkedHashMap (mutable)
 copy-on-write, effectively immutable since mutability is confined
  */
 open class BigIntegerIndexedList<T>(
@@ -34,13 +34,14 @@ open class BigIntegerIndexedList<T>(
             this[key]
         }
 
-    fun size(): BigInteger {
-        val maxIndex = backing.keys.max() ?: BigInteger.ZERO
+    fun size(): BigInteger =
+        if (backing.keys.isEmpty()) BigInteger.ZERO
+        else (backing.keys.max() ?: BigInteger.ZERO) + BigInteger.ONE
 
-        return if (maxIndex > BigInteger.ZERO) maxIndex + BigInteger.ONE
-        else BigInteger.ZERO
-    }
+    operator fun plus(other: BigIntegerIndexedList<T>): BigIntegerIndexedList<T> =
+        write(size(), other.backing.values.toList())
 
+    fun indices(): List<BigInteger> = backing.keys.toList().sorted()
 
     private fun copy(original: LinkedHashMap<BigInteger, T>) = LinkedHashMap(original)
 

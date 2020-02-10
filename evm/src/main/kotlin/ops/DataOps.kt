@@ -8,17 +8,18 @@ object DataOps {
 
     fun codeSize(context: ExecutionContext): ExecutionContext = with(context) {
         val call = callStack.last()
-        val newStack = stack.pushWord(Word.coerceFrom(call.code.size))
+        val newStack = stack.pushWord(Word.coerceFrom(call.code.size()))
         context.updateCurrentCallCtx(stack = newStack)
     }
 
     fun codeCopy(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, newStack) = stack.popWords(3)
-        val (to, from, size) = elements.map { it.toInt() }
+        val (to, from, size) = elements.map { it.toBigInt() }
         val call = callStack.last()
-        val data = call.code.drop(from).take(size)
-        val paddedData = data + Byte.Zero.repeat(size - data.size)
-        val newMemory = memory.write(to, paddedData)
+
+        val data = call.code.read(from, size.toInt())
+        val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
+        val newMemory = memory.write(to.toInt(), paddedData)
 
         context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
     }

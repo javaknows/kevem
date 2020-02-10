@@ -94,7 +94,7 @@ class BaseGasCostCalculatorTest {
             BigIntegerIndexedList.emptyByteList(),
             CallType.CALL,
             BigInteger.ZERO,
-            emptyList(),
+            BigIntegerIndexedList.emptyByteList(),
             stack = stack
         )
 
