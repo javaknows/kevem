@@ -1,6 +1,7 @@
 package org.kevm.evm.model
 
 import org.kevm.evm.*
+import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Instant
 import java.util.*
@@ -379,7 +380,7 @@ enum class CallType { INITIAL, CALL, CALLCODE, STATICCALL, DELEGATECALL }
 
 data class CallContext(
     val caller: Address,
-    val callData: List<Byte>,
+    val callData: BigIntegerIndexedList<Byte>,
     val type: CallType,
     val value: BigInteger,
     val code: List<Byte>,

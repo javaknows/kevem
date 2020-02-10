@@ -1,5 +1,6 @@
 package org.kevm.evm.ops
 
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.crypto.*
 import org.kevm.evm.model.Byte
 import org.kevm.evm.lang.*
@@ -63,7 +64,7 @@ object CallOps {
                     val (callData, newMemory) = memory.read(inLocation, inSize)
                     val newCall = CallContext(
                         nextCallerAddress,
-                        callData,
+                        BigIntegerIndexedList.fromBytes(callData),
                         CallType.CALLCODE,
                         value,
                         accounts.codeAt(callArguments.address),
@@ -101,7 +102,7 @@ object CallOps {
                 val (callData, newMemory) = memory.read(inLocation, inSize)
                 val newCall = CallContext(
                     currentCallCtx.caller,
-                    callData,
+                    BigIntegerIndexedList.fromBytes(callData),
                     CallType.DELEGATECALL,
                     currentCallCtx.value,
                     code,
@@ -154,7 +155,7 @@ object CallOps {
                     val callContractCode = destContract?.code ?: emptyList()
                     val newCall = CallContext(
                         nextCaller,
-                        callData,
+                        BigIntegerIndexedList.fromBytes(callData),
                         callType,
                         value,
                         callContractCode,

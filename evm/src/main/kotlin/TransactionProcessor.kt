@@ -1,7 +1,7 @@
 package org.kevm.evm
 
 import org.kevm.common.Logger
-import org.kevm.evm.gas.GasCost
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.gas.TransactionGasCalculator
 import org.kevm.evm.gas.TransactionValidator
 import org.kevm.evm.model.*
@@ -201,7 +201,7 @@ class TransactionProcessor(
 
         val callContext = CallContext(
             caller = tx.from,
-            callData = callData,
+            callData = BigIntegerIndexedList.fromBytes(callData),
             type = CallType.INITIAL,
             value = tx.value,
             code = code,

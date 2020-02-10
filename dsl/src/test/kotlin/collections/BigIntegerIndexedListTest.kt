@@ -3,7 +3,7 @@ package collections
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
-import org.kevm.evm.collections.BigIntegerIndexedByteList
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.model.Byte
 import java.math.BigInteger
 
@@ -11,7 +11,7 @@ class BigIntegerIndexedListTest {
 
     @Test
     internal fun `write a byte then read a byte`() {
-        val original = BigIntegerIndexedByteList()
+        val original = BigIntegerIndexedList(Byte.Zero)
 
         val written = original.write(BigInteger.ONE, Byte.One)
 
@@ -20,7 +20,7 @@ class BigIntegerIndexedListTest {
 
     @Test
     internal fun `write a byte then read some`() {
-        val original = BigIntegerIndexedByteList()
+        val original = BigIntegerIndexedList(Byte.Zero)
 
         val written = original.write(BigInteger.ONE, Byte.One)
 
@@ -29,7 +29,7 @@ class BigIntegerIndexedListTest {
 
     @Test
     internal fun `write some bytes then read some`() {
-        val original = BigIntegerIndexedByteList()
+        val original = BigIntegerIndexedList(Byte.Zero)
 
         val written = original.write(BigInteger.TWO, listOf(Byte.One, Byte("0x2"), Byte("0x3")))
 
@@ -38,10 +38,19 @@ class BigIntegerIndexedListTest {
 
     @Test
     internal fun `check original and written are different`() {
-        val original = BigIntegerIndexedByteList()
+        val original = BigIntegerIndexedList(Byte.Zero)
 
         val written = original.write(BigInteger.TWO, listOf(Byte.One, Byte("0x2"), Byte("0x3")))
 
         assertThat(System.identityHashCode(original)).isNotEqualTo(written)
+    }
+
+    @Test
+    internal fun `check fromByteString creates correct map`() {
+        val test = BigIntegerIndexedList.fromByteString("0x0102")
+
+        assertThat( test ).isEqualTo(
+            BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO, listOf(Byte("0x01"), Byte("0x02")))
+        )
     }
 }

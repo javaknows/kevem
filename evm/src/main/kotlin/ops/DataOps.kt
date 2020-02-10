@@ -25,20 +25,20 @@ object DataOps {
 
     fun callDataLoad(context: ExecutionContext): ExecutionContext = with(context) {
         val call = callStack.last()
-
         val (position, newStack) = stack.popWord()
-        val start = position.toInt().coerceIn(0, call.callData.size)
-        val end = (position.toInt() + 32).coerceIn(start, call.callData.size)
-        val append = Byte.Zero.repeat(32 - end + start)
 
-        val data = call.callData.subList(start, end) + append
+        val data = call.callData.read(position.toBigInt(), 32).let {
+            val append = Byte.Zero.repeat(32 - it.size)
+            it + append
+        }
+
         val finalStack = newStack.pushWord(Word.coerceFrom(data))
 
         context.updateCurrentCallCtx(stack = finalStack)
     }
 
     fun callDataSize(context: ExecutionContext): ExecutionContext = with(context) {
-        val size = callStack.last().callData.size
+        val size = callStack.last().callData.size()
         val newStack = stack.pushWord(Word.coerceFrom(size))
 
         context.updateCurrentCallCtx(stack = newStack)
@@ -46,11 +46,11 @@ object DataOps {
 
     fun callDataCopy(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, newStack) = stack.popWords(3)
-        val (to, from, size) = elements.map { it.toInt() }
+        val (to, from, size) = elements.map { it.toBigInt() }
         val call = callStack.last()
-        val data = call.callData.drop(Math.max(from, 0)).take(size)
-        val paddedData = data + Byte.Zero.repeat(size - data.size)
-        val newMemory = memory.write(to, paddedData)
+        val data = call.callData.read(from, size.toInt())
+        val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
+        val newMemory = memory.write(to.toInt(), paddedData)
 
         context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
     }

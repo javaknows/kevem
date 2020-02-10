@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.kevm.evm.EIP
 import org.kevm.evm.Opcode
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.gas.BaseGasCostCalculator
 import org.kevm.evm.gas.CallGasCostCalc
 import org.kevm.evm.gas.PredefinedContractGasCostCalc
@@ -90,7 +91,7 @@ class BaseGasCostCalculatorTest {
     ): ExecutionContext {
         val callContext = CallContext(
             Address("0x0"),
-            emptyList(),
+            BigIntegerIndexedList.emptyByteList(),
             CallType.CALL,
             BigInteger.ZERO,
             emptyList(),

@@ -1,5 +1,6 @@
 package org.kevm.evm
 
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.model.*
 import org.kevm.evm.model.Byte
 import java.math.BigInteger
@@ -19,7 +20,7 @@ internal fun baseExecutionContext(
     accounts: Accounts = Accounts()
         .updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT)
         .updateContract(Address(CONTRACT_ADDRESS), Contract(contractCode)),
-    callData: List<Byte> = emptyList(),
+    callData: BigIntegerIndexedList<Byte> = BigIntegerIndexedList.emptyByteList(),
     lastReturnData: List<Byte> = emptyList(),
     previousBlocks: Map<BigInteger, Word> = emptyMap()
 ): ExecutionContext {

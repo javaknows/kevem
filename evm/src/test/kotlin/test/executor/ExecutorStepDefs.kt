@@ -10,6 +10,7 @@ import org.kevm.evm.toByteList
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
+import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -177,7 +178,7 @@ class ExecutorStepDefs : En {
         }
 
         Given("call data is (empty|0x[a-zA-Z0-9]+)") { value: String ->
-            val callData = toByteList(value.replace("empty", "0x"))
+            val callData = BigIntegerIndexedList.fromByteString(value.replace("empty", "0x"))
 
             updateLastCallContext { callContext ->
                 callContext.copy(callData = callData)
@@ -480,7 +481,7 @@ class ExecutorStepDefs : En {
 
                 assertThat(currentCall.type).isEqualTo(CallType.valueOf(type))
                 assertThat(currentCall.caller).isEqualTo(Address(callerAddress))
-                assertThat(currentCall.callData).isEqualTo(toByteList(callData))
+                assertThat(currentCall.callData).isEqualTo(BigIntegerIndexedList.fromByteString(callData))
                 assertThat(currentCall.contractAddress).isEqualTo(Address(contractAddress))
                 assertThat(currentCall.value).isEqualTo(toBigInteger(value))
                 assertThat(currentCall.gasRemaining).isEqualTo(toBigInteger(gas))
@@ -607,7 +608,7 @@ class ExecutorStepDefs : En {
         val callCtx = currentCallContext.copy(
             type = CallType.valueOf(type),
             caller = Address(callerAddress),
-            callData = toByteList(callData),
+            callData = BigIntegerIndexedList.fromByteString(callData),
             value = toBigInteger(value),
             gas = toBigInteger(gas),
             returnLocation = toInt(outLocation),
@@ -696,7 +697,7 @@ class ExecutorStepDefs : En {
             callStack = listOf(
                 CallContext(
                     caller = Address("0x0"),
-                    callData = emptyList(),
+                    callData = BigIntegerIndexedList.emptyByteList(),
                     code = listOf(Opcode.INVALID.code),
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,

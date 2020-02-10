@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.kevm.evm.Executor
 import org.kevm.evm.HardFork
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.crypto.sha256
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
@@ -116,7 +117,7 @@ class VMTestCaseRunnerTest {
 
         val callContext = CallContext(
             caller = Address(exec.caller),
-            callData = toByteList(exec.data),
+            callData = BigIntegerIndexedList.fromByteString(exec.data),
             type = CallType.CALL,
             value = toBigInteger(exec.value),
             code = toByteList(exec.code),

@@ -1,6 +1,7 @@
 package org.kevm.evm.collections
 
 import org.kevm.evm.model.Byte
+import org.kevm.evm.toByteList
 import java.math.BigInteger
 
 /**
@@ -11,7 +12,6 @@ open class BigIntegerIndexedList<T>(
     private val default: T,
     private val backing: LinkedHashMap<BigInteger, T> = LinkedHashMap()
 ) {
-
     operator fun get(key: BigInteger): T = backing.getOrDefault(key, default)
 
     fun write(key: BigInteger, value: T): BigIntegerIndexedList<T> = copy(backing).let {
@@ -34,7 +34,30 @@ open class BigIntegerIndexedList<T>(
             this[key]
         }
 
-    private fun copy(original: LinkedHashMap<BigInteger, T>) = LinkedHashMap(original)
-}
+    fun size(): BigInteger {
+        val maxIndex = backing.keys.max() ?: BigInteger.ZERO
 
-class BigIntegerIndexedByteList : BigIntegerIndexedList<Byte>(Byte.Zero)
+        return if (maxIndex > BigInteger.ZERO) maxIndex + BigInteger.ONE
+        else BigInteger.ZERO
+    }
+
+
+    private fun copy(original: LinkedHashMap<BigInteger, T>) = LinkedHashMap(original)
+
+    override fun equals(other: Any?): Boolean =
+        if (other is BigIntegerIndexedList<*>)
+            backing == other.backing
+        else false
+
+    override fun hashCode(): Int = backing.hashCode()
+
+    companion object {
+        fun fromByteString(data: String): BigIntegerIndexedList<Byte> =
+            BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO, toByteList(data))
+
+        fun fromBytes(data: List<Byte>): BigIntegerIndexedList<Byte> =
+            BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO, data)
+
+        fun emptyByteList() = BigIntegerIndexedList(Byte.Zero)
+    }
+}
