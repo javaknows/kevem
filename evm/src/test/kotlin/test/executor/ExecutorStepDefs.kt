@@ -10,6 +10,7 @@ import org.kevm.evm.toByteList
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
+import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -75,7 +76,7 @@ class ExecutorStepDefs : En {
                 else listOf(Opcode.valueOf(opcode).code, Opcode.JUMPDEST.code)
 
             updateLastCallContext {
-                it.copy(code = code)
+                it.copy(code = BigIntegerIndexedList.fromBytes(code))
             }
 
             executeContext()
@@ -177,7 +178,7 @@ class ExecutorStepDefs : En {
         }
 
         Given("call data is (empty|0x[a-zA-Z0-9]+)") { value: String ->
-            val callData = toByteList(value.replace("empty", "0x"))
+            val callData = BigIntegerIndexedList.fromByteString(value.replace("empty", "0x"))
 
             updateLastCallContext { callContext ->
                 callContext.copy(callData = callData)
@@ -196,7 +197,7 @@ class ExecutorStepDefs : En {
         }
 
         Given("contract code is \\[([xA-Z0-9, ]+)\\]") { byteCodeNames: String ->
-            val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
+            val byteCode = BigIntegerIndexedList.fromBytes(byteCodeOrDataFromNamesOrHex(byteCodeNames))
 
             updateLastCallContext { callContext ->
                 callContext.copy(code = byteCode)
@@ -205,7 +206,7 @@ class ExecutorStepDefs : En {
 
         Given("contract code is (0x[a-zA-Z0-9]+)") { byteCode: String ->
             updateLastCallContext { callContext ->
-                callContext.copy(code = toByteList(byteCode))
+                callContext.copy(code = BigIntegerIndexedList.fromBytes(toByteList(byteCode)))
             }
         }
 
@@ -339,7 +340,7 @@ class ExecutorStepDefs : En {
 
         Given("contract code ends with (0x[a-zA-Z0-9]+)") { data: String ->
             updateLastCallContext {
-                val code = toByteList(data)
+                val code = BigIntegerIndexedList.fromByteString(data)
                 it.copy(code = code)
             }
         }
@@ -350,7 +351,7 @@ class ExecutorStepDefs : En {
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code)
                 }
 
@@ -369,7 +370,7 @@ class ExecutorStepDefs : En {
                 val expected = toByteList(it[1])
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code)
                 }
 
@@ -389,7 +390,7 @@ class ExecutorStepDefs : En {
                 val indexOfAA = toInt(it[2])
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code)
                 }
 
@@ -437,7 +438,7 @@ class ExecutorStepDefs : En {
                 val gas = it[1].toInt()
 
                 updateLastCallContext { ctx ->
-                    val code = listOf(opcode!!.code) + ctx.code
+                    val code = BigIntegerIndexedList.fromBytes(listOf(opcode!!.code)) + ctx.code
                     ctx.copy(code = code, gas = BigInteger("100000000"))
                 }
 
@@ -480,7 +481,7 @@ class ExecutorStepDefs : En {
 
                 assertThat(currentCall.type).isEqualTo(CallType.valueOf(type))
                 assertThat(currentCall.caller).isEqualTo(Address(callerAddress))
-                assertThat(currentCall.callData).isEqualTo(toByteList(callData))
+                assertThat(currentCall.callData).isEqualTo(BigIntegerIndexedList.fromByteString(callData))
                 assertThat(currentCall.contractAddress).isEqualTo(Address(contractAddress))
                 assertThat(currentCall.value).isEqualTo(toBigInteger(value))
                 assertThat(currentCall.gasRemaining).isEqualTo(toBigInteger(gas))
@@ -607,7 +608,7 @@ class ExecutorStepDefs : En {
         val callCtx = currentCallContext.copy(
             type = CallType.valueOf(type),
             caller = Address(callerAddress),
-            callData = toByteList(callData),
+            callData = BigIntegerIndexedList.fromByteString(callData),
             value = toBigInteger(value),
             gas = toBigInteger(gas),
             returnLocation = toInt(outLocation),
@@ -696,8 +697,8 @@ class ExecutorStepDefs : En {
             callStack = listOf(
                 CallContext(
                     caller = Address("0x0"),
-                    callData = emptyList(),
-                    code = listOf(Opcode.INVALID.code),
+                    callData = BigIntegerIndexedList.emptyByteList(),
+                    code = BigIntegerIndexedList.fromBytes(listOf(Opcode.INVALID.code)),
                     type = CallType.INITIAL,
                     value = BigInteger.ZERO,
                     stack = Stack(),

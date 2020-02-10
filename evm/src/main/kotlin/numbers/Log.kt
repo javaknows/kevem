@@ -2,7 +2,16 @@ package org.kevm.evm.numbers
 
 import java.math.BigInteger
 
-// TODO - get this working with BigIntegers without downcasting to Int
-fun logn(num: BigInteger, base: BigInteger): BigInteger = (Math.log(num.toDouble()) / Math.log(base.toDouble()))
-    .toInt()
-    .toBigInteger()
+fun log256(num: BigInteger): BigInteger =
+    if (num == BigInteger.ZERO) {
+        throw ArithmeticException("log256(0) is not defined")
+    } else {
+        log256Rec(num, BigInteger.ZERO)
+    }
+
+private tailrec fun log256Rec(num: BigInteger, count: BigInteger): BigInteger =
+    if (num == BigInteger.ZERO) {
+        count - BigInteger.ONE
+    } else {
+        log256Rec(num / BigInteger("256"), count + BigInteger.ONE)
+    }

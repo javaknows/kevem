@@ -28,8 +28,8 @@ object MemoryOps  {
     }
 
     fun mstore8(context: ExecutionContext): ExecutionContext = with(context) {
-        val (v, newStack) = stack.pop()
-        val (p, newStack2) = newStack.popWord()
+        val (p, newStack) = stack.popWord()
+        val (v, newStack2) = newStack.pop()
         val newMemory = memory.write(p.toInt(), v.take(1))
 
         context.updateCurrentCallCtx(stack = newStack2, memory = newMemory)

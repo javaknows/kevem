@@ -1,6 +1,7 @@
 package org.kevm.evm.model
 
 import org.kevm.evm.*
+import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Instant
 import java.util.*
@@ -147,6 +148,7 @@ data class Address(val value: BigInteger) {
     override fun toString() = Word.coerceFrom(value, 20).toString()
 }
 
+// TODO - should change code to BigIntegerIndexedList
 open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = Storage()) {
     operator fun get(index: Int): Byte {
         require(index in code.indices) { "out of range" }
@@ -379,10 +381,10 @@ enum class CallType { INITIAL, CALL, CALLCODE, STATICCALL, DELEGATECALL }
 
 data class CallContext(
     val caller: Address,
-    val callData: List<Byte>,
+    val callData: BigIntegerIndexedList<Byte>,
     val type: CallType,
     val value: BigInteger,
-    val code: List<Byte>,
+    val code: BigIntegerIndexedList<Byte>,
     val callingContext: ExecutionContext? = null,
     val gas: BigInteger = BigInteger.ZERO,
     val returnLocation: Int = 0,

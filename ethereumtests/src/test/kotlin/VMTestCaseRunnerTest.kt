@@ -1,14 +1,14 @@
 package org.kevm.ethereumtests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.kevm.evm.Executor
+import org.kevm.evm.HardFork
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.crypto.sha256
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
@@ -18,7 +18,6 @@ import java.lang.Exception
 import java.math.BigInteger
 import java.time.Instant
 
-@Disabled
 class VMTestCaseRunnerTest {
 
     private val executor = createExecutor()
@@ -52,8 +51,8 @@ class VMTestCaseRunnerTest {
         executionContext: ExecutionContext,
         executed: ExecutionContext
     ) {
-        val gasRemaining = executionContext.currentCallCtx.gas - executed.gasUsed
-        assertThat(gasRemaining).isEqualTo(toBigIntegerOrNull(gas))
+        val gasRemaining = (executionContext.currentCallCtx.gas - executed.gasUsed).toString(16)
+        assertThat(gasRemaining).isEqualTo(toBigIntegerOrNull(gas)?.toString(16))
     }
 
     companion object {
@@ -64,9 +63,12 @@ class VMTestCaseRunnerTest {
             val blackList = loadFromClasspath("ethereum-tests-pack/VMTests/blacklist.txt")
                 .split("\n")
                 .map { it.trim() }
+                .map{ it.replace("#.*".toRegex(), "") }
+                .map { it.trim() }
+                .filterNot { it == "" }
 
             val testNames = System.getProperty("testCase")?.let {
-                listOf(it)
+                listOf("$it.json")
             } ?: loadFromClasspath("ethereum-tests-pack/VMTests/tests.txt")
                 .split("\n")
                 .map { it.trim() }
@@ -85,7 +87,7 @@ class VMTestCaseRunnerTest {
     }
 
     private fun assertOutDataMatches(out: String?, executed: ExecutionContext) =
-        assertThat(toByteList(out)).isEqualTo(executed.lastReturnData)
+        assertThat(executed.lastReturnData).isEqualTo(toByteList(out))
 
     private fun assertPostAccountsMatch(accounts: Accounts, executed: ExecutionContext) =
         accounts.list().forEach { a ->
@@ -102,7 +104,7 @@ class VMTestCaseRunnerTest {
             number = BigInteger.ONE,
             difficulty = toBigInteger(env.currentDifficulty),
             gasLimit = toBigInteger(env.currentGasLimit),
-            timestamp = Instant.ofEpochMilli(toBigInteger(env.currentTimestamp).toLong())
+            timestamp = Instant.ofEpochSecond(1)
         )
 
         val transaction = Transaction(
@@ -112,10 +114,10 @@ class VMTestCaseRunnerTest {
 
         val callContext = CallContext(
             caller = Address(exec.caller),
-            callData = toByteList(exec.data),
+            callData = BigIntegerIndexedList.fromByteString(exec.data),
             type = CallType.CALL,
             value = toBigInteger(exec.value),
-            code = toByteList(exec.code),
+            code = BigIntegerIndexedList.fromByteString(exec.code),
             gas = toBigInteger(exec.gas),
             storageAddress = Address(exec.address),
             contractAddress = Address(exec.address)
@@ -127,7 +129,8 @@ class VMTestCaseRunnerTest {
             coinBase = Address(env.currentCoinbase),
             callStack = listOf(callContext),
             accounts = accounts,
-            previousBlocks = mapOf(Pair(BigInteger.ONE, sha256(listOf(Byte(1)))))
+            previousBlocks = mapOf(Pair(BigInteger.ONE, sha256(listOf(Byte(1))))),
+            features = Features(HardFork.Homestead.eips())
         )
     }
 
@@ -145,10 +148,8 @@ class VMTestCaseRunnerTest {
         val accountList = post?.map { entry ->
             val (a, d) = entry
 
-            Account(
-                Address(a),
-                toBigInteger(d.balance),
-                Contract(
+            val contract =
+                if (d.code != "0x") Contract(
                     code = toByteList(d.code),
                     storage = Storage(
                         d.storage.map { e ->
@@ -156,7 +157,13 @@ class VMTestCaseRunnerTest {
                             Pair(toBigInteger(k), Word.coerceFrom(v))
                         }.toMap()
                     )
-                ),
+                ) else null
+
+
+            Account(
+                Address(a),
+                toBigInteger(d.balance),
+                contract,
                 nonce = toBigInteger(d.nonce)
             )
         } ?: emptyList()

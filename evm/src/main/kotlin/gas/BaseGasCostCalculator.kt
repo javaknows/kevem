@@ -5,7 +5,7 @@ import org.kevm.evm.Opcode
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.Opcode.*
 import org.kevm.evm.numbers.BigIntMath
-import org.kevm.evm.numbers.logn
+import org.kevm.evm.numbers.log256
 import java.math.BigInteger
 import org.kevm.evm.ops.CallOps
 import org.kevm.evm.PrecompiledContractExecutor as Precompiled
@@ -25,6 +25,7 @@ class BaseGasCostCalculator(
                 EXTCODECOPY -> extCodeCopyCost(executionContext)
                 RETURNDATACOPY -> dataCopyCost(executionContext)
                 SSTORE -> sStoreCost(executionContext)
+                SLOAD -> sLoadCost(executionContext)
                 LOG0 -> logCost(executionContext, 0)
                 LOG1 -> logCost(executionContext, 1)
                 LOG2 -> logCost(executionContext, 2)
@@ -59,8 +60,14 @@ class BaseGasCostCalculator(
 
         val accountExists = executionContext.accounts.accountExists(address)
 
-        val newAccountCharge = if (accountExists) BigInteger.ZERO else GasCost.NewAccount.costBigInt
-        return GasCost.SelfDestruct.costBigInt + newAccountCharge
+        val (selfDestructCost, newAccountCost) =
+            if (executionContext.features.isEnabled(EIP.EIP150))
+                Pair(GasCost.SelfDestructEip150, GasCost.NewAccountEip150)
+            else
+                Pair(GasCost.SelfDestructHomestead, GasCost.NewAccountHomestead)
+
+        val newAccountCharge = if (accountExists) BigInteger.ZERO else newAccountCost.costBigInt
+        return selfDestructCost.costBigInt + newAccountCharge
     }
 
     /**
@@ -91,6 +98,10 @@ class BaseGasCostCalculator(
             GasCost.SReset.costBigInt
     }
 
+    private fun sLoadCost(executionContext: ExecutionContext): BigInteger =
+        if (executionContext.features.isEnabled(EIP.EIP150)) GasCost.SLoadEip150.costBigInt
+        else GasCost.SLoadHomestead.costBigInt
+
     /**
      * 700 + 3 * (number of words copied, rounded up)
      */
@@ -110,9 +121,8 @@ class BaseGasCostCalculator(
      * 30 + 6 * (size of input in words)
      */
     private fun sha3Cost(executionContext: ExecutionContext): BigInteger {
-        val (start, end) = executionContext.currentCallCtx.stack.peekWords(2)
-        val numBytes = BigIntMath.max(end.toBigInt() - start.toBigInt(), BigInteger.ZERO)
-        val numWords = numWordsRoundedUp(numBytes)
+        val (_, size) = executionContext.currentCallCtx.stack.peekWords(2)
+        val numWords = numWordsRoundedUp(size.toBigInt())
 
         return GasCost.Sha3.costBigInt + GasCost.Sha3Word.costBigInt * numWords
     }
@@ -129,7 +139,7 @@ class BaseGasCostCalculator(
             else GasCost.ExpByteHomestead
 
         return if (exp == BigInteger.ZERO) GasCost.Exp.costBigInt
-        else GasCost.Exp.costBigInt + byteCost.costBigInt * (BigInteger.ONE + logn(exp, BigInteger("256")))
+        else GasCost.Exp.costBigInt + byteCost.costBigInt * (BigInteger.ONE + log256(exp))
     }
 
     private fun numWordsRoundedUp(numBytes: BigInteger) = BigIntMath.divRoundUp(numBytes, BigInteger("32"))
