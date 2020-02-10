@@ -1,8 +1,6 @@
 package org.kevm.ethereumtests
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.fail
@@ -20,7 +18,6 @@ import java.lang.Exception
 import java.math.BigInteger
 import java.time.Instant
 
-@Disabled
 class VMTestCaseRunnerTest {
 
     private val executor = createExecutor()
