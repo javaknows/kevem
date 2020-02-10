@@ -19,6 +19,7 @@ import java.lang.Exception
 import java.math.BigInteger
 import java.time.Instant
 
+@Disabled
 class VMTestCaseRunnerTest {
 
     private val executor = createExecutor()
