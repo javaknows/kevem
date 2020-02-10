@@ -65,6 +65,9 @@ class VMTestCaseRunnerTest {
             val blackList = loadFromClasspath("ethereum-tests-pack/VMTests/blacklist.txt")
                 .split("\n")
                 .map { it.trim() }
+                .map{ it.replace("#.*".toRegex(), "") }
+                .map { it.trim() }
+                .filterNot { it == "" }
 
             val testNames = System.getProperty("testCase")?.let {
                 listOf("$it.json")
