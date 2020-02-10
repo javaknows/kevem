@@ -6,7 +6,7 @@ import org.kevm.evm.model.Log
 object EvmOps {
     fun push(context: ExecutionContext, numBytes: Int): ExecutionContext {
         val call = context.callStack.last()
-        val data = call.code.subList(context.currentLocation + 1, context.currentLocation + 1 + numBytes)
+        val data = call.code.drop(context.currentLocation + 1).take(numBytes)
         val newStack = context.stack.push(data)
 
         return context.updateCurrentCallCtx(stack = newStack)
