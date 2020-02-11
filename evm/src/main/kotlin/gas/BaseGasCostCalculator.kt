@@ -36,9 +36,21 @@ class BaseGasCostCalculator(
                 DELEGATECALL -> callCost(executionContext, false)
                 STATICCALL -> callCost(executionContext, false)
                 SUICIDE -> suicideCost(executionContext)
+                BALANCE -> balanceCost(executionContext)
+                EXTCODEHASH -> extCodeHashCost(executionContext)
                 else -> throw RuntimeException("Don't now how to compute gas cost for $opcode")
             }
         } else opcode.cost.cost.toBigInteger()
+
+    private fun extCodeHashCost(executionContext: ExecutionContext): BigInteger = when {
+        executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.ExtCodeHashEip1884.costBigInt
+        else -> GasCost.ExtCodeHashEip1052.costBigInt
+    }
+
+    private fun balanceCost(executionContext: ExecutionContext): BigInteger = when {
+        executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.BalanceEip1884.costBigInt
+        else -> GasCost.BalanceHomestead.costBigInt
+    }
 
     private fun callCost(executionContext: ExecutionContext, withValue: Boolean): BigInteger {
         val callArgs = CallOps.peekCallArgsFromStack(executionContext.stack, withValue)
@@ -98,9 +110,11 @@ class BaseGasCostCalculator(
             GasCost.SReset.costBigInt
     }
 
-    private fun sLoadCost(executionContext: ExecutionContext): BigInteger =
-        if (executionContext.features.isEnabled(EIP.EIP150)) GasCost.SLoadEip150.costBigInt
-        else GasCost.SLoadHomestead.costBigInt
+    private fun sLoadCost(executionContext: ExecutionContext): BigInteger = when {
+        executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.SLoadEip1884.costBigInt
+        executionContext.features.isEnabled(EIP.EIP150) -> GasCost.SLoadEip150.costBigInt
+        else -> GasCost.SLoadHomestead.costBigInt
+    }
 
     /**
      * 700 + 3 * (number of words copied, rounded up)

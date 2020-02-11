@@ -1,5 +1,6 @@
 package org.kevm.evm.ops
 
+import org.kevm.common.KevmException
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.model.Word
 
@@ -51,4 +52,11 @@ object CallerOps {
         updateCurrentCallCtx(stack = newStack)
     }
 
+    fun selfBalance(context: ExecutionContext): ExecutionContext = with(context) {
+        val address = currentCallCtx.contractAddress ?: throw KevmException("can't determine contract address")
+        val balance = context.accounts.balanceOf(address)
+        val newStack = stack.pushWord(Word.coerceFrom(balance))
+
+        updateCurrentCallCtx(stack = newStack)
+    }
 }

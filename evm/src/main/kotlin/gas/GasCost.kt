@@ -15,11 +15,13 @@ enum class GasCost(val cost: Int) {
     Mid(8),
     High(10),
     ExtCode(700),
-    Balance(400),
+    BalanceHomestead(400),
+    BalanceEip1884(700),
     Sha3(30),
     Sha3Word(6),
     SLoadHomestead(50),
     SLoadEip150(200),
+    SLoadEip1884(800),
     JumpDest(1),
     SSet(20000),
     SReset(5000),
@@ -48,7 +50,9 @@ enum class GasCost(val cost: Int) {
     LogData(8),
     LogTopic(375),
     QuadDivisor(20),
-    ExtCodeHash(400);
+    ExtCodeHashEip1052(400),
+    ExtCodeHashEip1884(700),
+    GasFastStep(5);
 
     val costBigInt: BigInteger
         get() = cost.toBigInteger()

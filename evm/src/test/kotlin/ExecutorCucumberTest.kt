@@ -8,8 +8,8 @@ import org.junit.runner.RunWith
 @CucumberOptions(
     plugin = ["pretty"],
     features = ["src/test/resources/features/executor"],
-    //tags = ["not @Ignore"],
-    tags = ["@Only"],
+    tags = ["not @Ignore"],
+    //tags = ["@Only"],
     glue=["org.kevm.evm.test.executor"]
 
 )
