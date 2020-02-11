@@ -1,4 +1,4 @@
-Feature: EIP-1108
+Feature: EIP-1108: Reduce alt_bn128 precompile gas costs
 
   # https://eips.ethereum.org/EIPS/eip-1108
 

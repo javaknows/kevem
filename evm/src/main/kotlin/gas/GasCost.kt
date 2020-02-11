@@ -47,7 +47,8 @@ enum class GasCost(val cost: Int) {
     Log(375),
     LogData(8),
     LogTopic(375),
-    QuadDivisor(20);
+    QuadDivisor(20),
+    ExtCodeHash(400);
 
     val costBigInt: BigInteger
         get() = cost.toBigInteger()

@@ -1,4 +1,4 @@
-Feature: EIP-2028
+Feature: EIP-2028: Transaction data gas cost reduction
 
   # https://eips.ethereum.org/EIPS/eip-2028
 

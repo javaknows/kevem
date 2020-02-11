@@ -116,6 +116,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
             Opcode.RETURNDATASIZE -> DataOps.returnDataSize(currentContext)
             Opcode.RETURNDATACOPY -> DataOps.returnDataCopy(currentContext)
             Opcode.BLOCKHASH -> BlockOps.blockHash(currentContext)
+            Opcode.EXTCODEHASH -> DataOps.extCodeHash(currentContext)
             Opcode.COINBASE -> BlockOps.coinBase(currentContext)
             Opcode.TIMESTAMP -> BlockOps.timeStamp(currentContext)
             Opcode.NUMBER -> BlockOps.number(currentContext)

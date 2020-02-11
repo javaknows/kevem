@@ -334,6 +334,12 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
         return Pair(Word.coerceFrom(data), stack)
     }
 
+    fun <T> popWord(operation: (word: Word) -> T): Pair<T, Stack> {
+        val (data, stack) = pop()
+
+        return Pair(operation(Word.coerceFrom(data)), stack)
+    }
+
     fun popWords(num: Int): Pair<List<Word>, Stack> {
         val (datas, stack) = pop(num)
 

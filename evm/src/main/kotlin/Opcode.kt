@@ -46,6 +46,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
     EXTCODECOPY(0x3C, 4, 0, 1, GasCost.Formula),
     RETURNDATASIZE(0x3D, 0, 1, 1, GasCost.Base),
     RETURNDATACOPY(0x3E, 3, 0, 1, GasCost.Formula),
+    EXTCODEHASH(0x3F, 1, 1, 1, GasCost.ExtCodeHash),
     BLOCKHASH(0x40, 1, 1, 1, GasCost.BlockHash),
     COINBASE(0x41, 0, 1, 1, GasCost.Base),
     TIMESTAMP(0x42, 0, 1, 1, GasCost.Base),

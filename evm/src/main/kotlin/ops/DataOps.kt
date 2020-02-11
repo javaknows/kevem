@@ -1,5 +1,6 @@
 package org.kevm.evm.ops
 
+import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.model.Byte
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.model.Word
@@ -91,4 +92,17 @@ object DataOps {
         context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
     }
 
+    fun extCodeHash(context: ExecutionContext): ExecutionContext = with(context) {
+        val (address, newStack) = stack.popWord() { it.toAddress() }
+
+        val hash: Word =
+            if (accounts.accountExists(address))
+                keccak256(accounts.codeAt(address))
+            else
+                Word.Zero
+
+        val finalStack = newStack.pushWord(hash)
+
+        context.updateCurrentCallCtx(stack = finalStack)
+    }
 }
