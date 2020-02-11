@@ -21,7 +21,7 @@ object TestObjects {
                     timestamp = Instant.parse("2006-12-03T10:15:30.00Z")
                 ),
                 BigInteger.TWO,
-                keccak256(Word.coerceFrom(BigInteger.ONE).data).data
+                keccak256(Word.coerceFrom(BigInteger.ONE).data)
             )
         ),
         Accounts(),

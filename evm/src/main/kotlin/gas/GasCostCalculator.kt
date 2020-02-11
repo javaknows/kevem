@@ -98,8 +98,14 @@ class PredefinedContractGasCostCalc {
                 if (executionCtx.features.isEnabled(EIP.EIP1108)) BigInteger("6000")
                 else BigInteger("40000")
             8 -> snarkvGasCost(numBytes, executionCtx.features)
+            9 -> blake2bfGasCost(data)
             else -> TODO()
         }
+    }
+
+    private fun blake2bfGasCost(data: List<Byte>): BigInteger {
+        val numRounds = bytesToBigInteger(data.take(4))
+        return BigInteger.ONE * numRounds
     }
 
     private fun expModGasCost(data: List<Byte>): BigInteger {

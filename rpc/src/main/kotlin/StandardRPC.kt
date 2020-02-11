@@ -42,7 +42,7 @@ class StandardRPC(
 
     fun web3clientVersion(): String = config.clientVersion
 
-    fun web3sha3(data: String): String = bytesToString(keccak256(toByteList(data)).data)
+    fun web3sha3(data: String): String = bytesToString(keccak256(toByteList(data)))
 
     fun netVersion(): String = config.netVersion.toString(10)
 
@@ -149,7 +149,7 @@ class StandardRPC(
             toBigIntegerOrZero(transaction.gas),
             toByteList(transaction.data),
             nonce,
-            hash.data
+            hash
         )
 
         return bytesToString(standardEvmOperations.sendTransaction(tx))

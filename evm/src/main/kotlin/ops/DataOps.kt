@@ -97,7 +97,7 @@ object DataOps {
 
         val hash: Word =
             if (accounts.accountExists(address))
-                keccak256(accounts.codeAt(address))
+                Word(keccak256(accounts.codeAt(address)))
             else
                 Word.Zero
 

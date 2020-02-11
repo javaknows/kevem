@@ -115,7 +115,7 @@ class StatefulTransactionProcessor(
             timestamp = clock.instant()
         )
 
-        return MinedBlock(nextBlock, BigInteger.ZERO, blockHash(nextBlock.number).data, emptyList())
+        return MinedBlock(nextBlock, BigInteger.ZERO, blockHash(nextBlock.number), emptyList())
     }
 
     private fun blockHash(num: BigInteger) =

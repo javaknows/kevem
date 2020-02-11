@@ -82,7 +82,7 @@ class StandardEvmOperations(val evm: StatefulTransactionProcessor) {
             tran.gasLimit,
             toByteList(tran.data),
             tran.nonce,
-            hash.data
+            hash
         )
 
         return sendTransaction(tx)

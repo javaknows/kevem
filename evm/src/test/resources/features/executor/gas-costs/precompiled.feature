@@ -169,3 +169,31 @@ Feature: Gas costs for precompiled contract execution
       | CALLCODE     | [0x1, 0x6, 0x0, 0x0, 0x128, 0x0, 0x64] |
       | DELEGATECALL | [0x1, 0x6, 0x0, 0x128, 0x0, 0x64]      |
       | STATICCALL   | [0x1, 0x6, 0x0, 0x128, 0x0, 0x64]      |
+
+
+  Scenario Outline: BLAKE2 precompiled smart contract gas cost is 0 when 0 rounds - <callType>
+    Given the stack contains elements <stackElements>
+    And 0x000000048c9bdf267e6096a3ba7ca8485ae67bb2bf894fe72f36e3cf1361d5f3af54fa5d182e6ad7f520e511f6c3e2b8c68059b6bbd41fbabd9831f79217e1319cde05b61626300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000001 is stored in memory at location 0x0
+    When opcode <callType> is executed
+    Then 0 gas is now used by the previous call context
+
+    Examples:
+      | callType     | stackElements                         |
+      | CALL         | [0x1, 0x9, 0x0, 0x0, 0xD5, 0x0, 0x64] |
+      | CALLCODE     | [0x1, 0x9, 0x0, 0x0, 0xD5, 0x0, 0x64] |
+      | DELEGATECALL | [0x1, 0x9, 0x0, 0xD5, 0x0, 0x64]      |
+      | STATICCALL   | [0x1, 0x9, 0x0, 0xD5, 0x0, 0x64]      |
+
+
+  Scenario Outline: BLAKE2 precompiled smart contract gas cost is 1 when 1 round - <callType>
+    Given the stack contains elements <stackElements>
+    And 0x000000148c9bdf267e6096a3ba7ca8485ae67bb2bf894fe72f36e3cf1361d5f3af54fa5d182e6ad7f520e511f6c3e2b8c68059b6bbd41fbabd9831f79217e1319cde05b61626300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000001 is stored in memory at location 0x0
+    When opcode <callType> is executed
+    Then 1 gas is now used by the previous call context
+
+    Examples:
+      | callType     | stackElements                         |
+      | CALL         | [0x1, 0x9, 0x0, 0x0, 0xD5, 0x0, 0x64] |
+      | CALLCODE     | [0x1, 0x9, 0x0, 0x0, 0xD5, 0x0, 0x64] |
+      | DELEGATECALL | [0x1, 0x9, 0x0, 0xD5, 0x0, 0x64]      |
+      | STATICCALL   | [0x1, 0x9, 0x0, 0xD5, 0x0, 0x64]      |
