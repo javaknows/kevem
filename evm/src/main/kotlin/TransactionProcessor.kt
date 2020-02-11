@@ -13,18 +13,18 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 
 // TODO - consider block gas limit
 // TODO - define behaviour for two suicides of same contract in same tx
-// TODO - proper transaction hash generation
 class TransactionProcessor(
     private val executor: Executor,
+    private val features: Features = Features(emptyList()),
     private val txValidator: TransactionValidator = TransactionValidator(),
     private val txGasCalculator: TransactionGasCalculator = TransactionGasCalculator(),
     private val log: Logger = Logger.createLogger(TransactionProcessor::class)
 ) {
 
     internal fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
-        if (txValidator.isValid(worldState, tx)) {
+        if (txValidator.isValid(worldState, tx, features)) {
             val ws = incrementSenderNonce(worldState, tx.from)
-            processValidTx(ws, tx, currentBlock)
+            processValidTx(ws, tx, currentBlock, features)
         } else
             rejectInvalidTx(worldState, tx)
 
@@ -32,11 +32,16 @@ class TransactionProcessor(
         return copy(accounts = accounts.incrementNonce(sender))
     }
 
-    private fun processValidTx(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult {
+    private fun processValidTx(
+        worldState: WorldState,
+        tx: TransactionMessage,
+        currentBlock: Block,
+        features: Features
+    ): ProcessResult {
         val (newWorldState, recipient) = updateBalancesAndCreateInitialContractIfRequired(worldState, tx)
 
         val execResult = executor.executeAll(
-            createExecutionCtx(newWorldState, currentBlock, tx, recipient)
+            createExecutionCtx(newWorldState, currentBlock, tx, recipient, features)
         )
 
         return if (execResult.lastCallError == EvmError.None) {
@@ -188,7 +193,8 @@ class TransactionProcessor(
         worldState: WorldState,
         currentBlock: Block,
         tx: TransactionMessage,
-        recipient: Address
+        recipient: Address,
+        features: Features
     ): ExecutionContext {
 
         val transaction = Transaction(tx.from, tx.gasPrice)
@@ -197,7 +203,7 @@ class TransactionProcessor(
             if (tx.to != null) Pair(worldState.accounts.codeAt(tx.to), tx.data)
             else Pair(tx.data, emptyList())
 
-        val intrinsicGas = txGasCalculator.intrinsicGas(tx)
+        val intrinsicGas = txGasCalculator.intrinsicGas(tx, features)
 
         val callContext = CallContext(
             caller = tx.from,
@@ -222,7 +228,8 @@ class TransactionProcessor(
             callStack = listOf(callContext),
             accounts = worldState.accounts,
             previousBlocks = previousBlocks,
-            gasUsed = intrinsicGas
+            gasUsed = intrinsicGas,
+            features = features
         )
     }
 

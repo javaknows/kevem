@@ -35,6 +35,8 @@ class TransactionProcessorStepDefs : En {
 
     private var clock: Clock = Clock.fixed(Instant.parse("2006-12-05T15:15:30.00Z"), ZoneId.of("UTC"))
 
+    private var features = Features(emptyList())
+
     private var worldStateResult: WorldState? = null
 
     private var transactionResult: TransactionResult? = null
@@ -79,7 +81,7 @@ class TransactionProcessorStepDefs : En {
         }
 
         When("the transaction is executed") {
-            val tp = TransactionProcessor(executor)
+            val tp = TransactionProcessor(executor, features)
             val (ws, tr) = tp.process(worldState, transaction, currentBlock)
 
             worldStateResult = ws
@@ -87,7 +89,7 @@ class TransactionProcessorStepDefs : En {
         }
 
         When("the transaction is mined via stateful transaction processor") {
-            val tp = TransactionProcessor(executor)
+            val tp = TransactionProcessor(executor, features)
             val stp = StatefulTransactionProcessor(tp, clock, worldState)
 
             val txReceipt = stp.enqueTransaction(transaction)
@@ -179,6 +181,16 @@ class TransactionProcessorStepDefs : En {
 
         Given("the current time is (.*)") { time: String ->
             clock = Clock.fixed(Instant.parse(time), ZoneId.of("UTC"))
+        }
+
+        Given("EIP ([0-9A-Za-z]+) is enabled") { eipName: String ->
+            val eip = EIP.valueOf(eipName)
+            features = Features(features.eips + listOf(eip))
+        }
+
+        Given("([0-9A-Za-z]+) hard fork features are enabled") { forkName: String ->
+            val hardFork = HardFork.valueOf(forkName)
+            features = Features(features.eips + hardFork.eips())
         }
     }
 

@@ -1,6 +1,7 @@
 package org.kevm.evm.gas
 
 import org.kevm.common.Logger
+import org.kevm.evm.model.Features
 import org.kevm.evm.model.TransactionMessage
 import org.kevm.evm.model.WorldState
 
@@ -9,8 +10,8 @@ class TransactionValidator(
     private val txGasCalculator: TransactionGasCalculator = TransactionGasCalculator()
 ) {
 
-    fun isValid(worldState: WorldState, transaction: TransactionMessage): Boolean = with(txGasCalculator) {
-        val intrinsicGas = intrinsicGas(transaction)
+    fun isValid(worldState: WorldState, transaction: TransactionMessage, features: Features): Boolean = with(txGasCalculator) {
+        val intrinsicGas = intrinsicGas(transaction, features)
         val upFrontCost = upFrontCost(transaction)
 
         when {

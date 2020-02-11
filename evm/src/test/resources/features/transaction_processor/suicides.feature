@@ -1,8 +1,9 @@
 Feature: Suicides Behaviour Of Transaction Processing
 
   Background: Account has plenty funds
-    Given account 0x5E4DE7 has nonce 0
-    Given account 0x5E4DE7 has balance 100000000000000000
+    Given Byzantium hard fork features are enabled
+    And account 0x5E4DE7 has nonce 0
+    And account 0x5E4DE7 has balance 100000000000000000
 
   Scenario: Balances are correct after an account is suicided and sent to new account
     Given contract at address 0xEEEEEE has code [PUSH3 0xDD 0xDD 0xDD SUICIDE]
