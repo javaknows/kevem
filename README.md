@@ -11,7 +11,7 @@ It is a test EVM client in the style of [Ganache](https://www.trufflesuite.com/g
 
 It allows running web3j tests completely in-process without using a separate Ganache instance.
 
-It is currently in a development state and not suitable for production usage yet. A list of missing features and shortcomings can be found in [evm/notes.md](evm/notes.md)
+A list of missing features and shortcomings can be found in [the missing feature issues list](https://github.com/wjsrobertson/kevm/labels/missing%20feature)
 
 ## Example Usage
 

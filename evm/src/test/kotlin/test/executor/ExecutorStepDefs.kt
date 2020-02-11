@@ -10,6 +10,7 @@ import org.kevm.evm.toByteList
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
+import org.kevm.evm.EIP
 import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Clock
@@ -335,6 +336,13 @@ class ExecutorStepDefs : En {
         Given("there is ([0-9xA-Za-z]*) gas used") { gas: String ->
             updateLastCallContext {
                 it.copy(gasUsed = toBigInteger(gas))
+            }
+        }
+
+        Given("EIP ([0-9A-Za-z]+) is enabled") { eipName: String ->
+            val eip = EIP.valueOf(eipName)
+            updateExecutionContext {
+                it.copy(features = Features(it.features.eips + listOf(eip)))
             }
         }
 

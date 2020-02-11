@@ -10,23 +10,9 @@ enum class HardFork(val eip: EIP) {
     Petersburg(EIP.EIP1716);
 
     fun eips(): List<EIP> = eaipsAcc(setOf(eip)).sorted()
-
-    tailrec fun eaipsAcc(eips: Set<EIP>, acc: List<EIP> = emptyList()): List<EIP> =
-        if (eips.isEmpty()) acc
-        else {
-            val nextEip = eips.first()
-
-            val add =
-                if (acc.contains(nextEip)) emptyList()
-                else nextEip.dependencies
-
-            val remaining = eips - nextEip
-
-            eaipsAcc(remaining + add, acc + nextEip)
-        }
 }
 
-enum class EIP(val description: String, val dependencies: List<EIP> = emptyList()) {
+enum class EIP(val description: String, val immediateDependencies: List<EIP> = emptyList()) {
     EIP2("Homestead Hard-fork Changes"),
     EIP7("DELEGATECALL"),
     EIP8("devp2p Forward Compatibility Requirements for Homestead"),
@@ -66,5 +52,21 @@ enum class EIP(val description: String, val dependencies: List<EIP> = emptyList(
     ),
     EIP1013("Hardfork Constantinople", listOf(EIP145, EIP609, EIP1014, EIP1052, EIP1234, EIP1283)),
     EIP1716("Hardfork Petersburg", listOf(EIP1013, EIP1283)),
-    EIP1679("Hardfork Istanbul", listOf(EIP1716, EIP152, EIP1108, EIP1344, EIP1884, EIP2028, EIP2200))
+    EIP1679("Hardfork Istanbul", listOf(EIP1716, EIP152, EIP1108, EIP1344, EIP1884, EIP2028, EIP2200));
+
+    fun dependencies(): List<EIP> = eaipsAcc(immediateDependencies.toSet()).sorted()
 }
+
+private tailrec fun eaipsAcc(eips: Set<EIP>, acc: List<EIP> = emptyList()): List<EIP> =
+    if (eips.isEmpty()) acc
+    else {
+        val nextEip = eips.first()
+
+        val add =
+            if (acc.contains(nextEip)) emptyList()
+            else nextEip.immediateDependencies
+
+        val remaining = eips - nextEip
+
+        eaipsAcc(remaining + add, acc + nextEip)
+    }

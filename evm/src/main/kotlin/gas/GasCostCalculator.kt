@@ -1,11 +1,13 @@
 package org.kevm.evm.gas
 
+import org.kevm.evm.EIP
 import org.kevm.evm.Opcode
 import org.kevm.evm.bytesToBigInteger
 import org.kevm.evm.model.Address
 import org.kevm.evm.model.Byte
 import org.kevm.evm.model.Byte.Companion.padRightToSize
 import org.kevm.evm.model.ExecutionContext
+import org.kevm.evm.model.Features
 import org.kevm.evm.numbers.BigIntMath.max
 import org.kevm.evm.ops.CallArguments
 import java.math.BigInteger
@@ -89,9 +91,13 @@ class PredefinedContractGasCostCalc {
             3 -> BigInteger("600") + BigInteger("120") * numWords
             4 -> BigInteger("15") + BigInteger("3") * numWords
             5 -> expModGasCost(data)
-            6 -> BigInteger("500")
-            7 -> BigInteger("40000")
-            8 -> snarkvGasCost(numBytes)
+            6 ->
+                if (executionCtx.features.isEnabled(EIP.EIP1108)) BigInteger("150")
+                else BigInteger("500")
+            7 ->
+                if (executionCtx.features.isEnabled(EIP.EIP1108)) BigInteger("6000")
+                else BigInteger("40000")
+            8 -> snarkvGasCost(numBytes, executionCtx.features)
             else -> TODO()
         }
     }
@@ -114,8 +120,16 @@ class PredefinedContractGasCostCalc {
         return (fFactor * eSizeFactor) / GasCost.QuadDivisor.costBigInt
     }
 
-    private fun snarkvGasCost(numBytes: Int): BigInteger {
+    private fun snarkvGasCost(numBytes: Int, features: Features): BigInteger {
+        val baseCost =
+            if (features.isEnabled(EIP.EIP1108)) BigInteger("45000")
+            else BigInteger("100000")
+
+        val perPairCost =
+            if (features.isEnabled(EIP.EIP1108)) BigInteger("34000")
+            else BigInteger("80000")
+
         val numSnarkPairs = (numBytes / 192).toBigInteger()
-        return (BigInteger("80000") * numSnarkPairs) + BigInteger("100000")
+        return (perPairCost * numSnarkPairs) + baseCost
     }
 }
