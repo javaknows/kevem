@@ -429,6 +429,11 @@ data class Features(
     fun isEnabled(eip: EIP) = eips.contains(eip)
 }
 
+data class EvmConfig(
+    val chainId: BigInteger = BigInteger.ZERO,
+    val coinbase: Address = Address("0x0")
+)
+
 data class ExecutionContext(
     val currentBlock: Block,
     val currentTransaction: Transaction,
@@ -443,7 +448,8 @@ data class ExecutionContext(
     val refunds: Map<Address, BigInteger> = emptyMap(),
     val suicidedAccounts: List<Address> = emptyList(),
     val gasUsed: BigInteger = BigInteger.ZERO,
-    val features: Features = Features(HardFork.Byzantium.eips())
+    val features: Features = Features(HardFork.Byzantium.eips()),
+    val config: EvmConfig = EvmConfig()
 ) {
     val currentCallCtx: CallContext
         get() = callStack.last()

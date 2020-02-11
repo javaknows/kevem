@@ -53,6 +53,7 @@ enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numB
     NUMBER(0x43, 0, 1, 1, GasCost.Base),
     DIFFICULTY(0x44, 0, 1, 1, GasCost.Base),
     GASLIMIT(0x45, 0, 1, 1, GasCost.Base),
+    CHAINID(0x46, 0, 1, 1, GasCost.Base),
     SELFBALANCE(0x47, 0, 1, 1, GasCost.GasFastStep),
     POP(0x50, 1, 0, 1, GasCost.Base),
     MLOAD(0x51, 1, 1, 1, GasCost.VeryLow),

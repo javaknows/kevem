@@ -38,4 +38,9 @@ object BlockOps {
         val newStack = stack.pushWord(Word.coerceFrom(currentBlock.gasLimit))
         updateCurrentCallCtx(stack = newStack)
     }
+
+    fun chainId(context: ExecutionContext): ExecutionContext = with(context) {
+        val newStack = stack.pushWord(Word.coerceFrom(config.chainId))
+        updateCurrentCallCtx(stack = newStack)
+    }
 }

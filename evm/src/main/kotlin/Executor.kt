@@ -122,6 +122,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
             Opcode.NUMBER -> BlockOps.number(currentContext)
             Opcode.DIFFICULTY -> BlockOps.difficulty(currentContext)
             Opcode.GASLIMIT -> BlockOps.gasLimit(currentContext)
+            Opcode.CHAINID -> BlockOps.chainId(currentContext) // TODO - move this and coinbase to own object
             Opcode.SELFBALANCE -> CallerOps.selfBalance(currentContext)
             Opcode.POP -> EvmOps.pop(currentContext)
             Opcode.MLOAD -> MemoryOps.mload(currentContext)

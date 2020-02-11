@@ -413,6 +413,12 @@ class ExecutorStepDefs : En {
             }
         }
 
+        Given("the chain ID is ([a-zA-Z0-9]+)") { chainId: String ->
+            updateExecutionContext {
+                it.copy(config = it.config.copy(chainId = toBigInteger(chainId)))
+            }
+        }
+
         Then("a log has been generated with data (0x[a-zA-Z0-9]+)") { data: String ->
             checkResult {
                 assertThat(it.logs).hasSize(1)
