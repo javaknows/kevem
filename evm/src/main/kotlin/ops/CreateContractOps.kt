@@ -1,5 +1,6 @@
 package org.kevm.evm.ops
 
+import org.kevm.evm.EIP
 import org.kevm.evm.model.*
 import org.kevm.evm.numbers.generateAddress
 import org.kevm.evm.numbers.generateAddressFromSenderAndNonce
@@ -41,7 +42,7 @@ object CreateContractOps {
         context: ExecutionContext
     ): ExecutionContext {
         val (currentBalance, currentAddress) = with(currentCallCtx) {
-            val current  = contractAddress ?: throw RuntimeException("can't determine contract address")
+            val current = contractAddress ?: throw RuntimeException("can't determine contract address")
             Pair(accounts.balanceOf(current), current)
         }
 
@@ -56,17 +57,23 @@ object CreateContractOps {
             }
             else -> {
                 val (newContractCode, newMemory) = memory.read(p, s)
-                val contract = Contract(newContractCode)
-                val balance = v.toBigInt()
-                val newEvmState = accounts
-                    .updateBalanceAndContract(atAddress, balance, contract)
-                    .updateBalance(currentAddress, accounts.balanceOf(currentAddress).subtract(balance))
+                if (context.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
+                    HaltOps.fail(
+                        context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas")
+                    )
+                else {
+                    val contract = Contract(newContractCode)
+                    val balance = v.toBigInt()
+                    val newEvmState = accounts
+                        .updateBalanceAndContract(atAddress, balance, contract)
+                        .updateBalance(currentAddress, accounts.balanceOf(currentAddress).subtract(balance))
 
-                val newStack2 = newStack.pushWord(atAddress.toWord())
+                    val newStack2 = newStack.pushWord(atAddress.toWord())
 
-                context
-                    .copy(accounts = newEvmState)
-                    .updateCurrentCallCtx(stack = newStack2, memory = newMemory)
+                    context
+                        .copy(accounts = newEvmState)
+                        .updateCurrentCallCtx(stack = newStack2, memory = newMemory)
+                }
             }
         }
     }

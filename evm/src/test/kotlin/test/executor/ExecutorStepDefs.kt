@@ -1,16 +1,13 @@
 package org.kevm.evm.test.executor
 
-import org.kevm.evm.Executor
-import org.kevm.evm.Opcode
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.evm.lang.*
 import org.kevm.evm.model.Byte
-import org.kevm.evm.toByteList
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
-import org.kevm.evm.EIP
+import org.kevm.evm.*
 import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Clock
@@ -285,6 +282,16 @@ class ExecutorStepDefs : En {
             }
         }
 
+        //     And 0x12 repeated 0x6001 times is stored in memory at location 0x100
+        Given("(0x[0-9A-Za-z]{2}) repeated (.*) times is stored in memory at (0x[a-zA-Z0-9]+)") { byte: String, times: String, location: String ->
+            val data = "0x${stripHexPrefix(byte).repeat(toBigInteger(times).toInt())}"
+
+            updateLastCallContext {
+                val newMemory = it.memory.write(toInt(location), toByteList(data))
+                it.copy(memory = newMemory)
+            }
+        }
+
         Given("(0x[a-zA-Z0-9]+) is in storage at location (0x[a-zA-Z0-9]+) of (.*)") { data: String, location: String, contractAddress: String ->
             updateExecutionContext { ctx ->
                 val address =
@@ -340,9 +347,14 @@ class ExecutorStepDefs : En {
         }
 
         Given("EIP ([0-9A-Za-z]+) is enabled") { eipName: String ->
-            val eip = EIP.valueOf(eipName)
             updateExecutionContext {
-                it.copy(features = Features(it.features.eips + listOf(eip)))
+                it.copy(features = Features(it.features.eips + listOf( EIP.valueOf(eipName))))
+            }
+        }
+
+        Given("EIP ([0-9A-Za-z]+) is not enabled") { eipName: String ->
+            updateExecutionContext {
+                it.copy(features = Features(it.features.eips - EIP.valueOf(eipName)))
             }
         }
 
