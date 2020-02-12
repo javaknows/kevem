@@ -51,7 +51,11 @@ object EvmContextCreator {
                 )
             )
         ),
-        clock: Clock = Clock.systemUTC()
+        clock: Clock = Clock.systemUTC(),
+        evmConfig: EvmConfig = EvmConfig(
+            chainId = BigInteger.TWO,
+            coinbase = Address("0xc94770007dda54cF92009BFF0dE90c06F603a09f")
+        )
     ): EvmContext {
         val tp = TransactionProcessor(
             Executor(
@@ -61,20 +65,21 @@ object EvmContextCreator {
                         MemoryUsageGasCalc()
                     )
                 )
-            )
+            ),
+            config = evmConfig
         )
 
         val statefulTransactionProcessor = StatefulTransactionProcessor(
             tp, clock, WorldState(
                 listOf(createGenisisBlock(config)),
-                accounts,
-                Address(config.coinbase)
+                accounts
             )
         )
 
         val standardRpc = StandardRPC(
             StandardEvmOperations(
-                statefulTransactionProcessor
+                statefulTransactionProcessor,
+                evmConfig
             ),
             config,
             localAccounts

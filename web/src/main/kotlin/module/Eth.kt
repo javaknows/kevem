@@ -423,6 +423,18 @@ private val EthGetLogs = Method.create("eth_getLogs", EthGetLogsRequest::class, 
     EthGetLogsResponse(request, logs)
 }
 
+class EthChainIdRequest(jsonrpc: String, method: String, id: Long) :
+    RpcRequest<List<Int>>(jsonrpc, method, id, emptyList())
+
+class EthChainIdResponse(request: EthChainIdRequest, result: String) :
+    RpcResponse<String>(request, result)
+
+private val EthChainId =
+    Method.create("eth_chainId", EthChainIdRequest::class, EthChainIdResponse::class) { request, context ->
+        val coinbase = context.standardRpc.ethChainId()
+        EthChainIdResponse(request, coinbase)
+    }
+
 @Suppress("UNCHECKED_CAST")
 private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthProtocolVersion,
@@ -454,7 +466,8 @@ private val webMethods: List<Method<RpcRequest<*>, RpcResponse<*>>> = listOf(
     EthGetTransactionReceipt,
     EthPendingTransactions,
     EthGetCompilers,
-    EthGetLogs
+    EthGetLogs,
+    EthChainId
 ) as List<Method<RpcRequest<*>, RpcResponse<*>>>
 
 val EthModule = Module(webMethods)

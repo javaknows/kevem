@@ -43,9 +43,10 @@ class EvmCreationResult(
     val accounts: Accounts,
     val localAccounts: List<LocalAccount>,
     val appConfig: AppConfig,
-    val clock: Clock
+    val clock: Clock,
+    val evmConfig: EvmConfig
 ) {
-    fun toWeb3j() = Web3ServiceCreator.createWeb3(appConfig, LocalAccounts(localAccounts), accounts, clock)
+    fun toWeb3j() = Web3ServiceCreator.createWeb3(appConfig, LocalAccounts(localAccounts), accounts, clock, evmConfig)
 }
 
 @Boundary
@@ -84,7 +85,7 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
 }
 
 data class Config(
-    val chainId: Int? = null,
+    val chainId: BigInteger? = null,
     val peerCount: Int? = null,
     val coinbase: String? = null,
     val hashRate: BigInteger? = null,
@@ -102,21 +103,29 @@ fun kevm(
 ): EvmCreationResult =
     EvmCreationContext().let {
         EvmCreator(it).apply(create)
-        return EvmCreationResult(it.accounts, it.localAccounts, toAppConfig(config), clock)
+        return EvmCreationResult(it.accounts, it.localAccounts, toAppConfig(config), clock, toEvmConfig(config))
     }
 
 internal fun toAppConfig(config: Config): AppConfig {
     val defaults = AppConfig()
 
     return defaults.copy(
-        chainId = config.chainId ?: defaults.chainId,
         peerCount = config.peerCount ?: defaults.peerCount,
         coinbase = config.coinbase ?: defaults.coinbase,
         hashRate = config.hashRate ?: defaults.hashRate,
         difficulty = config.difficulty ?: defaults.difficulty,
-        extraData = if(config.extraData != null) Word.coerceFrom(config.extraData) else defaults.extraData,
+        extraData = if (config.extraData != null) Word.coerceFrom(config.extraData) else defaults.extraData,
         gasPrice = config.gasPrice ?: defaults.gasPrice,
         blockGasLimit = config.blockGasLimit ?: defaults.blockGasLimit,
-        genesisBlockTimestamp = if(config.genesisBlockTimestamp != null) Instant.parse(config.genesisBlockTimestamp) else defaults.genesisBlockTimestamp
+        genesisBlockTimestamp = if (config.genesisBlockTimestamp != null) Instant.parse(config.genesisBlockTimestamp) else defaults.genesisBlockTimestamp
+    )
+}
+
+internal fun toEvmConfig(config: Config): EvmConfig {
+    val defaults = EvmConfig()
+
+    return defaults.copy(
+        chainId = config.chainId ?: defaults.chainId,
+        coinbase = config.coinbase?.let { Address(it) } ?: defaults.coinbase
     )
 }

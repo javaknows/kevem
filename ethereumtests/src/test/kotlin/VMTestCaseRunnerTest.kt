@@ -126,11 +126,13 @@ class VMTestCaseRunnerTest {
         return ExecutionContext(
             currentBlock = nextBlock,
             currentTransaction = transaction,
-            coinBase = Address(env.currentCoinbase),
             callStack = listOf(callContext),
             accounts = accounts,
             previousBlocks = mapOf(Pair(BigInteger.ONE, Word(sha256(listOf(Byte(1)))))),
-            features = Features(HardFork.Homestead.eips())
+            features = Features(HardFork.Homestead.eips()),
+            config = EvmConfig(
+                coinbase = Address(env.currentCoinbase)
+            )
         )
     }
 

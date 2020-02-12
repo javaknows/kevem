@@ -56,7 +56,7 @@ fun toAddress(a: String?) = Address(checkNotNull(a) { "address field is null" })
 
 fun isEmptyHex(to: String?): Boolean = to == null || to == "0x" || to == ""
 
-class StandardEvmOperations(val evm: StatefulTransactionProcessor) {
+class StandardEvmOperations(private val evm: StatefulTransactionProcessor, private val evmConfig: EvmConfig) {
 
     fun getTransactionCount(address: Address, block: BlockReference): BigInteger = evm.getWorldState().let { ws ->
         return getTransactions(address, block, ws).size.toBigInteger()
@@ -112,9 +112,7 @@ class StandardEvmOperations(val evm: StatefulTransactionProcessor) {
                 .filter { it.message.from == address }
         }
 
-    fun coinbase(): Address = evm.getWorldState().let { ws ->
-        return ws.coinbase
-    }
+    fun coinbase(): Address = evmConfig.coinbase
 
     fun blockNumber(): BigInteger = evm.getWorldState().blocks.last().block.number
 
@@ -247,7 +245,9 @@ class StandardEvmOperations(val evm: StatefulTransactionProcessor) {
             .filter { topics == null || it.topics.any { t -> topics.contains(t) } }
     }
 
-    private fun getBlockNumber(block: BlockReference?, ws: WorldState): BigInteger? {
+    fun chainId() = evmConfig.chainId
+
+    fun getBlockNumber(block: BlockReference?, ws: WorldState): BigInteger? {
         return when (block) {
             is LatestBlock -> ws.blocks.last().block.number
             is NumericBlock -> block.number

@@ -41,7 +41,11 @@ object Web3TestContext {
         ),
         localAccounts: LocalAccounts = LocalAccounts(),
         accounts: Accounts = Accounts(),
-        blocks: List<MinedBlock> = emptyList()
+        blocks: List<MinedBlock> = emptyList(),
+        evmConfig: EvmConfig = EvmConfig(
+            chainId = BigInteger.TWO,
+            coinbase = Address("0xC014BA5E")
+        )
     ): Web3j {
         val gasCostCalculator = GasCostCalculator(
             BaseGasCostCalculator(CallGasCostCalc(), PredefinedContractGasCostCalc()),
@@ -50,7 +54,7 @@ object Web3TestContext {
             )
         )
         val executor = Executor(gasCostCalculator)
-        val tp = TransactionProcessor(executor)
+        val tp = TransactionProcessor(executor, config = evmConfig)
         val clock = Clock.fixed(Instant.parse("2006-12-05T15:15:30.00Z"), ZoneId.of("UTC"))
         val block = Block(
             number = BigInteger.ONE,
@@ -86,10 +90,10 @@ object Web3TestContext {
             BigInteger("99999999999999999999")
         )
 
-        val worldState = WorldState(listOf(minedBlock) + blocks, newAccounts, Address(config.coinbase))
+        val worldState = WorldState(listOf(minedBlock) + blocks, newAccounts)
 
         val stp = StatefulTransactionProcessor(tp, clock, worldState)
-        val eth = StandardEvmOperations(stp)
+        val eth = StandardEvmOperations(stp, evmConfig)
         val standardRPC = StandardRPC(eth, config, localAccounts)
         val ethAdapter = StandardRpcAdapter(standardRPC)
         val rpcProviders = listOf(

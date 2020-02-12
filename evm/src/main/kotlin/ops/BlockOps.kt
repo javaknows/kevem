@@ -14,7 +14,7 @@ object BlockOps {
     }
 
     fun coinBase(context: ExecutionContext): ExecutionContext = with(context) {
-        val newStack = stack.pushWord(coinBase.toWord())
+        val newStack = stack.pushWord(context.config.coinbase.toWord())
         updateCurrentCallCtx(stack = newStack)
     }
 

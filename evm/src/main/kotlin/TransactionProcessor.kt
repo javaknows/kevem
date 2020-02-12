@@ -16,6 +16,7 @@ typealias ProcessResult = Pair<WorldState, TransactionResult>
 class TransactionProcessor(
     private val executor: Executor,
     private val features: Features = Features(emptyList()),
+    private val config: EvmConfig = EvmConfig(),
     private val txValidator: TransactionValidator = TransactionValidator(),
     private val txGasCalculator: TransactionGasCalculator = TransactionGasCalculator(),
     private val log: Logger = Logger.createLogger(TransactionProcessor::class)
@@ -224,12 +225,12 @@ class TransactionProcessor(
         return ExecutionContext(
             currentBlock = currentBlock,
             currentTransaction = transaction,
-            coinBase = worldState.coinbase,
             callStack = listOf(callContext),
             accounts = worldState.accounts,
             previousBlocks = previousBlocks,
             gasUsed = intrinsicGas,
-            features = features
+            features = features,
+            config = config
         )
     }
 

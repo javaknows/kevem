@@ -48,12 +48,15 @@ internal fun baseExecutionContext(
             origin = Address(CALLER),
             gasPrice = GAS_PRICE
         ),
-        coinBase = Address("0xFFEEDD"),
         callStack = listOf(call),
         accounts = accounts,
         logs = emptyList(),
         completed = false,
         lastReturnData = lastReturnData,
-        previousBlocks = previousBlocks
+        previousBlocks = previousBlocks,
+        config = EvmConfig(
+            chainId = BigInteger.TWO,
+            coinbase = Address("0xFFEEDD")
+        )
     )
 }

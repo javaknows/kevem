@@ -24,8 +24,7 @@ object TestObjects {
                 keccak256(Word.coerceFrom(BigInteger.ONE).data)
             )
         ),
-        Accounts(),
-        Address("0xFFEEDD")
+        Accounts()
     )
 
     val tx = TransactionMessage(

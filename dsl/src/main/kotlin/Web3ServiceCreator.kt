@@ -23,7 +23,8 @@ object Web3ServiceCreator {
         config: AppConfig,
         localAccounts: LocalAccounts = LocalAccounts(),
         accounts: Accounts = Accounts(),
-        clock: Clock
+        clock: Clock,
+        evmConfig: EvmConfig
     ): Web3j {
         val tp = TransactionProcessor(
             Executor(
@@ -33,7 +34,9 @@ object Web3ServiceCreator {
                         MemoryUsageGasCalc()
                     )
                 )
-            )
+            ),
+            // TODO - pass in EIP / features here too
+            config = evmConfig
         )
 
         val providers = listOf(
@@ -46,10 +49,9 @@ object Web3ServiceCreator {
                                 clock,
                                 WorldState(
                                     listOf(createGenisisBlock(config)),
-                                    accounts,
-                                    Address(config.coinbase)
+                                    accounts
                                 )
-                            )
+                            ), evmConfig
                         ),
                         config,
                         localAccounts

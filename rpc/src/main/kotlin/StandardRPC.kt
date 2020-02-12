@@ -317,6 +317,8 @@ class StandardRPC(
         }
     }
 
+    fun ethChainId(): String = standardEvmOperations.chainId().toStringHexPrefix()
+
     fun ethGetWork() {
         throw UnsupportedOperationException("Not implemented")
     }

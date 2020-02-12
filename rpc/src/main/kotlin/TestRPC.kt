@@ -55,8 +55,7 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
 
         val worldState = WorldState(
             listOf(minedBlock),
-            Accounts(accounts),
-            Address("0x0")
+            Accounts(accounts)
         )
 
         evm.setWorldState(worldState)

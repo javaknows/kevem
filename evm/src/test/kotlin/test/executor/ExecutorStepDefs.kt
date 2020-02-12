@@ -237,7 +237,7 @@ class ExecutorStepDefs : En {
 
         Given("coinbase is (0x[a-zA-Z0-9]+)") { address: String ->
             updateExecutionContext {
-                it.copy(coinBase = Address(address))
+                it.copy(config = it.config.copy(coinbase = Address(address)))
             }
         }
 
@@ -705,7 +705,6 @@ class ExecutorStepDefs : En {
                 origin = Address("0xFFEEDD"),
                 gasPrice = BigInteger.ONE
             ),
-            coinBase = Address("0xFFEEDD"),
             logs = emptyList(),
             completed = false,
             callStack = listOf(
@@ -721,6 +720,10 @@ class ExecutorStepDefs : En {
                     storageAddress = Address("0x0"),
                     gas = BigInteger("1000000000000000000000")
                 )
+            ),
+            config = EvmConfig(
+                chainId = BigInteger.TWO,
+                coinbase = Address("0xFFEEDD")
             )
         )
 }

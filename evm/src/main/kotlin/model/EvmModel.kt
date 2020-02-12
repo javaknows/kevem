@@ -437,7 +437,6 @@ data class EvmConfig(
 data class ExecutionContext(
     val currentBlock: Block,
     val currentTransaction: Transaction,
-    val coinBase: Address,
     val callStack: List<CallContext> = emptyList(),
     val accounts: Accounts = Accounts(),
     val logs: List<Log> = emptyList(),
@@ -514,7 +513,7 @@ data class ExecutionContext(
     }
 }
 
-data class WorldState(val blocks: List<MinedBlock>, val accounts: Accounts, val coinbase: Address)
+data class WorldState(val blocks: List<MinedBlock>, val accounts: Accounts)
 
 data class TransactionMessage(
     val from: Address,
