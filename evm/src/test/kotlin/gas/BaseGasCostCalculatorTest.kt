@@ -102,8 +102,8 @@ class BaseGasCostCalculatorTest {
             currentBlock = TestObjects.block2,
             currentTransaction = Transaction(Address("0x0"), BigInteger.ONE),
             callStack = listOf(callContext),
-            features = Features(eips),
             accounts = accounts,
+            features = Features(eips),
             config = EvmConfig(
                 chainId = BigInteger.TWO,
                 coinbase = Address("0xFFEEDD")

@@ -4,7 +4,6 @@ import org.kevm.evm.*
 import org.kevm.evm.collections.BigIntegerIndexedList
 import java.math.BigInteger
 import java.time.Instant
-import java.util.*
 import kotlin.math.max
 
 data class Byte(val value: Int) {
@@ -448,7 +447,8 @@ data class ExecutionContext(
     val suicidedAccounts: List<Address> = emptyList(),
     val gasUsed: BigInteger = BigInteger.ZERO,
     val features: Features = Features(HardFork.Byzantium.eips()),
-    val config: EvmConfig = EvmConfig()
+    val config: EvmConfig = EvmConfig(),
+    val originalAccounts: Accounts = Accounts()
 ) {
     val currentCallCtx: CallContext
         get() = callStack.last()

@@ -58,9 +58,7 @@ object CreateContractOps {
             else -> {
                 val (newContractCode, newMemory) = memory.read(p, s)
                 if (context.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
-                    HaltOps.fail(
-                        context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas")
-                    )
+                    HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
                 else {
                     val contract = Contract(newContractCode)
                     val balance = v.toBigInt()

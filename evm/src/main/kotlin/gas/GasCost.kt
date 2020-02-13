@@ -22,6 +22,7 @@ enum class GasCost(val cost: Int) {
     SLoadHomestead(50),
     SLoadEip150(200),
     SLoadEip1884(800),
+    SLoadEip2200(800),
     JumpDest(1),
     SSet(20000),
     SReset(5000),
@@ -52,7 +53,9 @@ enum class GasCost(val cost: Int) {
     QuadDivisor(20),
     ExtCodeHashEip1052(400),
     ExtCodeHashEip1884(700),
-    GasFastStep(5);
+    GasFastStep(5),
+    SStoreSet(20000),
+    SStoreReset(5000);
 
     val costBigInt: BigInteger
         get() = cost.toBigInteger()

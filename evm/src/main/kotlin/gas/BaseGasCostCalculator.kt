@@ -4,6 +4,7 @@ import org.kevm.evm.EIP
 import org.kevm.evm.Opcode
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.Opcode.*
+import org.kevm.evm.model.Word
 import org.kevm.evm.numbers.BigIntMath
 import org.kevm.evm.numbers.log256
 import java.math.BigInteger
@@ -98,17 +99,38 @@ class BaseGasCostCalculator(
      * ((value != 0) && (storage_location == 0)) ? 20000 : 5000
      */
     private fun sStoreCost(executionContext: ExecutionContext): BigInteger {
-        val (location, value) = executionContext.currentCallCtx.stack.peekWords(3).map { it.toBigInt() }
+        val (location, newValue) = executionContext.currentCallCtx.stack.peekWords(2)
 
         val storageAddress = executionContext.currentCallCtx.storageAddress
             ?: throw RuntimeException("can't determine contract address")
-        val oldValue = executionContext.accounts.storageAt(storageAddress, location)
+        val currentValue = executionContext.accounts.storageAt(storageAddress, location.toBigInt())
+        val originalValue = executionContext.originalAccounts.storageAt(storageAddress, location.toBigInt())
 
-        return if (value != BigInteger.ZERO && oldValue.toBigInt() == BigInteger.ZERO)
+        return if (executionContext.features.isEnabled(EIP.EIP2200)) {
+            eip2200SStoreCost(currentValue, newValue, originalValue)
+        } else {
+            homesteadSStoreCost(newValue, currentValue)
+        }
+    }
+
+    private fun eip2200SStoreCost(currentValue: Word, newValue: Word, originalValue: Word): BigInteger =
+        if (currentValue == newValue)
+            GasCost.SLoadEip2200.costBigInt
+        else {
+            if (originalValue == currentValue) {
+                if (originalValue == Word.Zero)
+                    GasCost.SStoreSet.costBigInt
+                else
+                    GasCost.SStoreReset.costBigInt
+            } else
+                GasCost.SLoadEip2200.costBigInt
+        }
+
+    private fun homesteadSStoreCost(newValue: Word, currentValue: Word): BigInteger =
+        if (newValue != Word.Zero && currentValue == Word.Zero)
             GasCost.SSet.costBigInt
         else
             GasCost.SReset.costBigInt
-    }
 
     private fun sLoadCost(executionContext: ExecutionContext): BigInteger = when {
         executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.SLoadEip1884.costBigInt

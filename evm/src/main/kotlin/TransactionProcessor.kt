@@ -230,7 +230,8 @@ class TransactionProcessor(
             previousBlocks = previousBlocks,
             gasUsed = intrinsicGas,
             features = features,
-            config = config
+            config = config,
+            originalAccounts = worldState.accounts
         )
     }
 

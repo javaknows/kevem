@@ -669,11 +669,11 @@ class ExecutorStepDefs : En {
     }
 
     private fun executeContext() {
-        result = executor.executeNextOpcode(executionContext)
+        result = executor.executeNextOpcode(executionContext.copy(originalAccounts = executionContext.accounts))
     }
 
     private fun executeAllContext() {
-        result = executor.executeAll(executionContext)
+        result = executor.executeAll(executionContext.copy(originalAccounts = executionContext.accounts))
     }
 
     private fun updateCurrentBlock(updateBlock: (ctx: Block) -> Block) {
@@ -717,8 +717,6 @@ class ExecutorStepDefs : En {
                 origin = Address("0xFFEEDD"),
                 gasPrice = BigInteger.ONE
             ),
-            logs = emptyList(),
-            completed = false,
             callStack = listOf(
                 CallContext(
                     caller = Address("0x0"),
@@ -733,6 +731,8 @@ class ExecutorStepDefs : En {
                     gas = BigInteger("1000000000000000000000")
                 )
             ),
+            logs = emptyList(),
+            completed = false,
             config = EvmConfig(
                 chainId = BigInteger.TWO,
                 coinbase = Address("0xFFEEDD")
