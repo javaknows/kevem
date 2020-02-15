@@ -1,5 +1,6 @@
 package org.kevm.ethereumtests
 
+import com.fasterxml.jackson.core.type.TypeReference
 import org.assertj.core.api.Assertions.assertThat
 
 import org.junit.jupiter.api.DisplayName
@@ -26,7 +27,7 @@ class VMTestCaseRunnerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource(value = ["testCases"])
     internal fun `ethereum-test VMTest pack`(testCase: VMTestCase): Unit = with(testCase) {
-        println(testCase.toString())
+
         val executionContext = createExecutionContext(testCase)
 
         val executed = try {
@@ -56,34 +57,15 @@ class VMTestCaseRunnerTest {
     }
 
     companion object {
-        private val parser = VMTestCaseParser()
+        private const val testsRoot = "ethereum-tests-pack/VMTests"
+
+        private val loader = TestCaseLoader(
+            TestCaseParser(object :
+                TypeReference<Map<String, VMTestCase>>() {}, testsRoot), testsRoot
+        )
 
         @JvmStatic
-        fun testCases(): List<VMTestCase> {
-            val blackList = loadFromClasspath("ethereum-tests-pack/VMTests/blacklist.txt")
-                .split("\n")
-                .map { it.trim() }
-                .map{ it.replace("#.*".toRegex(), "") }
-                .map { it.trim() }
-                .filterNot { it == "" }
-
-            val testNames = System.getProperty("testCase")?.let {
-                listOf("$it.json")
-            } ?: loadFromClasspath("ethereum-tests-pack/VMTests/tests.txt")
-                .split("\n")
-                .map { it.trim() }
-                .filterNot { tc -> blackList.any { b -> tc.contains(b) } }
-                .filterNot { it.startsWith("#") }
-
-            return testNames.flatMap {
-                try {
-                    listOf(parser.parse(it))
-                } catch (e: Exception) {
-                    println("failed to parse $it - ${e.message}")
-                    emptyList<VMTestCase>()
-                }
-            }
-        }
+        fun testCases() = loader.loadTestCases()
     }
 
     private fun assertOutDataMatches(out: String?, executed: ExecutionContext) =
@@ -146,7 +128,7 @@ class VMTestCaseRunnerTest {
             )
         )
 
-    private fun parseAccounts(post: Map<String, TestCaseAccount>?): Accounts {
+    private fun parseAccounts(post: Map<String, VMTestCaseAccount>?): Accounts {
         val accountList = post?.map { entry ->
             val (a, d) = entry
 

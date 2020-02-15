@@ -22,7 +22,7 @@ class TransactionProcessor(
     private val log: Logger = Logger.createLogger(TransactionProcessor::class)
 ) {
 
-    internal fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
+    fun process(worldState: WorldState, tx: TransactionMessage, currentBlock: Block): ProcessResult =
         if (txValidator.isValid(worldState, tx, features)) {
             val ws = incrementSenderNonce(worldState, tx.from)
             processValidTx(ws, tx, currentBlock, features)

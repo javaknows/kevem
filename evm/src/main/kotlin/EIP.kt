@@ -9,7 +9,7 @@ enum class HardFork(val eip: EIP) {
     Istanbul(EIP.EIP1679),
     Petersburg(EIP.EIP1716);
 
-    fun eips(): List<EIP> = eaipsAcc(setOf(eip)).sorted()
+    fun eips(): List<EIP> = eipsAcc(setOf(eip)).sorted()
 }
 
 enum class EIP(val description: String, val immediateDependencies: List<EIP> = emptyList()) {
@@ -54,10 +54,10 @@ enum class EIP(val description: String, val immediateDependencies: List<EIP> = e
     EIP1716("Hardfork Petersburg", listOf(EIP1013, EIP1283)),
     EIP1679("Hardfork Istanbul", listOf(EIP1716, EIP152, EIP1108, EIP1344, EIP1884, EIP2028, EIP2200));
 
-    fun dependencies(): List<EIP> = eaipsAcc(immediateDependencies.toSet()).sorted()
+    fun dependencies(): List<EIP> = eipsAcc(immediateDependencies.toSet()).sorted()
 }
 
-private tailrec fun eaipsAcc(eips: Set<EIP>, acc: List<EIP> = emptyList()): List<EIP> =
+private tailrec fun eipsAcc(eips: Set<EIP>, acc: List<EIP> = emptyList()): List<EIP> =
     if (eips.isEmpty()) acc
     else {
         val nextEip = eips.first()
@@ -68,5 +68,5 @@ private tailrec fun eaipsAcc(eips: Set<EIP>, acc: List<EIP> = emptyList()): List
 
         val remaining = eips - nextEip
 
-        eaipsAcc(remaining + add, acc + nextEip)
+        eipsAcc(remaining + add, acc + nextEip)
     }

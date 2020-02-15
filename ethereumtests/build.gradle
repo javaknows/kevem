@@ -8,8 +8,11 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-test-junit5"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation project(":evm")
+    implementation project(":common")
+    implementation "org.web3j:core:${web3Version}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlin}"
     implementation "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonJsonProviderVersion}"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonYamlDataFormatVersion}"
     testCompile "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitParamsVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitParamsVersion}"

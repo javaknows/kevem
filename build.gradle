@@ -12,6 +12,7 @@ ext {
     apacheCxfVersion = '3.3.5'
     jakartaVersion = '2.1.6'
     jacksonJsonProviderVersion = '2.10.2.1'
+    jacksonYamlDataFormatVersion = '2.10.2'
     jacksonModuleKotlin = '2.10.2'
     httpComponentsVersion= '4.5.11'
 }
