@@ -5,6 +5,7 @@ import org.kevm.web.module.EvmContext
 import org.kevm.evm.Executor
 import org.kevm.evm.StatefulTransactionProcessor
 import org.kevm.evm.TransactionProcessor
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.evm.toByteList
@@ -45,7 +46,7 @@ object EvmContextCreator {
                                     Pair(BigInteger.ZERO, Word.coerceFrom("0x4d2"))
                                 )
                             ),
-                            code = toByteList("0x600160008035811a818181146012578301005b601b6001356025565b8060005260206000f25b600060078202905091905056")
+                            code = BigIntegerIndexedList.fromByteString("0x600160008035811a818181146012578301005b601b6001356025565b8060005260206000f25b600060078202905091905056")
                         )
                     )
                 )

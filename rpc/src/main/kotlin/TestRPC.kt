@@ -1,6 +1,7 @@
 package org.kevm.rpc
 
 import org.kevm.evm.StatefulTransactionProcessor
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.model.*
 import org.kevm.evm.model.Byte
 import org.kevm.evm.toByteList
@@ -46,7 +47,7 @@ class TestRPC(val evm: StatefulTransactionProcessor) {
                             val (index, contents) = s
                             Pair(toBigInteger(index), Word.coerceFrom(contents))
                         }?.toMap() ?: emptyMap()
-                        Contract(code, Storage(storageContents))
+                        Contract(BigIntegerIndexedList.fromBytes(code), Storage(storageContents))
                     },
                     nonce = toBigIntegerOrZero(accountParam.nonce)
                 )

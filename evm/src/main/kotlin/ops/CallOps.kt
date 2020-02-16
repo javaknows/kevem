@@ -1,6 +1,7 @@
 package org.kevm.evm.ops
 
 import org.kevm.evm.collections.BigIntegerIndexedList
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevm.evm.crypto.*
 import org.kevm.evm.model.Byte
 import org.kevm.evm.lang.*
@@ -67,7 +68,7 @@ object CallOps {
                         BigIntegerIndexedList.fromBytes(callData),
                         CallType.CALLCODE,
                         value,
-                        BigIntegerIndexedList.fromBytes(accounts.codeAt(callArguments.address)),
+                        accounts.codeAt(callArguments.address),
                         context,
                         gas,
                         outLocation,
@@ -97,7 +98,7 @@ object CallOps {
             Precompiled.doPrecompiled(context, callArguments)
         else {
             with(callArguments) {
-                val code = accounts.contractAt(address)?.code ?: emptyList() // TODO - what if code is empty
+                val code = accounts.contractAt(address)?.code ?: emptyByteList() // TODO - what if code is empty
 
                 val (callData, newMemory) = memory.read(inLocation, inSize)
                 val newCall = CallContext(
@@ -105,7 +106,7 @@ object CallOps {
                     BigIntegerIndexedList.fromBytes(callData),
                     CallType.DELEGATECALL,
                     currentCallCtx.value,
-                    BigIntegerIndexedList.fromBytes(code),
+                    code,
                     context,
                     gas,
                     outLocation,
@@ -152,13 +153,13 @@ object CallOps {
                         .updateBalance(nextCaller, startBalance - value)
 
                     val (callData, newMemory) = memory.read(inLocation, inSize)
-                    val callContractCode = destContract?.code ?: emptyList()
+                    val callContractCode = destContract?.code ?: emptyByteList()
                     val newCall = CallContext(
                         nextCaller,
                         BigIntegerIndexedList.fromBytes(callData),
                         callType,
                         value,
-                        BigIntegerIndexedList.fromBytes(callContractCode),
+                        callContractCode,
                         context,
                         gas,
                         outLocation,

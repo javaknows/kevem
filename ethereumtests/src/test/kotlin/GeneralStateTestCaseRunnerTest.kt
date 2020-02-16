@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.kevm.evm.Executor
 import org.kevm.evm.TransactionProcessor
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.evm.toByteList
@@ -230,7 +231,7 @@ class GeneralStateTestCaseRunnerTest {
 
             val contract =
                 if (d.code != "0x") Contract(
-                    code = toByteList(d.code),
+                    code = BigIntegerIndexedList.fromByteString(d.code),
                     storage = Storage(
                         d.storage.map { e ->
                             val (k, v) = e

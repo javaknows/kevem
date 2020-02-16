@@ -134,7 +134,7 @@ class VMTestCaseRunnerTest {
 
             val contract =
                 if (d.code != "0x") Contract(
-                    code = toByteList(d.code),
+                    code = BigIntegerIndexedList.fromByteString(d.code),
                     storage = Storage(
                         d.storage.map { e ->
                             val (k, v) = e

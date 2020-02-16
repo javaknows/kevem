@@ -20,7 +20,7 @@ internal fun baseExecutionContext(
     contractCode: List<Byte> = emptyList(),
     accounts: Accounts = Accounts()
         .updateBalance(Address(BALANCE_ADDRESS), BALANCE_AMOUNT)
-        .updateContract(Address(CONTRACT_ADDRESS), Contract(contractCode)),
+        .updateContract(Address(CONTRACT_ADDRESS), Contract(BigIntegerIndexedList.fromBytes(contractCode))),
     callData: BigIntegerIndexedList<Byte> = BigIntegerIndexedList.emptyByteList(),
     lastReturnData: BigIntegerIndexedList<Byte> = emptyByteList(),
     previousBlocks: Map<BigInteger, Word> = emptyMap()

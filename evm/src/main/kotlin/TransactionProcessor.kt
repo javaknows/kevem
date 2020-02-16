@@ -2,6 +2,7 @@ package org.kevm.evm
 
 import org.kevm.common.Logger
 import org.kevm.evm.collections.BigIntegerIndexedList
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevm.evm.gas.TransactionGasCalculator
 import org.kevm.evm.gas.TransactionValidator
 import org.kevm.evm.model.*
@@ -89,7 +90,7 @@ class TransactionProcessor(
         val accountsWithNewContractCode = updateCodeIfCreated(
             accountsAfterFinalCharge,
             isContractCreation(tx),
-            execResult.lastReturnData.toList(),
+            execResult.lastReturnData,
             recipient
         )
 
@@ -125,7 +126,7 @@ class TransactionProcessor(
     private fun updateCodeIfCreated(
         accounts: Accounts,
         isCreate: Boolean,
-        code: List<Byte>,
+        code: BigIntegerIndexedList<Byte>,
         recipient: Address
     ): Accounts =
         if (isCreate) {
@@ -146,7 +147,11 @@ class TransactionProcessor(
         transaction: TransactionMessage
     ): Pair<WorldState, Address> {
         val newWorldState = worldState.copy(
-            accounts = deductFromAccount(worldState.accounts, transaction.from, txGasCalculator.upFrontCost(transaction))
+            accounts = deductFromAccount(
+                worldState.accounts,
+                transaction.from,
+                txGasCalculator.upFrontCost(transaction)
+            )
         )
 
         val (recipient, newWorldState2) =
@@ -189,7 +194,6 @@ class TransactionProcessor(
         }
 
 
-
     private fun createExecutionCtx(
         worldState: WorldState,
         currentBlock: Block,
@@ -202,7 +206,7 @@ class TransactionProcessor(
 
         val (code, callData) =
             if (tx.to != null) Pair(worldState.accounts.codeAt(tx.to), tx.data)
-            else Pair(tx.data, emptyList())
+            else Pair(BigIntegerIndexedList.fromBytes(tx.data), emptyList())
 
         val intrinsicGas = txGasCalculator.intrinsicGas(tx, features)
 
@@ -211,7 +215,7 @@ class TransactionProcessor(
             callData = BigIntegerIndexedList.fromBytes(callData),
             type = CallType.INITIAL,
             value = tx.value,
-            code = BigIntegerIndexedList.fromBytes(code),
+            code = code,
             gas = tx.gasLimit - intrinsicGas,
             contractAddress = recipient,
             storageAddress = recipient

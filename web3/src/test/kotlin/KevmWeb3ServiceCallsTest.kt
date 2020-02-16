@@ -11,6 +11,7 @@ import org.kevm.web3.test.Web3TestContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.DefaultBlockParameterNumber
 import java.math.BigInteger
@@ -186,7 +187,7 @@ class KevmWeb3ServiceCallsTest {
             accounts = Accounts().updateContract(
                 Address("0xABCDEF"),
                 Contract(
-                    emptyList(),
+                    emptyByteList(),
                     Storage().set(BigInteger.ONE, Word.coerceFrom(1))
                 )
             )

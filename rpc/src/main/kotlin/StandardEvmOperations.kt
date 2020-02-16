@@ -2,6 +2,7 @@ package org.kevm.rpc
 
 import org.kevm.evm.StatefulTransactionProcessor
 import org.kevm.evm.bytesToString
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevm.evm.crypto.keccak256
 import org.kevm.evm.model.*
 import org.kevm.evm.model.Byte
@@ -152,10 +153,10 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
     fun getCode(address: Address, block: BlockReference): List<Byte> =
         evm.getWorldState().let { ws ->
             return when (block) {
-                is LatestBlock -> ws.accounts.contractAt(address)?.code ?: emptyList()
-                is PendingBlock -> ws.accounts.contractAt(address)?.code ?: emptyList()
+                is LatestBlock -> ws.accounts.contractAt(address)?.code ?: emptyByteList()
+                is PendingBlock -> ws.accounts.contractAt(address)?.code ?: emptyByteList()
                 else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
-            }
+            }.toList()
         }
 
     fun getBlockByHash(hash: List<Byte>): MinedBlock? =

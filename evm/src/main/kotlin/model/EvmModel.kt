@@ -155,14 +155,14 @@ data class Address(val value: BigInteger) {
 }
 
 // TODO - should change code to BigIntegerIndexedList
-open class Contract(val code: List<Byte> = emptyList(), val storage: Storage = Storage()) {
+open class Contract(val code: BigIntegerIndexedList<Byte> = emptyByteList(), val storage: Storage = Storage()) {
     operator fun get(index: Int): Byte {
-        require(index in code.indices) { "out of range" }
+        require(index.toBigInteger() in code.indices()) { "out of range" }
 
-        return code[index]
+        return code[index.toBigInteger()]
     }
 
-    fun copy(code: List<Byte>? = null, storage: Storage? = null) =
+    fun copy(code: BigIntegerIndexedList<Byte>? = null, storage: Storage? = null) =
         Contract(code ?: this.code, storage ?: this.storage)
 
     override fun equals(other: Any?): Boolean =
@@ -187,7 +187,7 @@ class Accounts(private val addresses: Map<Address, Account> = emptyMap()) {
 
     fun balanceOf(address: Address) = addresses[address]?.balance ?: BigInteger.ZERO
 
-    fun codeAt(address: Address): List<Byte> = addresses[address]?.contract?.code ?: emptyList()
+    fun codeAt(address: Address): BigIntegerIndexedList<Byte> = addresses[address]?.contract?.code ?: emptyByteList()
 
     fun contractAt(address: Address): Contract? = addresses[address]?.contract
 
@@ -530,7 +530,7 @@ data class TransactionMessage(
     val value: BigInteger,
     val gasPrice: BigInteger,
     val gasLimit: BigInteger,
-    val data: List<Byte> = emptyList(),
+    val data: List<Byte> = emptyList(), // TODO - BigInteger index
     val nonce: BigInteger,
     val hash: List<Byte> = emptyList() // TODO - this doesn't really fit here - maybe move it
 )

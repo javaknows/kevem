@@ -211,7 +211,7 @@ class ExecutorStepDefs : En {
         Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([A-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
             val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
             val newAddress = Address(address)
-            val newContract = Contract(byteCode)
+            val newContract = Contract(BigIntegerIndexedList.fromBytes(byteCode))
 
             updateExecutionContext {
                 val evmState = it.accounts.updateContract(newAddress, newContract)
@@ -498,7 +498,7 @@ class ExecutorStepDefs : En {
 
             checkResult {
                 val code = it.accounts.codeAt(Address(address))
-                assertThat(code).isEqualTo(parsedExpectedCode)
+                assertThat(code).isEqualTo(BigIntegerIndexedList.fromBytes(parsedExpectedCode))
             }
         }
 
@@ -653,7 +653,7 @@ class ExecutorStepDefs : En {
 
         val newEvmState = executionContext.accounts.updateContract(
             Address(contractAddress),
-            Contract(emptyList())
+            Contract()
         )
 
         return Pair(callCtx, executionContext.copy(accounts = newEvmState))

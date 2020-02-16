@@ -131,7 +131,7 @@ object HaltOps {
             val newDestBalance = balanceOf(sendFundsToAddress) + balanceOf(contractAddress)
 
             updateBalance(sendFundsToAddress, newDestBalance)
-                .updateBalanceAndContract(contractAddress, BigInteger.ZERO, contract.copy(code = emptyList()))
+                .updateBalanceAndContract(contractAddress, BigInteger.ZERO, contract.copy(code = emptyByteList()))
         }
 
         return context

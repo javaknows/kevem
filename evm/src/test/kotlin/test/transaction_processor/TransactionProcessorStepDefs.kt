@@ -7,6 +7,7 @@ import org.kevm.evm.model.Byte
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
+import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.crypto.keccak256
 import java.math.BigInteger
 import java.time.Clock
@@ -131,7 +132,7 @@ class TransactionProcessorStepDefs : En {
 
         Then("the code at address (.*) is now (.*)") { a: String, c: String ->
             val address = Address(a)
-            val code = toByteList(c)
+            val code = BigIntegerIndexedList.fromBytes(toByteList(c))
 
             val actual = worldStateResult!!.accounts.contractAt(address)!!.code
             assertThat(actual).isEqualTo(code)
@@ -140,7 +141,7 @@ class TransactionProcessorStepDefs : En {
         Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([xA-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
             val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
             val newAddress = Address(address)
-            val newContract = Contract(byteCode)
+            val newContract = Contract(BigIntegerIndexedList.fromBytes(byteCode))
 
             worldState = worldState.run {
                 copy(accounts = accounts.updateContract(newAddress, newContract))
