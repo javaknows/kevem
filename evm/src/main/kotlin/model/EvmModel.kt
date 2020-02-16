@@ -35,9 +35,14 @@ data class Byte(val value: Int) {
         }
 
         fun padRightToMultipleOf(list: List<Byte>, multiple: Int, pad: Byte = Zero): List<Byte> {
-            val over = list.size % multiple != 0
-            val targetSize = multiple * ((multiple / list.size) + if (over) 1 else 0)
-            return list + pad.repeat(targetSize - list.size)
+            return if (list.isEmpty()) pad.repeat(multiple)
+            else {
+                val appendSize =
+                    if (list.size % multiple == 0) 0
+                    else multiple - (list.size % multiple)
+
+                list + pad.repeat(appendSize)
+            }
         }
 
         fun padLeftToSize(list: List<Byte>, size: Int, pad: Byte = Zero): List<Byte> {
