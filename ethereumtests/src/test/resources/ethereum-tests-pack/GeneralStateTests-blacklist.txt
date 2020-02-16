@@ -26,3 +26,4 @@ stPreCompiledContracts/modexp
 stTimeConsuming/CALLBlake2f_MaxRounds
 stSystemOperationsTest/CallRecursiveBomb0_OOG_atMaxCallDepth
 /CallRecursiveBombPreCall
+stRandom/randomStatetest85

@@ -17,33 +17,42 @@ object PrecompiledContractExecutor {
 
     fun doPrecompiled(context: ExecutionContext, args: CallArguments): ExecutionContext =
         when (args.address.value.toInt()) {
-            1 -> executePrecompiled(context, args) { input -> Byte.trimAndPadLeft(ecdsarecover(input), 32) }
-            2 -> executePrecompiled(context, args) { input -> Word(sha256(input)).data }
-            3 -> executePrecompiled(context, args) { input -> Word.coerceFrom(ripemd160(input)).data }
-            4 -> executePrecompiled(context, args) { input -> input }
-            5 -> executePrecompiled(context, args) { input -> expmod(input) }
-            6 -> executePrecompiled(context, args) { input -> bnAdd(input) }
-            7 -> executePrecompiled(context, args) { input -> bnMul(input) }
-            8 -> executePrecompiled(context, args) { input -> snarkV(input) }
-            9 -> executePrecompiled(context, args) { input -> blake2(input) }
+            1 -> executePrecompiled(context, args) { input -> Pair(true, Byte.trimAndPadLeft(ecdsarecover(input), 32)) }
+            2 -> executePrecompiled(context, args) { input -> Pair(true, Word(sha256(input)).data) }
+            3 -> executePrecompiled(context, args) { input -> Pair(true, Word.coerceFrom(ripemd160(input)).data) }
+            4 -> executePrecompiled(context, args) { input -> Pair(true, input) }
+            5 -> executePrecompiled(context, args) { input -> Pair(true, expmod(input)) }
+            6 -> executePrecompiled(context, args) { input -> Pair(true, bnAdd(input)) }
+            7 -> executePrecompiled(context, args) { input -> Pair(true, bnMul(input)) }
+            8 -> executePrecompiled(context, args) { input -> Pair(true, snarkV(input)) }
+            9 -> executePrecompiled(context, args) { input -> Pair(true, blake2(input)) }
             else -> throw KevmException("Unknown precompiled smart contract address ${args.address}")
         }
 
     private fun executePrecompiled(
         context: ExecutionContext,
         args: CallArguments,
-        func: (List<Byte>) -> List<Byte>
+        func: (List<Byte>) -> Pair<Boolean, List<Byte>>
     ): ExecutionContext =
         with(context) {
             val (input, newMemory) = memory.read(args.inLocation, args.inSize)
-            val newMemory2 = func(input).let {
-                if (it.isNotEmpty())
-                    newMemory.write(args.outLocation, Byte.trimAndPadRight(it, args.outSize))
+
+            val result = try {
+                func(input)
+            } catch (e: Exception) {
+                Pair(false, emptyList<Byte>())
+            }
+
+            val newMemory2 = result.let {
+                if (result.first && it.second.isNotEmpty())
+                    newMemory.write(args.outLocation, Byte.trimAndPadRight(it.second, args.outSize))
                 else
                     newMemory
             }
 
-            updateCurrentCallCtx(memory = newMemory2)
+            val newStack = stack.pushWord(Word.coerceFrom(result.first))
+
+            updateCurrentCallCtx(memory = newMemory2, stack = newStack)
         }
 
 }

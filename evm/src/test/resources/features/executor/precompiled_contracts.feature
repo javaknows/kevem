@@ -12,6 +12,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 32 bytes of memory from position 0 is 0x0000000000000000000000000c65a9d9ffc02c7c99e36e32ce0f950c7804ceda
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                         |
@@ -27,6 +28,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 32 bytes of memory from position 0 is 0x1a835ed8734f86355ca5b835d824d486993aabf1913cd3a011b7446c0514b7c9
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                        |
@@ -42,6 +44,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 32 bytes of memory from position 0 is 0x0000000000000000000000000bdc9d2d256b3ee9daae347be6f4dc835a467ffe
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                        |
@@ -57,6 +60,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 2 bytes of memory from position 0 is 0x61ab
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                       |
@@ -72,6 +76,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 32 bytes of memory from position 0 is 0x3b01b01ac41f2d6e917c6d6a221ce793802469026d9ab7578fa2e79e4da6aaab
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                         |
@@ -87,6 +92,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 64 bytes of memory from position 0 is 0x15bf2bb17880144b5d1cd2b1f46eff9d617bffd1ca57c37fb5a49bd84e53cf66049c797f9ce0d17083deb32b5e36f2ea2a212ee036598dd7624c168993d1355f
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                          |
@@ -102,6 +108,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 64 bytes of memory from position 0 is 0x1dbad7d39dbc56379f78fac1bca147dc8e66de1b9d183c7b167351bfe0aeab742cd757d51289cd8dbd0acf9e673ad67d0f0a89f912af47ed1be53664f5692575
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                         |
@@ -117,6 +124,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 32 bytes of memory from position 0 is 0x0000000000000000000000000000000000000000000000000000000000000001
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                          |
@@ -132,6 +140,7 @@ Feature: Functionality of precompiled contracts
     When opcode <callType> is executed
     Then there is no last error
     And 64 bytes of memory from position 0 is 0x08c9bcf367e6096a3ba7ca8485ae67bb2bf894fe72f36e3cf1361d5f3af54fa5d282e6ad7f520e511f6c3e2b8c68059b9442be0454267ce079217e1319cde05b
+    And the stack contains 0x1
 
     Examples:
       | callType     | stackElements                         |
@@ -139,3 +148,9 @@ Feature: Functionality of precompiled contracts
       | CALLCODE     | [0x1, 0x9, 0x0, 0x0, 0xD5, 0x0, 0x64] |
       | DELEGATECALL | [0x1, 0x9, 0x0, 0xD5, 0x0, 0x64]      |
       | STATICCALL   | [0x1, 0x9, 0x0, 0xD5, 0x0, 0x64]      |
+
+
+  Scenario: BLAKE2 precompiled smart contract CALL fails with 0x0 (error) if no data
+    Given the stack contains elements [0x1, 0x9, 0x0, 0x0, 0x0, 0x0, 0x64]
+    When opcode CALL is executed
+    And the stack contains 0x0
