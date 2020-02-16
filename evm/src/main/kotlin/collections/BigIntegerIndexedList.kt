@@ -7,6 +7,8 @@ import java.math.BigInteger
 /**
 backed by LinkedHashMap (mutable)
 copy-on-write, effectively immutable since mutability is confined
+
+ TODO - back by list for Int sized index values
  */
 open class BigIntegerIndexedList<T>(
     private val default: T,

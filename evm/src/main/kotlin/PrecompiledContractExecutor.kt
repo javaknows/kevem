@@ -13,7 +13,7 @@ import java.math.BigInteger
 object PrecompiledContractExecutor {
 
     fun isPrecompiledContractCall(address: Address) =
-        address.value <= BigInteger("9")
+        address.value <= BigInteger("9") && address.value > BigInteger.ZERO
 
     fun doPrecompiled(context: ExecutionContext, args: CallArguments): ExecutionContext =
         when (args.address.value.toInt()) {
