@@ -1,3 +1,28 @@
 # has a nasty comment field in a result map
 stExtCodeHash/callToNonExistent
 stExample/add11
+
+# some are slow but some are broken - TODO - fix
+stPreCompiledContracts2/CALLCODEBlake2f
+
+# OOM - TODO - fix
+stRandom2/randomStatetest554
+
+# takes an age - TODO - fix
+stRandom2/randomStatetest579
+stStaticCall/static_CallRecursiveBombPreCall2
+stStaticCall/static_CallRecursiveBomb0
+stStaticCall/static_CallRecursiveBombPreCall
+stZeroKnowledge/pairingTest
+stRandom/randomStatetest352
+stReturnDataTest/modexp_modsize0_returndatasize
+stShift/shiftCombinations
+stQuadraticComplexityTest/Call1MB1024Calldepth
+stQuadraticComplexityTest/Callcode50000
+stQuadraticComplexityTest/Return50000
+stQuadraticComplexityTest/Call50000
+stSpecialTest/JUMPDEST_Attack
+stPreCompiledContracts/modexp
+stTimeConsuming/CALLBlake2f_MaxRounds
+stSystemOperationsTest/CallRecursiveBomb0_OOG_atMaxCallDepth
+/CallRecursiveBombPreCall

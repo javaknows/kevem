@@ -64,7 +64,8 @@ data class GeneralStateTestCase(
 ) {
     val name = info.source
         .replace("src/GeneralStateTestsFiller/", "")
-        .replace(".yml", "")
+        .replace("Filler.yml", "")
+        .replace("Filler.json", "")
 
     override fun toString(): String = name
 }

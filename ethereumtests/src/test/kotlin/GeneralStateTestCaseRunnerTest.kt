@@ -26,7 +26,7 @@ class GeneralStateTestCaseRunnerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource(value = ["testCases"])
     internal fun `ethereum-test GeneralStateTest pack`(testCase: GeneralStateTestExplodedCase): Unit = with(testCase) {
-        //println(testCase.name)
+        println(testCase.name)
 
         val nextBlock = Block(
             number = toBigInteger(env.currentNumber),
@@ -58,7 +58,7 @@ class GeneralStateTestCaseRunnerTest {
         val txMessage = TransactionMessage(
             from = from,
             to = to,
-            value = toBigInteger(transaction.value),
+            value = toBigInteger0xTo0(transaction.value),
             gasPrice = toBigInteger(transaction.gasPrice),
             gasLimit = toBigInteger(transaction.gasLimit),
             data = toByteList(transaction.data),
@@ -68,7 +68,9 @@ class GeneralStateTestCaseRunnerTest {
 
         val result = tp.process(worldState, txMessage, nextBlock)
 
-        println(result)
+        //println("Woooooooooot")
+
+        //println(result)
 
         //tp.
 
@@ -87,6 +89,9 @@ class GeneralStateTestCaseRunnerTest {
          */
 
     }
+
+    private fun toBigInteger0xTo0(num: String): BigInteger =  toBigInteger(num.replace("^0x$".toRegex(), "0"))
+
 
     companion object {
         private const val testsRoot = "ethereum-tests-pack/GeneralStateTests"
@@ -168,6 +173,8 @@ class GeneralStateTestCaseRunnerTest {
                 }
 
             }
+
+            println("Loaded ${flatMap.size} test cases" )
 
             return flatMap
         }
