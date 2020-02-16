@@ -189,7 +189,7 @@ class ExecutorStepDefs : En {
                 else toByteList(bytes)
 
             checkResult {
-                val actual = it.memory.peek(toInt(start), toInt(length))
+                val actual = it.memory.peek(toBigInteger(start), toInt(length))
                 assertThat(actual).isEqualTo(expected)
             }
         }
@@ -221,7 +221,7 @@ class ExecutorStepDefs : En {
 
         Given("return data is (0x[a-zA-Z0-9]+)") { data: String ->
             updateExecutionContext {
-                it.copy(lastReturnData = toByteList(data))
+                it.copy(lastReturnData = BigIntegerIndexedList.fromByteString(data))
             }
         }
 
@@ -277,7 +277,7 @@ class ExecutorStepDefs : En {
                 else data
 
             updateLastCallContext {
-                val newMemory = it.memory.write(toInt(location), toByteList(bytes))
+                val newMemory = it.memory.write(toBigInteger(location), toByteList(bytes))
                 it.copy(memory = newMemory)
             }
         }
@@ -287,7 +287,16 @@ class ExecutorStepDefs : En {
             val data = "0x${stripHexPrefix(byte).repeat(toBigInteger(times).toInt())}"
 
             updateLastCallContext {
-                val newMemory = it.memory.write(toInt(location), toByteList(data))
+                val newMemory = it.memory.write(toBigInteger(location), toByteList(data))
+                it.copy(memory = newMemory)
+            }
+        }
+
+        Given("the highest byte touched in memory is ([a-zA-Z0-9]+)") { byte: String ->
+            val highest = toBigInteger(byte)
+
+            updateLastCallContext {
+                val newMemory = it.memory.copy(maxIndex = highest)
                 it.copy(memory = newMemory)
             }
         }
@@ -591,7 +600,7 @@ class ExecutorStepDefs : En {
         }
 
         Then("return data is now (empty|0x[a-zA-Z0-9]+)") { value: String ->
-            val data = toByteList(value.replace("empty", "0x"))
+            val data = BigIntegerIndexedList.fromBytes(toByteList(value.replace("empty", "0x")))
 
             checkResult {
                 assertThat(it.lastReturnData).isEqualTo(data)
@@ -637,7 +646,7 @@ class ExecutorStepDefs : En {
             callData = BigIntegerIndexedList.fromByteString(callData),
             value = toBigInteger(value),
             gas = toBigInteger(gas),
-            returnLocation = toInt(outLocation),
+            returnLocation = toBigInteger(outLocation),
             returnSize = toInt(outSize),
             contractAddress = Address(contractAddress)
         )

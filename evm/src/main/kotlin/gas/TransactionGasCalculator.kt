@@ -31,7 +31,7 @@ class TransactionGasCalculator {
 
     fun contractCreationCost(transaction: TransactionMessage, executionResult: ExecutionContext): BigInteger =
         if (transaction.to == null)
-            GasCost.CodeDeposit.costBigInt * executionResult.lastReturnData.size.toBigInteger() * transaction.gasPrice
+            GasCost.CodeDeposit.costBigInt * executionResult.lastReturnData.size() * transaction.gasPrice
         else
             BigInteger.ZERO
 

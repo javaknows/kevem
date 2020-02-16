@@ -20,7 +20,7 @@ object DataOps {
 
         val data = call.code.read(from, size.toInt())
         val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
-        val newMemory = memory.write(to.toInt(), paddedData)
+        val newMemory = memory.write(to, paddedData)
 
         context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
     }
@@ -52,21 +52,21 @@ object DataOps {
         val call = callStack.last()
         val data = call.callData.read(from, size.toInt())
         val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
-        val newMemory = memory.write(to.toInt(), paddedData)
+        val newMemory = memory.write(to, paddedData)
 
         context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
     }
 
     fun returnDataSize(context: ExecutionContext): ExecutionContext = with(context) {
-        val newStack = stack.pushWord(Word.coerceFrom(lastReturnData.size))
+        val newStack = stack.pushWord(Word.coerceFrom(lastReturnData.size()))
         context.updateCurrentCallCtx(stack = newStack)
     }
 
     fun returnDataCopy(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, newStack) = stack.popWords(3)
-        val (to, from, size) = elements.map { it.toInt() }
-        val data = lastReturnData.drop(from).take(size)
-        val paddedData = data + Byte.Zero.repeat(size - data.size)
+        val (to, from, size) = elements.map { it.toBigInt() }
+        val data = lastReturnData.read(from, size.toInt())
+        val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size) // TODO - overflow
         val newMemory = memory.write(to, paddedData)
 
         return context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
@@ -87,7 +87,7 @@ object DataOps {
         val code = accounts.codeAt(address.toAddress())
         val data = code.drop(from.toInt()).take(size.toInt())
         val paddedData = data + Byte.Zero.repeat(size.toInt() - data.size)
-        val newMemory = memory.write(to.toInt(), paddedData)
+        val newMemory = memory.write(to.toBigInt(), paddedData)
 
         context.updateCurrentCallCtx(stack = newStack, memory = newMemory)
     }

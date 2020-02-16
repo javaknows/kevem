@@ -1,6 +1,8 @@
 package org.kevm.evm.ops
 
 import org.kevm.evm.coerceByteListToSize
+import org.kevm.evm.collections.BigIntegerIndexedList
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevm.evm.gas.Refund
 import org.kevm.evm.model.*
 import java.math.BigInteger
@@ -20,15 +22,15 @@ object HaltOps {
             .copy(
                 completed = newCallStack.isEmpty(),
                 callStack = newCallStack,
-                lastReturnData = emptyList(),
+                lastReturnData = emptyByteList(),
                 gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
 
     fun doReturn(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, _) = context.stack.popWords(2)
-        val (dataLocation, dataSize) = elements.map { it.toInt() }
-        val (returnData, newMemory) = memory.read(dataLocation, dataSize)
+        val (dataLocation, dataSize) = elements
+        val (returnData, newMemory) = memory.read(dataLocation.toBigInt(), dataSize.toInt())
 
         val caller = currentCallCtx.caller
         val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
@@ -46,7 +48,7 @@ object HaltOps {
             .copy(
                 completed = newCallStack.isEmpty(),
                 callStack = newCallStack,
-                lastReturnData = returnData,
+                lastReturnData = BigIntegerIndexedList.fromBytes(returnData),
                 gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
@@ -70,7 +72,7 @@ object HaltOps {
         return callingContext.copy(
             callStack = callStack,
             completed = completed,
-            lastReturnData = emptyList(),
+            lastReturnData = emptyByteList(),
             lastCallError = error,
             gasUsed = gasUsed + currentCallCtx.gas
         )
@@ -78,8 +80,8 @@ object HaltOps {
 
     fun revert(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, _) = context.stack.popWords(2)
-        val (outMemLocation, outSize) = elements.map { it.toInt() }
-        val (returnData, newMemory) = memory.read(outMemLocation, outSize)
+        val (outMemLocation, outSize) = elements
+        val (returnData, newMemory) = memory.read(outMemLocation.toBigInt(), outSize.toInt())
 
         val oldCtx = currentCallCtx
         val callingContext = currentCallCtx.callingContext ?: context.copy(
@@ -103,7 +105,7 @@ object HaltOps {
             .copy(
                 callStack = callStack,
                 completed = completed,
-                lastReturnData = returnData,
+                lastReturnData = BigIntegerIndexedList.fromBytes(returnData),
                 gasUsed = gasUsed + currentCallCtx.gasUsed
             )
     }
@@ -136,7 +138,7 @@ object HaltOps {
             .refund(caller, refund)
             .copy(
                 completed = newCallStack.isEmpty(),
-                lastReturnData = emptyList(),
+                lastReturnData = emptyByteList(),
                 accounts = newEvmState,
                 callStack = newCallStack,
                 gasUsed = gasUsed + currentCallCtx.gasUsed

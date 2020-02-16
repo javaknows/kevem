@@ -8,6 +8,7 @@ import org.kevm.evm.model.Word
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import java.math.BigInteger
 import kotlin.test.junit5.JUnit5Asserter.fail
 
 class ExecutorTestPackTest {
@@ -56,7 +57,7 @@ class ExecutorTestPackTest {
                 )
             ),
             contractCode = listOf(Opcode.SHA3.code),
-            memory = Memory().write(0, data)
+            memory = Memory().write(BigInteger.ZERO, data)
         )
 
         val result = underTest.executeNextOpcode(context)

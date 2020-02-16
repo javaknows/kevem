@@ -4,6 +4,7 @@ import org.kevm.evm.Opcode
 import org.kevm.evm.Opcode.*
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.model.Stack
+import org.kevm.evm.numbers.BigIntMath
 import org.kevm.evm.ops.CallOps
 import java.lang.Integer.max
 import java.math.BigInteger
@@ -16,36 +17,36 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
         DELEGATECALL -> callCost(executionCtx, false)
         STATICCALL -> callCost(executionCtx, false)
         SHA3 -> calculate(executionCtx) {
-            val (from, length) = it.peekWords(2).map { w -> w.toInt() }
-            highestByteOrNull(from, length)
+            val (from, length) = it.peekWords(2)
+            highestByteOrNull(from.toBigInt(), length.toInt())
         }
         CALLDATACOPY -> calculate(executionCtx) {
-            val (to, _, size) = it.peekWords(3).map { w -> w.toInt() }
-            highestByteOrNull(to, size)
+            val (to, _, size) = it.peekWords(3)
+            highestByteOrNull(to.toBigInt(), size.toInt())
         }
         EXTCODECOPY -> calculate(executionCtx) {
-            val (_, to, _, size) = it.peekWords(4).map { w -> w.toInt() }
-            highestByteOrNull(to, size)
+            val (_, to, _, size) = it.peekWords(4)
+            highestByteOrNull(to.toBigInt(), size.toInt())
         }
         RETURNDATACOPY -> calculate(executionCtx) {
-            val (to, _, size) = it.peekWords(3).map { w -> w.toInt() }
-            highestByteOrNull(to, size)
+            val (to, _, size) = it.peekWords(3)
+            highestByteOrNull(to.toBigInt(), size.toInt())
         }
         CODECOPY -> calculate(executionCtx) {
-            val (to, _, size) = it.peekWords(3).map { w -> w.toInt() }
-            highestByteOrNull(to, size)
+            val (to, _, size) = it.peekWords(3)
+            highestByteOrNull(to.toBigInt(), size.toInt())
         }
         MLOAD -> calculate(executionCtx) {
-            val (loc) = it.peekWords(1).map { w -> w.toInt() }
-            loc + 32
+            val (loc) = it.peekWords(1).map { w -> w.toBigInt() }
+            loc + 32.toBigInteger()
         }
         MSTORE -> calculate(executionCtx) {
-            val (loc, _) = it.peekWords(2).map { w -> w.toInt() }
-            loc + 32
+            val (loc, _) = it.peekWords(2).map { w -> w.toBigInt() }
+            loc + 32.toBigInteger()
         }
         MSTORE8 -> calculate(executionCtx) {
-            val (loc, _) = it.peekWords(2).map { w -> w.toInt() }
-            loc + 1
+            val (loc, _) = it.peekWords(2).map { w -> w.toBigInt() }
+            loc + 1.toBigInteger()
         }
         LOG0 -> logCost(executionCtx)
         LOG1 -> logCost(executionCtx)
@@ -53,26 +54,26 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
         LOG3 -> logCost(executionCtx)
         LOG4 -> logCost(executionCtx)
         CREATE -> calculate(executionCtx) {
-            val (_, loc, size) = it.peekWords(3).map { w -> w.toInt() }
-            highestByteOrNull(loc, size)
+            val (_, loc, size) = it.peekWords(3)
+            highestByteOrNull(loc.toBigInt(), size.toInt())
         }
         RETURN -> calculate(executionCtx) {
-            val (loc, size) = it.peekWords(2).map { w -> w.toInt() }
-            highestByteOrNull(loc, size)
+            val (loc, size) = it.peekWords(2)
+            highestByteOrNull(loc.toBigInt(), size.toInt())
         }
         CREATE2 -> calculate(executionCtx) {
-            val (_, _, loc, size) = it.peekWords(4).map { w -> w.toInt() }
-            highestByteOrNull(loc, size)
+            val (_, _, loc, size) = it.peekWords(4)
+            highestByteOrNull(loc.toBigInt(), size.toInt())
         }
         REVERT -> calculate(executionCtx) {
-            val (loc, size) = it.peekWords(2).map { w -> w.toInt() }
-            highestByteOrNull(loc, size)
+            val (loc, size) = it.peekWords(2)
+            highestByteOrNull(loc.toBigInt(), size.toInt())
         }
         else -> BigInteger.ZERO
     }
 
     private fun logCost(executionContext: ExecutionContext): BigInteger = calculate(executionContext) {
-        val (loc, size) = it.peekWords(2).map { w -> w.toInt() }
+        val (loc, size) = it.peekWords(2).map { w -> w.toBigInt() }
         loc + size
     }
 
@@ -80,35 +81,34 @@ class MemoryUsageGasCostCalculator(private val memoryUseGasCalc: MemoryUsageGasC
         calculate(executionContext) {
             val callArgs = CallOps.peekCallArgsFromStack(executionContext.stack, withValue)
 
-            val readMaxByte = highestByteOrNull(callArgs.inSize, callArgs.inLocation)
-            val writeMaxByte = highestByteOrNull(callArgs.outSize, callArgs.outLocation)
+            val readMaxByte = highestByteOrNull(callArgs.inLocation, callArgs.inSize)
+            val writeMaxByte = highestByteOrNull(callArgs.outLocation, callArgs.outSize)
 
             nullSafeMax(readMaxByte, writeMaxByte)
         }
 
-    private fun calculate(executionContext: ExecutionContext, maxReferenced: (Stack) -> Int?): BigInteger {
+    private fun calculate(executionContext: ExecutionContext, maxReferenced: (Stack) -> BigInteger?): BigInteger {
         val maxByteReferenced = maxReferenced(executionContext.stack)
 
-        val memCost =
-            if (maxByteReferenced != null) {
-                val currentMax = executionContext.currentCallCtx.memory.maxIndex
+        return if (maxByteReferenced != null) {
+            val currentMax = executionContext.currentCallCtx.memory.maxIndex
 
-                if (currentMax == null || maxByteReferenced > currentMax) {
-                    memoryUseGasCalc.memoryCost(maxByteReferenced) - memoryUseGasCalc.memoryCost(currentMax ?: 0)
-                } else 0
-            } else 0
-
-        return memCost.toBigInteger()
+            if (currentMax == null || maxByteReferenced > currentMax) {
+                memoryUseGasCalc.memoryCost(maxByteReferenced) - memoryUseGasCalc.memoryCost(
+                    currentMax ?: BigInteger.ZERO
+                )
+            } else BigInteger.ZERO
+        } else BigInteger.ZERO
     }
 
-    private fun nullSafeMax(a: Int?, b: Int?) = when {
+    private fun nullSafeMax(a: BigInteger?, b: BigInteger?) = when {
         a == null -> b
         b == null -> a
-        else -> max(a, b)
+        else -> BigIntMath.max(a, b)
     }
 
-    private fun highestByteOrNull(from: Int, length: Int) =
-        if (length > 0) from + length
+    private fun highestByteOrNull(from: BigInteger, length: Int): BigInteger? =
+        if (length > 0) from + length.toBigInteger()
         else null
 }
 

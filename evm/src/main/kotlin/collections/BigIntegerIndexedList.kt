@@ -45,6 +45,8 @@ open class BigIntegerIndexedList<T>(
 
     fun indices(): List<BigInteger> = backing.keys.toList().sorted()
 
+    fun toList(): List<T> = read(BigInteger.ZERO, size().toInt()) // TODO - watch out - can overflow, should fail
+
     private fun copy(original: LinkedHashMap<BigInteger, T>) = LinkedHashMap(original)
 
     override fun equals(other: Any?): Boolean =

@@ -14,9 +14,9 @@ import org.kevm.evm.PrecompiledContractExecutor as Precompiled
 data class CallArguments(
     val gas: BigInteger,
     val address: Address,
-    val inLocation: Int,
+    val inLocation: BigInteger,
     val inSize: Int,
-    val outLocation: Int,
+    val outLocation: BigInteger,
     val outSize: Int,
     val value: BigInteger = BigInteger.ZERO
 )
@@ -209,9 +209,9 @@ object CallOps {
         return CallArguments(
             g.toBigInt(),
             a.toAddress(),
-            inLocation.toInt(),
+            inLocation.toBigInt(),
             inSize.toInt(),
-            outLocation.toInt(),
+            outLocation.toBigInt(),
             outSize.toInt(),
             value.toBigInt()
         )

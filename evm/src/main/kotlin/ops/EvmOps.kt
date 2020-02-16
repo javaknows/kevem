@@ -34,7 +34,7 @@ object EvmOps {
         val (p, s) = elements
         val (topics, newStack2) = newStack.popWords(num)
 
-        val (data, newMemory) = memory.read(p.toInt(), s.toInt())
+        val (data, newMemory) = memory.read(p.toBigInt(), s.toInt())
         val newLog = Log(data, topics)
 
         return context

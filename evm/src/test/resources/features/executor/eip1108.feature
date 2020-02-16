@@ -11,6 +11,7 @@ Feature: EIP-1108: Reduce alt_bn128 precompile gas costs
   Scenario Outline: BNADD precompiled smart contract gas is correct when <eip> is enabled
     Given the stack contains elements [0x1, 0x6, 0x0, 0x0, 0x128, 0x0, 0x64]
     And 0x17c139df0efee0f766bc0204762b774362e4ded88953a39ce849a8a7fa163fa901e0559bacb160664764a357af8a9fe70baa9258e0b959273ffc5718c6d4cc7c039730ea8dff1254c0fee9c0ea777d29a9c710b7e616683f194f18c43b43b869073a5ffcc6fc7a28c30723d6e58ce577356982d65b833a5a5c15bf9024b43d98 is stored in memory at location 0x0
+    And the highest byte touched in memory is 0x128
     And EIP <eip> is enabled
     When opcode CALL is executed
     Then <gas> gas is now used
@@ -24,6 +25,7 @@ Feature: EIP-1108: Reduce alt_bn128 precompile gas costs
   Scenario Outline: BNMUL precompiled smart contract gas is correct when <eip> is enabled
     Given the stack contains elements [0x1, 0x7, 0x0, 0x0, 0x96, 0x0, 0x64]
     And 0x1a87b0584ce92f4593d161480614f2989035225609f08058ccfa3d0f940febe31a2f3c951f6dadcc7ee9007dff81504b0fcd6d7cf59996efdc33d92bf7f9f8f60000000000000000000000000000000000000000000000000000000000000009 is stored in memory at location 0x0
+    And the highest byte touched in memory is 0x96
     And EIP <eip> is enabled
     When opcode CALL is executed
     Then <gas> gas is now used

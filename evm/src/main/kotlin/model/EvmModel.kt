@@ -2,6 +2,8 @@ package org.kevm.evm.model
 
 import org.kevm.evm.*
 import org.kevm.evm.collections.BigIntegerIndexedList
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
+import org.kevm.evm.numbers.BigIntMath
 import java.math.BigInteger
 import java.time.Instant
 import kotlin.math.max
@@ -261,15 +263,12 @@ class Accounts(private val addresses: Map<Address, Account> = emptyMap()) {
 }
 
 // TODO - indexes/lengths should be BigInteger
-class Memory(private val data: Map<Int, Byte> = emptyMap(), val maxIndex: Int? = null) {
-    fun peek(index: Int): Byte = data.getOrDefault(
-        index,
-        Byte.Zero
-    )
+class Memory(private val data: BigIntegerIndexedList<Byte> = emptyByteList(), val maxIndex: BigInteger? = null) {
+    fun peek(index: BigInteger): Byte = data[index]
 
-    fun peek(index: Int, length: Int): List<Byte> = index.until(index + length).map { peek(it) }
+    fun peek(index: BigInteger, length: Int): List<Byte> = data.read(index, length)
 
-    fun read(index: Int, length: Int): Pair<List<Byte>, Memory> =
+    fun read(index: BigInteger, length: Int): Pair<List<Byte>, Memory> =
         if (length == 0) Pair(emptyList(), this)
         else {
             val max = getMaxIndex(index, length)
@@ -278,17 +277,22 @@ class Memory(private val data: Map<Int, Byte> = emptyMap(), val maxIndex: Int? =
             Pair(mem, Memory(data, max))
         }
 
-    fun write(index: Int, values: List<Byte>): Memory =
+    fun write(index: BigInteger, values: List<Byte>): Memory =
         if (values.isEmpty()) this
         else {
-            val to = (index + values.size).coerceAtLeast(0)
-            val memory = data + (index.until(to) zip values).toMap()
+            val newData = data.write(index, values)
             val max = getMaxIndex(index, values.size)
 
-            Memory(memory, max)
+            Memory(newData, max)
         }
 
-    private fun getMaxIndex(index: Int, length: Int) = max(maxIndex ?: 0, index + length)
+    fun copy(maxIndex: BigInteger? = null): Memory {
+        val mi = maxIndex?.let { maxIndex }
+        return Memory(data, mi)
+    }
+
+    private fun getMaxIndex(index: BigInteger, length: Int)
+            = BigIntMath.max(maxIndex ?: BigInteger.ZERO, index + length.toBigInteger())
 }
 
 class Storage(private val data: Map<BigInteger, Word> = emptyMap()) {
@@ -397,7 +401,7 @@ data class CallContext(
     val code: BigIntegerIndexedList<Byte>,
     val callingContext: ExecutionContext? = null,
     val gas: BigInteger = BigInteger.ZERO,
-    val returnLocation: Int = 0,
+    val returnLocation: BigInteger = BigInteger.ZERO,
     val returnSize: Int = 0,
     val stack: Stack = Stack(),
     val memory: Memory = Memory(),
@@ -445,7 +449,7 @@ data class ExecutionContext(
     val accounts: Accounts = Accounts(),
     val logs: List<Log> = emptyList(),
     val completed: Boolean = false,
-    val lastReturnData: List<Byte> = emptyList(),
+    val lastReturnData: BigIntegerIndexedList<Byte> = emptyByteList(),
     val previousBlocks: Map<BigInteger, Word> = emptyMap(),
     val lastCallError: EvmError = EvmError.None,
     val refunds: Map<Address, BigInteger> = emptyMap(),

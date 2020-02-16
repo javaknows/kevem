@@ -8,6 +8,7 @@ import org.kevm.evm.model.Byte
 import org.kevm.evm.model.Byte.Companion.padRightToSize
 import org.kevm.evm.model.ExecutionContext
 import org.kevm.evm.model.Features
+import org.kevm.evm.numbers.BigIntMath
 import org.kevm.evm.numbers.BigIntMath.max
 import org.kevm.evm.ops.CallArguments
 import java.math.BigInteger
@@ -30,10 +31,10 @@ class MemoryUsageGasCalc {
     /**
      * C_mem in the yellow paper
      */
-    fun memoryCost(highestByteIndex: Int): Int {
-        val numWords = Math.ceil(highestByteIndex / 32.toDouble()).toInt()
+    fun memoryCost(highestByteIndex: BigInteger): BigInteger {
+        val numWords = BigIntMath.divRoundUp(highestByteIndex, 32.toBigInteger())
 
-        return (GasCost.Memory.cost * numWords) + ((numWords * numWords) / 512)
+        return (GasCost.Memory.costBigInt * numWords) + ((numWords * numWords) / 512.toBigInteger())
     }
 }
 

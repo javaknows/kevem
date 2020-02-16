@@ -89,7 +89,7 @@ class TransactionProcessor(
         val accountsWithNewContractCode = updateCodeIfCreated(
             accountsAfterFinalCharge,
             isContractCreation(tx),
-            execResult.lastReturnData,
+            execResult.lastReturnData.toList(),
             recipient
         )
 

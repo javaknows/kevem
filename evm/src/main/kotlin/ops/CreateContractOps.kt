@@ -22,7 +22,7 @@ object CreateContractOps {
         val (elements, newStack) = stack.popWords(4)
         val (v, n, p, s) = elements
 
-        val (codeData, _) = memory.read(p.toInt(), s.toInt())
+        val (codeData, _) = memory.read(p.toBigInt(), s.toInt())
         val contractAddress =
             currentCallCtx.contractAddress ?: throw RuntimeException("can't determine contract address")
         val newContractAddress = generateAddress(
@@ -56,7 +56,7 @@ object CreateContractOps {
                 HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
             }
             else -> {
-                val (newContractCode, newMemory) = memory.read(p, s)
+                val (newContractCode, newMemory) = memory.read(p.toBigInteger(), s) // TODO - can overflow
                 if (context.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
                     HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
                 else {

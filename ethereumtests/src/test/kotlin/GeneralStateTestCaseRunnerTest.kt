@@ -2,6 +2,7 @@ package org.kevm.ethereumtests
 
 import com.fasterxml.jackson.core.type.TypeReference
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.fail
@@ -18,6 +19,7 @@ import org.web3j.crypto.Keys
 import java.math.BigInteger
 import java.time.Instant
 
+@Disabled
 class GeneralStateTestCaseRunnerTest {
 
     private val executor = createExecutor()
