@@ -11,10 +11,10 @@ Feature: Contract Creation by Transaction
       | from     | to | value | gasPrice | gasLimit | data                                                                               | nonce |
       | 0x5E4DE7 |    | 69    | 1        | 3000000  | [PUSH1 0x01 DUP1 PUSH1 0x0C PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN INVALID ADDRESS] | 0     |
     When the transaction is executed
-    Then a contract with address 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 was created
-    And the code at address 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 is now 0x30
-    And account 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 now has nonce 1
-    And account 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 now has balance 69
+    Then a contract with address 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 was created
+    And the code at address 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 is now 0x30
+    And account 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 now has nonce 1
+    And account 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 now has balance 69
     And transaction used 53980 gas
 
     # base cost: 21000
@@ -33,7 +33,7 @@ Feature: Contract Creation by Transaction
       | from     | to | value | gasPrice | gasLimit | data      | nonce |
       | 0x5E4DE7 |    | 0     | 1        | 3000000  | [INVALID] | 0     |
     When the transaction is executed
-    Then account 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 does not exist
+    Then account 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 does not exist
     And transaction used 3000000 gas
     And account 0x5E4DE7 now has balance 99999999997000000
 
@@ -43,4 +43,4 @@ Feature: Contract Creation by Transaction
       | from     | to | value | gasPrice | gasLimit | data                                                             | nonce |
       | 0x5E4DE7 |    | 69    | 1        | 3000000  | [PUSH1 0x0 DUP1 PUSH1 0x0 PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN] | 0     |
     When the transaction is executed
-    Then account 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 now has nonce 1
+    Then account 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 now has nonce 1

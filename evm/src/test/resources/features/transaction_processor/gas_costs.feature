@@ -30,8 +30,8 @@ Feature: Gas Costs In Transaction Processing
       | from     | to | value | gasPrice | gasLimit | data                                                                               | nonce |
       | 0x5E4DE7 |    | 0     | 1        | 3000000  | [PUSH1 0x01 DUP1 PUSH1 0x0C PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN INVALID ADDRESS] | 0     |
     When the transaction is executed
-    Then a contract with address 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 was created
-    And the code at address 0x66ee2961f3200b1a4b6f585c9c64e95920799b29 is now 0x30
+    Then a contract with address 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 was created
+    And the code at address 0x4323e6a12ef30c6ace4c90ef7375253ab51ee087 is now 0x30
     Then transaction used 53980 gas
 
     # base cost: 21000
