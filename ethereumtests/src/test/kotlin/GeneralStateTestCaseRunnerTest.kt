@@ -69,28 +69,18 @@ class GeneralStateTestCaseRunnerTest {
             hash = emptyList() // TODO - this doesn't really fit here - maybe move it
         )
 
-        val result = tp.process(worldState, txMessage, nextBlock)
+        val (wsResult, txResult) = tp.process(worldState, txMessage, nextBlock)
 
-        //println("Woooooooooot")
+        results.forEach {
+            val (address, expectedResult) = it
 
-        //println(result)
+            println("address: $address")
 
-        //tp.
-
-        /*
-        val executionContext = createExecutionContext(testCase)
-
-        val executed = try {
-            executor.executeAll(executionContext)
-        } catch (e: Exception) {
-            fail("$testCase failed with ${e.message}", e)
+            expectedResult.balance?.also { expectedBalance ->
+                val balance = wsResult.accounts.balanceOf(Address(address))
+                assertThat(balance).isEqualTo(toBigInteger0xTo0(expectedBalance))
+            }
         }
-
-        if (post != null) {
-            assertPostAccountsMatch(parseAccounts(post), executed)
-        }
-         */
-
     }
 
     private fun toBigInteger0xTo0(num: String): BigInteger =  toBigInteger(num.replace("^0x$".toRegex(), "0"))

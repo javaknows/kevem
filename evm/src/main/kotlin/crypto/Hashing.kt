@@ -14,6 +14,8 @@ fun ripemd160(input: List<Byte>): List<Byte> = hash(input, RIPEMD160.Digest())
 
 fun blake2(input: List<Byte>): List<Byte> = hash(input, Blake2bfMessageDigest())
 
+fun keccak256(bytes: ByteArray): String = Hex.toHexString(Keccak.Digest256().digest(bytes))
+
 private fun hash(input: List<Byte>, messageDigest: MessageDigest): List<Byte> {
     val bytes: ByteArray = input.map { it.javaByte() }.toByteArray()
     val digest: ByteArray = messageDigest.digest(bytes)
