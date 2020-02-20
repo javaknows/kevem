@@ -31,6 +31,8 @@ class GeneralStateTestCaseRunnerTest {
     internal fun `ethereum-test GeneralStateTest pack`(testCase: GeneralStateTestExplodedCase): Unit = with(testCase) {
         println(testCase.name)
 
+        // TODO - execute this via StatefulTransactionProcessor
+
         val nextBlock = Block(
             number = toBigInteger(env.currentNumber),
             difficulty = toBigInteger(env.currentDifficulty),
@@ -81,9 +83,10 @@ class GeneralStateTestCaseRunnerTest {
                 assertThat(balance).isEqualTo(toBigInteger0xTo0(expectedBalance))
             }
         }
+
     }
 
-    private fun toBigInteger0xTo0(num: String): BigInteger =  toBigInteger(num.replace("^0x$".toRegex(), "0"))
+    private fun toBigInteger0xTo0(num: String): BigInteger = toBigInteger(num.replace("^0x$".toRegex(), "0"))
 
 
     companion object {
@@ -108,7 +111,7 @@ class GeneralStateTestCaseRunnerTest {
                 with(tc.transaction) {
                     (data.indices zip data).flatMap { d ->
                         (gasLimit.indices zip gasLimit).flatMap { g ->
-                            (value.indices zip value).map { v ->
+                            (value.indices zip value).flatMap { v ->
                                 val explodedTransaction = GeneralStateTestExplodedCaseTransaction(
                                     data = d.second,
                                     gasLimit = g.second,
@@ -121,45 +124,49 @@ class GeneralStateTestCaseRunnerTest {
 
                                 val eee: List<GeneralStateTestsFillerExpect> = f.expect
                                     .filter { e -> e.indexes.data.contains(d.first) || e.indexes.data.contains(-1) }
-                                    .filter { e ->  e.indexes.gas.contains(g.first) || e.indexes.gas.contains(-1) }
+                                    .filter { e -> e.indexes.gas.contains(g.first) || e.indexes.gas.contains(-1) }
                                     .filter { e -> e.indexes.value.contains(v.first) || e.indexes.value.contains(-1) }
 
-                                val eOnlyForFork: List<GeneralStateTestsFillerExpect> = eee
-                                    .flatMap { e: GeneralStateTestsFillerExpect ->
-                                        e.network.map { network: String -> Pair(network, e) }
-                                    }
-                                    .filter { it.first.contains(tc.post.keys.first()) }
-                                    .map { it.second }
+                                tc.post.keys.map { hardFork ->
 
-                                val results: Map<String, GeneralStateTestsFillerResult> = eOnlyForFork.flatMap { e ->
-                                    e.result.entries.map { entry ->
-                                        val (address, r) = entry
-                                        Pair(
-                                            address, GeneralStateTestsFillerResult(
-                                                balance = r.balance,
-                                                nonce = r.nonce,
-                                                code = r.code,
-                                                storage = r.storage,
-                                                shouldnotexist = r.shouldnotexist
-                                            )
-                                        )
-                                    }
-                                }.toMap()
+                                    val eOnlyForFork: List<GeneralStateTestsFillerExpect> = eee
+                                        .flatMap { e: GeneralStateTestsFillerExpect ->
+                                            e.network.map { network: String -> Pair(network, e) }
+                                        }
+                                        .filter { it.first.contains(hardFork) }
+                                        .map { it.second }
 
-                                val hardFork = tc.post.keys.first()
+                                    val results: Map<String, GeneralStateTestsFillerResult> =
+                                        eOnlyForFork.flatMap { e ->
+                                            e.result.entries.map { entry ->
+                                                val (address, r) = entry
+                                                Pair(
+                                                    address, GeneralStateTestsFillerResult(
+                                                        balance = r.balance,
+                                                        nonce = r.nonce,
+                                                        code = r.code,
+                                                        storage = r.storage,
+                                                        shouldnotexist = r.shouldnotexist
+                                                    )
+                                                )
+                                            }
+                                        }.toMap()
 
-                                val name =
-                                    "${tc.name} - $hardFork - data=${d.second}, gas=${g.second}, value=${v.second}"
+                                    val name =
+                                        "${tc.name} - $hardFork - data=${d.second}, gas=${g.second}, value=${v.second}"
 
-                                GeneralStateTestExplodedCase(
-                                    name = name,
-                                    env = tc.env,
-                                    post = tc.post,
-                                    pre = tc.pre,
-                                    transaction = explodedTransaction,
-                                    results = results,
-                                    hardFork = hardFork
-                                )
+                                    val post = tc.post[hardFork] ?: emptyList()
+
+                                    GeneralStateTestExplodedCase(
+                                        name = name,
+                                        env = tc.env,
+                                        post = post,
+                                        pre = tc.pre,
+                                        transaction = explodedTransaction,
+                                        results = results,
+                                        hardFork = hardFork
+                                    )
+                                }
                             }
                         }
                     }
@@ -167,7 +174,7 @@ class GeneralStateTestCaseRunnerTest {
 
             }
 
-            println("Loaded ${flatMap.size} test cases" )
+            println("Loaded ${flatMap.size} test cases")
 
             return flatMap
         }

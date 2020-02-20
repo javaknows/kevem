@@ -83,7 +83,7 @@ data class GeneralStateTestExplodedCaseTransaction(
 data class GeneralStateTestExplodedCase(
     val name: String,
     val env: GeneralStateTestCaseEnv,
-    val post: Map<String, List<GeneralStateTestCasePost>>,
+    val post: List<GeneralStateTestCasePost>,
     val pre: Map<String, GeneralStateTestCasePre>,
     val transaction: GeneralStateTestExplodedCaseTransaction,
     val results: Map<String, GeneralStateTestsFillerResult>,
