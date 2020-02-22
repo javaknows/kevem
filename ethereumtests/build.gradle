@@ -9,6 +9,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation project(":evm")
     implementation project(":common")
+    implementation project(":rpc")
+    implementation project(":web")
     implementation "org.web3j:core:${web3Version}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlin}"
     implementation "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonJsonProviderVersion}"
@@ -19,6 +21,7 @@ dependencies {
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitParamsVersion}"
     testCompile "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
     testCompile "org.assertj:assertj-core:${assertjVersion}"
+    testCompile "org.apache.httpcomponents:httpclient:${httpComponentsVersion}"
 }
 
 compileKotlin {

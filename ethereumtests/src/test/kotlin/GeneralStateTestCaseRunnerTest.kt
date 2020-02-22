@@ -1,27 +1,50 @@
 package org.kevm.ethereumtests
 
-import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.ContentType
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.util.EntityUtils
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.*
 
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.kevm.evm.Executor
-import org.kevm.evm.TransactionProcessor
+import org.kevm.evm.*
 import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
-import org.kevm.evm.toByteList
-import org.kevm.evm.toStringHexPrefix
+import org.kevm.rpc.*
+import org.kevm.web.EvmContextCreator
+import org.kevm.web.Server
+import org.kevm.web.module.EthSendTransactionRequest
+import org.kevm.web.module.EvmContext
 import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.Keys
 import java.math.BigInteger
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
 
 @Disabled
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GeneralStateTestCaseRunnerTest {
+
+    private val server = Server()
+    private val client = HttpClients.createDefault()
+    private val mapper = jacksonObjectMapper()
+
+    //@BeforeAll
+    //fun setUp() {
+
+    //}
+
+    @AfterAll
+    fun tearDown() {
+        server.stop()
+        client.close()
+    }
 
     private val executor = createExecutor()
 
@@ -31,18 +54,27 @@ class GeneralStateTestCaseRunnerTest {
     internal fun `ethereum-test GeneralStateTest pack`(testCase: GeneralStateTestExplodedCase): Unit = with(testCase) {
         println(testCase.name)
 
-        // TODO - execute this via StatefulTransactionProcessor
+        val keyPair = ECKeyPair.create(toByteList(transaction.secretKey).map { it.javaByte() }.toByteArray())
 
-        val nextBlock = Block(
-            number = toBigInteger(env.currentNumber),
-            difficulty = toBigInteger(env.currentDifficulty),
-            gasLimit = toBigInteger(env.currentGasLimit),
-            timestamp = Instant.ofEpochSecond(toBigInteger(env.currentTimestamp).toLong())
-        )
+        val gasPrice = toBigInteger(transaction.gasPrice)
 
         val features = Features(emptyList())
 
         val evmConfig = EvmConfig(coinbase = Address(env.currentCoinbase))
+
+        val instant = Instant.ofEpochSecond(toBigInteger(env.currentTimestamp).toLong())
+
+        val difficulty = toBigInteger(env.currentDifficulty)
+
+        val blockGasLimit = toBigInteger(env.currentGasLimit)
+
+        val appConfig = AppConfig(
+            coinbase = env.currentCoinbase,
+            difficulty = difficulty,
+            gasPrice = gasPrice,
+            blockGasLimit = blockGasLimit,
+            genesisBlockTimestamp = instant
+        )
 
         val tp = TransactionProcessor(
             executor = createExecutor(),
@@ -50,155 +82,91 @@ class GeneralStateTestCaseRunnerTest {
             config = evmConfig
         )
 
-        val worldState = WorldState(blocks = emptyList(), accounts = parseAccounts(pre))
+        val accounts = parseAccounts(pre)
 
-        val keyPair = ECKeyPair.create(toByteList(transaction.secretKey).map { it.javaByte() }.toByteArray())
+        val clock = Clock.fixed(instant, ZoneId.of("UTC"))
 
-        val from = Address("0x" + Keys.getAddress(keyPair.publicKey.toStringHexPrefix()))
-
-        val to =
-            if (transaction.to.isBlank()) null
-            else Address(transaction.to)
-
-        val txMessage = TransactionMessage(
-            from = from,
-            to = to,
-            value = toBigInteger0xTo0(transaction.value),
-            gasPrice = toBigInteger(transaction.gasPrice),
-            gasLimit = toBigInteger(transaction.gasLimit),
-            data = toByteList(transaction.data),
-            nonce = toBigInteger(transaction.nonce),
-            hash = emptyList() // TODO - this doesn't really fit here - maybe move it
+        val genesisBlock = MinedBlock(
+            block = Block(
+                number = BigInteger.ZERO,
+                difficulty = difficulty,
+                gasLimit = blockGasLimit,
+                timestamp = Instant.MIN
+            ),
+            gasUsed = BigInteger.ZERO,
+            hash = toByteList(env.previousHash),
+            transactions = emptyList()
         )
 
-        val (wsResult, txResult) = tp.process(worldState, txMessage, nextBlock)
+        val statefulTransactionProcessor = StatefulTransactionProcessor(
+            tp, clock, WorldState(listOf(genesisBlock), accounts)
+        )
+
+        val localAccount = LocalAccount(Keys.getAddress(keyPair), transaction.secretKey)
+
+        val standardRpc = StandardRPC(
+            StandardEvmOperations(
+                statefulTransactionProcessor,
+                evmConfig
+            ),
+            appConfig,
+            LocalAccounts(listOf(localAccount))
+        )
+
+        val testRpc = TestRPC(
+            statefulTransactionProcessor
+        )
+
+        val evmContext = EvmContext(standardRpc, testRpc)
+
+        server.start(9002, false, evmContext)
+
+        val txRequest = EthSendTransactionRequest(
+            "2.0", "eth_sendTransaction", 1L, listOf(
+                SendTransactionParamDTO(
+                    from = localAccount.address.toString(),
+                    to = transaction.to,
+                    value = transaction.value,
+                    gasPrice = transaction.gasPrice,
+                    gas = transaction.gasLimit,
+                    data = transaction.data,
+                    nonce = transaction.nonce
+                )
+            )
+        )
+
+        val request = mapper.writeValueAsString(txRequest)
+
+        val httppost = HttpPost("http://localhost:9002/").apply {
+            entity = StringEntity(request, ContentType.APPLICATION_JSON)
+        }
+
+        val response = client.execute(httppost)
+        val responseBody = EntityUtils.toString(response.entity)
+
+        println(responseBody)
+
+        val wsResult = statefulTransactionProcessor.getWorldState()
 
         results.forEach {
             val (address, expectedResult) = it
 
-            println("address: $address")
-
             expectedResult.balance?.also { expectedBalance ->
                 val balance = wsResult.accounts.balanceOf(Address(address))
+
+                println("address: $address, balance: $balance")
+
                 assertThat(balance).isEqualTo(toBigInteger0xTo0(expectedBalance))
             }
         }
-
     }
-
-    private fun toBigInteger0xTo0(num: String): BigInteger = toBigInteger(num.replace("^0x$".toRegex(), "0"))
 
 
     companion object {
-        private const val testsRoot = "ethereum-tests-pack/GeneralStateTests"
-
-        private val loader = TestCaseLoader(
-            TestCaseParser(object :
-                TypeReference<Map<String, GeneralStateTestCase>>() {}, testsRoot), testsRoot
-        )
-
-        private val fillerLoader = GeneralStateTestsFillerLoader("ethereum-tests-pack/GeneralStateTestsFiller")
+        private val loader = ExplodedGeneralTestCaseLoader()
 
         @JvmStatic
-        fun testCases(): List<GeneralStateTestExplodedCase> {
-            val testCases: List<GeneralStateTestCase> = loader.loadTestCases()
-            val tcWithFiller: List<Pair<GeneralStateTestCase, GeneralStateTestsFiller>> = loadFiller(testCases)
-            val withFork = explodeWithFork(tcWithFiller)
-
-            val flatMap: List<GeneralStateTestExplodedCase> = withFork.flatMap {
-                val (tc, f) = it
-
-                with(tc.transaction) {
-                    (data.indices zip data).flatMap { d ->
-                        (gasLimit.indices zip gasLimit).flatMap { g ->
-                            (value.indices zip value).flatMap { v ->
-                                val explodedTransaction = GeneralStateTestExplodedCaseTransaction(
-                                    data = d.second,
-                                    gasLimit = g.second,
-                                    gasPrice = gasPrice,
-                                    nonce = nonce,
-                                    secretKey = secretKey,
-                                    to = to,
-                                    value = v.second
-                                )
-
-                                val eee: List<GeneralStateTestsFillerExpect> = f.expect
-                                    .filter { e -> e.indexes.data.contains(d.first) || e.indexes.data.contains(-1) }
-                                    .filter { e -> e.indexes.gas.contains(g.first) || e.indexes.gas.contains(-1) }
-                                    .filter { e -> e.indexes.value.contains(v.first) || e.indexes.value.contains(-1) }
-
-                                tc.post.keys.map { hardFork ->
-
-                                    val eOnlyForFork: List<GeneralStateTestsFillerExpect> = eee
-                                        .flatMap { e: GeneralStateTestsFillerExpect ->
-                                            e.network.map { network: String -> Pair(network, e) }
-                                        }
-                                        .filter { it.first.contains(hardFork) }
-                                        .map { it.second }
-
-                                    val results: Map<String, GeneralStateTestsFillerResult> =
-                                        eOnlyForFork.flatMap { e ->
-                                            e.result.entries.map { entry ->
-                                                val (address, r) = entry
-                                                Pair(
-                                                    address, GeneralStateTestsFillerResult(
-                                                        balance = r.balance,
-                                                        nonce = r.nonce,
-                                                        code = r.code,
-                                                        storage = r.storage,
-                                                        shouldnotexist = r.shouldnotexist
-                                                    )
-                                                )
-                                            }
-                                        }.toMap()
-
-                                    val name =
-                                        "${tc.name} - $hardFork - data=${d.second}, gas=${g.second}, value=${v.second}"
-
-                                    val post = tc.post[hardFork] ?: emptyList()
-
-                                    GeneralStateTestExplodedCase(
-                                        name = name,
-                                        env = tc.env,
-                                        post = post,
-                                        pre = tc.pre,
-                                        transaction = explodedTransaction,
-                                        results = results,
-                                        hardFork = hardFork
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            println("Loaded ${flatMap.size} test cases")
-
-            return flatMap
-        }
-
-        private fun explodeWithFork(tcWithFiller: List<Pair<GeneralStateTestCase, GeneralStateTestsFiller>>): List<Pair<GeneralStateTestCase, GeneralStateTestsFiller>> {
-            return tcWithFiller.flatMap { pair ->
-                val (tc, f) = pair
-
-                tc.post.map { entry ->
-                    val tcWithFork = tc.copy(post = mapOf(entry.toPair()))
-                    Pair(tcWithFork, f)
-                }
-            }
-        }
-
-        private fun loadFiller(testCases: List<GeneralStateTestCase>): List<Pair<GeneralStateTestCase, GeneralStateTestsFiller>> {
-            val tcWithFiller = testCases.map { tc ->
-                val fillerPath = tc.info.source.replace("src/GeneralStateTestsFiller/", "")
-                val filler = fillerLoader.parse(fillerPath)
-
-                Pair(tc, filler)
-            }
-            return tcWithFiller
-        }
+        fun testCases(): List<GeneralStateTestExplodedCase> = loader.loadTestCases()
     }
 
     private fun assertOutDataMatches(out: String?, executed: ExecutionContext) =
@@ -248,7 +216,12 @@ class GeneralStateTestCaseRunnerTest {
         return Accounts(accountList)
     }
 
-    // use from general location
+    /*
+     use from general location
+     */
+
+    private fun toBigInteger0xTo0(num: String): BigInteger = toBigInteger(num.replace("^0x$".toRegex(), "0"))
+
     private fun toBigInteger(number: String) =
         if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
         else BigInteger(number)
@@ -259,5 +232,4 @@ class GeneralStateTestCaseRunnerTest {
         if (number == null) null
         else if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
         else BigInteger(number)
-
 }

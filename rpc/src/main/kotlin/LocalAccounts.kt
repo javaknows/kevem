@@ -4,11 +4,18 @@ import org.kevm.evm.locking.readLock
 import org.kevm.evm.locking.writeLock
 import org.kevm.evm.model.Address
 import org.kevm.evm.model.Byte
+import org.kevm.evm.toByteList
 import org.web3j.abi.datatypes.Bool
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
-data class LocalAccount(val address: Address, val privateKey: List<Byte>, val locked: Boolean = false)
+data class LocalAccount(val address: Address, val privateKey: List<Byte>, val locked: Boolean = false) {
+    constructor(address: String, privateKey: String, locked: Boolean = false) : this(
+        Address(address),
+        toByteList(privateKey),
+        locked
+    )
+}
 
 class LocalAccounts(a: List<LocalAccount> = emptyList()) {
 
@@ -17,13 +24,13 @@ class LocalAccounts(a: List<LocalAccount> = emptyList()) {
     private var acc = a
 
     var accounts
-    get() = readLock(lock) {
-        acc
-    }
-    set(value) = writeLock(lock) {
-        acc = value
-    }
+        get() = readLock(lock) {
+            acc
+        }
+        set(value) = writeLock(lock) {
+            acc = value
+        }
 
-    fun getByAddress(address: Address): LocalAccount? = accounts.find { it.address ==  address}
+    fun getByAddress(address: Address): LocalAccount? = accounts.find { it.address == address }
 
 }

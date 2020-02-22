@@ -21,7 +21,7 @@ class RpcServerIntegrationTest {
 
     @BeforeEach
     internal fun setUp() {
-        server.start(9002)
+        server.start(9002, false, EvmContextCreator.create())
     }
 
     @AfterEach

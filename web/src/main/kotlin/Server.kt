@@ -19,30 +19,26 @@ class Server {
 
     private var jaxRsServer: org.apache.cxf.endpoint.Server? = null // guarded by runningLock
 
-    fun start(port: Int, keepAlive: Boolean = false) {
-        locked(runningLock) {
-            jaxRsServer = createServer(port)
-            jaxRsServer?.start()
-            running = true
+    fun start(port: Int, keepAlive: Boolean = false, evmContext: EvmContext) = locked(runningLock) {
+        jaxRsServer = createServer(port, evmContext)
+        jaxRsServer?.start()
+        running = true
 
-            if (keepAlive) {
-                while (running) {
-                    stopped.await()
-                }
+        if (keepAlive) {
+            while (running) {
+                stopped.await()
             }
         }
     }
 
-    fun stop() {
-        locked(runningLock) {
-            jaxRsServer?.stop()
-            jaxRsServer?.destroy()
-            running = false
-            stopped.signal()
-        }
+    fun stop() = locked(runningLock) {
+        jaxRsServer?.stop()
+        jaxRsServer?.destroy()
+        running = false
+        stopped.signal()
     }
 
-    private fun createServer(port: Int): Server {
+    private fun createServer(port: Int, evmContext: EvmContext): Server {
         val modules = listOf(WebModule, NetModule, EthModule, TestModule)
 
         return JAXRSServerFactoryBean().apply {
@@ -54,7 +50,7 @@ class Server {
             setResourceClasses(KevmWebRpcService::class.java)
             setResourceProvider(
                 KevmWebRpcService::class.java, SingletonResourceProvider(
-                    KevmWebRpcService(modules, EvmContextCreator.create()) // TODO - EvmContext should be passed in
+                    KevmWebRpcService(modules, evmContext)
                 )
             )
         }.create()
