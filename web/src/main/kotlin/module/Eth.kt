@@ -301,7 +301,7 @@ private val EthEstimateGas =
             request.params[0] as Map<Any, Any>,
             SendCallParamDTO::class
         ) // TODO - shoud crate and use EstimateGasParamDTO with more nullable fields
-        val block = request.params[1] as String
+        val block: String? = if (request.params.indices.contains(1)) request.params[1] as String else null
         val data = context.standardRpc.ethEstimateGas(call, block)
         EthEstimateGasResponse(request, data)
     }
@@ -381,12 +381,12 @@ private val EthGetTransactionByBlockNumberAndIndex = Method.create("eth_getTrans
 class EthGetTransactionReceiptRequest(jsonrpc: String, method: String, id: Long, params: List<String>) :
     RpcRequest<List<String>>(jsonrpc, method, id, params)
 
-class EthGetTransactionReceiptResponse(request: EthGetTransactionReceiptRequest, result: TransactionDTO?) :
-    RpcResponse<TransactionDTO?>(request, result)
+class EthGetTransactionReceiptResponse(request: EthGetTransactionReceiptRequest, result: TransactionReceiptDTO?) :
+    RpcResponse<TransactionReceiptDTO?>(request, result)
 
 private val EthGetTransactionReceipt = Method.create("eth_getTransactionReceipt", EthGetTransactionReceiptRequest::class, EthGetTransactionReceiptResponse::class) { request, context ->
     val hash = request.params[0]
-    val transaction = context.standardRpc.ethGetTransactionByHash(hash)
+    val transaction = context.standardRpc.ethGetTransactionReceipt(hash)
     EthGetTransactionReceiptResponse(request, transaction)
 }
 

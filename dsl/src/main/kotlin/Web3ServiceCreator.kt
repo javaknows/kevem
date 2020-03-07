@@ -6,13 +6,13 @@ import org.kevm.evm.TransactionProcessor
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.evm.toByteList
-import org.kevm.rpc.AppConfig
-import org.kevm.rpc.LocalAccounts
-import org.kevm.rpc.StandardEvmOperations
-import org.kevm.rpc.StandardRPC
-import org.kevm.web3.KevmWeb3Service
-import org.kevm.web3.StandardRPCProvider
-import org.kevm.web3.modules.StandardRpcAdapter
+import org.kevm.rpc.*
+import org.kevm.web.KevmWebRpcService
+import org.kevm.web.module.EthModule
+import org.kevm.web.module.EvmContext
+import org.kevm.web.module.NetModule
+import org.kevm.web.module.WebModule
+import org.kevm.web3.AdapterKevmWeb3jService
 import org.web3j.protocol.Web3j
 import java.math.BigInteger
 import java.time.Clock
@@ -39,28 +39,24 @@ object Web3ServiceCreator {
             config = evmConfig
         )
 
-        val providers = listOf(
-            StandardRPCProvider(
-                StandardRpcAdapter(
-                    StandardRPC(
-                        StandardEvmOperations(
-                            StatefulTransactionProcessor(
-                                tp,
-                                clock,
-                                WorldState(
-                                    listOf(createGenisisBlock(config)),
-                                    accounts
-                                )
-                            ), evmConfig
-                        ),
-                        config,
-                        localAccounts
-                    )
-                )
+        val stp = StatefulTransactionProcessor(
+            tp, clock, WorldState(
+                listOf(createGenisisBlock(config)),
+                accounts
             )
         )
 
-        return Web3j.build(KevmWeb3Service(providers))
+        val evmContext = EvmContext(
+            StandardRPC(StandardEvmOperations(stp, evmConfig), config, localAccounts), TestRPC(
+                stp
+            )
+        )
+
+        return Web3j.build(
+            AdapterKevmWeb3jService(
+                KevmWebRpcService(listOf(WebModule, NetModule, EthModule), evmContext)
+            )
+        )
     }
 
     private fun createGenisisBlock(config: AppConfig): MinedBlock {

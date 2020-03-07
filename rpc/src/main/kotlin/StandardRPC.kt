@@ -185,7 +185,7 @@ class StandardRPC(
         return bytesToString(standardEvmOperations.call(tx, BlockReference.fromString(block)))
     }
 
-    fun ethEstimateGas(transaction: SendCallParamDTO, block: String = "latest"): String {
+    fun ethEstimateGas(transaction: SendCallParamDTO, block: String? = "latest"): String {
         val gas =
             if (transaction.gas == null) standardEvmOperations.pendingBlockGasLimit()
             else toBigInteger(transaction.gas)

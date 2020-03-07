@@ -29,6 +29,6 @@ class KevmWeb3ServiceErrorsTest {
     fun `can receive an error`() {
         val error = web3.shhNewGroup().send().error
 
-        assertThat(error.message).isEqualTo("not implemented")
+        assertThat(error.message).isEqualTo("unknown RPC request method 'shh_newGroup'")
     }
 }

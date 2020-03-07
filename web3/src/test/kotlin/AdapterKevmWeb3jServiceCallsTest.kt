@@ -11,12 +11,7 @@ import org.kevm.web3.test.Web3TestContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.kevm.web.EvmContextCreator
-import org.kevm.web.KevmWebRpcService
-import org.kevm.web.module.EthModule
-import org.kevm.web.module.NetModule
-import org.kevm.web.module.WebModule
-import org.web3j.protocol.Web3j
+import org.kevm.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.protocol.core.DefaultBlockParameterNumber
 import java.math.BigInteger
@@ -30,11 +25,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt as Web3Transa
  */
 class AdapterKevmWeb3jServiceCallsTest {
 
-    var web3 = Web3j.build(
-        AdapterKevmWeb3jService(
-            KevmWebRpcService(listOf(WebModule, NetModule, EthModule), EvmContextCreator.create())
-        )
-    )
+    var web3 = Web3TestContext.createTestWeb3()
 
     //var web3 = Web3TestContext.createTestWeb3()
     var txManager = Web3TestContext.txManager(web3)
@@ -69,7 +60,7 @@ class AdapterKevmWeb3jServiceCallsTest {
 
     @BeforeEach
     fun setUp() {
-        web3 = Web3j.build(AdapterKevmWeb3jService(KevmWebRpcService(listOf(WebModule, NetModule, EthModule), EvmContextCreator.create())))
+        web3 = Web3TestContext.createTestWeb3()
         txManager = Web3TestContext.txManager(web3)
     }
 
@@ -84,7 +75,7 @@ class AdapterKevmWeb3jServiceCallsTest {
     fun `can get net version`() {
         val result = web3.netVersion().send().result
 
-        assertThat(result).isEqualTo("0x2")
+        assertThat(result).isEqualTo("5")
     }
 
     @Test
@@ -198,7 +189,7 @@ class AdapterKevmWeb3jServiceCallsTest {
             accounts = Accounts().updateContract(
                 Address("0xABCDEF"),
                 Contract(
-                    emptyList(),
+                    emptyByteList(),
                     Storage().set(BigInteger.ONE, Word.coerceFrom(1))
                 )
             )
@@ -449,7 +440,7 @@ class AdapterKevmWeb3jServiceCallsTest {
             "0x0",
             "0x0",
             null,
-            "0x0",
+            null,
             "0x1",
             "0x00000000000000000000000000000000000aaaaa",
             "0x00000000000000000000000000000000000bbbbb",

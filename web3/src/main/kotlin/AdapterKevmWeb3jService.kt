@@ -10,7 +10,9 @@ import org.web3j.protocol.Web3jService
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
 import org.web3j.protocol.websocket.events.Notification
+import java.lang.RuntimeException
 import java.util.concurrent.CompletableFuture
+import org.web3j.protocol.core.Response.Error as Web3jError
 
 class AdapterKevmWeb3jService(
     val service: KevmWebRpcService,
@@ -21,9 +23,13 @@ class AdapterKevmWeb3jService(
 ) : Web3jService {
 
     override fun <T : Response<*>?> send(request: Request<*, out Response<*>>, responseType: Class<T>): T {
-        val kevmRequest = web3RequestToKevm(request)
-        val kevmResponse = service.processRequest(kevmRequest)
-        return kevmResponseToWeb3j(kevmResponse, responseType)
+        return try {
+            val kevmRequest = web3RequestToKevm(request)
+            val kevmResponse = service.processRequest(kevmRequest)
+            kevmResponseToWeb3j(kevmResponse, responseType)
+        } catch (e: Exception) {
+            createErrorResponse(responseType, e, request)
+        }
     }
 
     private fun <T : Response<*>?> kevmResponseToWeb3j(response: RpcResponse<*>?, responseType: Class<T>): T {
@@ -34,6 +40,20 @@ class AdapterKevmWeb3jService(
     private fun web3RequestToKevm(request: Request<*, out Response<*>>): RpcRequest<*> {
         val requestJson = web3jObjectMapper.writeValueAsString(request)
         return kevmObjectMapper.readValue(requestJson, RpcRequest::class.java)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Response<*>?> createErrorResponse(
+        responseType: Class<T>,
+        e: Exception,
+        request: Request<*, out Response<*>>
+    ): T {
+        val instance: T = (responseType.constructors[0].newInstance() as T) ?: throw RuntimeException("can't create ${responseType} instance")
+        instance?.setError(Web3jError(-1, e.message))
+        instance?.setId(request.id)
+        instance?.setJsonrpc(request.jsonrpc)
+
+        return instance
     }
 
     override fun <T : Response<*>> sendAsync(
