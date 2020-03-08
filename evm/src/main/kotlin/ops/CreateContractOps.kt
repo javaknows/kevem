@@ -1,10 +1,12 @@
 package org.kevm.evm.ops
 
+import org.kevm.common.KevmException
 import org.kevm.evm.EIP
 import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.model.*
 import org.kevm.evm.numbers.generateAddress
 import org.kevm.evm.numbers.generateAddressFromSenderAndNonce
+import java.math.BigInteger
 
 // TODO - create a compatibility pack around this
 object CreateContractOps {
@@ -61,11 +63,13 @@ object CreateContractOps {
                 if (context.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
                     HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
                 else {
+                    val contractAddress = context.currentCallCtx.contractAddress ?: throw KevmException("can't determine contract address")
                     val contract = Contract(BigIntegerIndexedList.fromBytes(newContractCode))
                     val balance = v.toBigInt()
                     val newEvmState = accounts
                         .updateBalanceAndContract(atAddress, balance, contract)
                         .updateBalance(currentAddress, accounts.balanceOf(currentAddress).subtract(balance))
+                        .updateNonce(contractAddress, accounts.nonceOf(contractAddress).add(BigInteger.ONE))
 
                     val newStack2 = newStack.pushWord(atAddress.toWord())
 
