@@ -40,7 +40,7 @@ class GeneralStateTestCaseRunnerTest {
 
     //}
 
-    @AfterAll
+    @AfterEach
     fun tearDown() {
         server.stop()
         client.close()
@@ -149,14 +149,35 @@ class GeneralStateTestCaseRunnerTest {
         val wsResult = statefulTransactionProcessor.getWorldState()
 
         results.forEach {
-            val (address, expectedResult) = it
+            val (a, expectedResult) = it
+            val address = Address(a)
+
+            if (expectedResult.shouldnotexist == "1")
+                assertThat(wsResult.accounts.accountExists(address)).isFalse()
+            else
+                assertThat(wsResult.accounts.accountExists(address)).isTrue()
 
             expectedResult.balance?.also { expectedBalance ->
-                val balance = wsResult.accounts.balanceOf(Address(address))
-
-                println("address: $address, balance: $balance")
-
+                val balance = wsResult.accounts.balanceOf(address)
                 assertThat(balance).isEqualTo(toBigInteger0xTo0(expectedBalance))
+            }
+            expectedResult.nonce?.also { expectedNonce ->
+                val nonce = wsResult.accounts.nonceOf(address)
+                assertThat(nonce).isEqualTo(toBigInteger0xTo0(expectedNonce))
+            }
+            expectedResult.code?.also { expectedCode ->
+                val code = wsResult.accounts.codeAt(address)
+                val codeString = bytesToString(code.toList())
+                assertThat(codeString).isEqualTo(expectedCode)
+            }
+            expectedResult.storage?.also { expectedStorage ->
+                expectedStorage.forEach {
+                    val (index, expectedValue) = it
+
+                    val value = wsResult.accounts.storageAt(address, toBigInteger(index))
+
+                    assertThat(value).isEqualTo(Word.coerceFrom(expectedValue))
+                }
             }
         }
     }

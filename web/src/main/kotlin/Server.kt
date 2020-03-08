@@ -38,6 +38,8 @@ class Server {
         stopped.signal()
     }
 
+    fun isRunning() = running
+
     private fun createServer(port: Int, evmContext: EvmContext): Server {
         val modules = listOf(WebModule, NetModule, EthModule, TestModule)
 
