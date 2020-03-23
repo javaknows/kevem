@@ -3,10 +3,7 @@ package org.kevm.dsl
 import org.kevm.common.KevmException
 import org.kevm.evm.model.*
 import org.kevm.evm.toByteList
-import org.kevm.rpc.AppConfig
-import org.kevm.rpc.LocalAccount
-import org.kevm.rpc.LocalAccounts
-import org.kevm.rpc.toBigInteger
+import org.kevm.rpc.*
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -51,9 +48,16 @@ class EvmCreationResult(
 
 @Boundary
 class AccountCreator {
-    var balance: BigInteger = BigInteger.ZERO
+    var balance: BigInteger = eth(100)
     var address: String? = null
     var privateKey: String? = null
+}
+
+@Boundary
+class MnemonicAccountCreator {
+    var balance: BigInteger = eth(100)
+    var numAccounts: Int = 1
+    var mnemonic: String? = null
 }
 
 @Boundary
@@ -81,6 +85,25 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
         }
 
         creationContext.addAccount(account, localAccount)
+    }
+
+    fun mnemonicAccounts(create: MnemonicAccountCreator.() -> Unit) {
+        val accountCreator = MnemonicAccountCreator().apply(create)
+
+        val balance = accountCreator.balance
+        val numAccounts = accountCreator.numAccounts
+        val mnemonic = accountCreator.mnemonic
+
+        val keyPairs =
+            if (mnemonic != null) keyPairsFromMnemonic(mnemonic, numAccounts)
+            else throw KevmException("mnemonic field must be set in mnemonicAccounts")
+
+        keyPairs.forEach { kp ->
+            val account = Account(Address(kp.address), balance)
+            val localAccount =  LocalAccount(Address(kp.address), toByteList(kp.privateKey), false)
+
+            creationContext.addAccount(account, localAccount)
+        }
     }
 }
 

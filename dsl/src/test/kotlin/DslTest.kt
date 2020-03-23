@@ -6,6 +6,8 @@ import org.junit.jupiter.api.assertThrows
 import org.kevm.common.KevmException
 
 import org.kevm.evm.model.Address
+import org.kevm.evm.toByteList
+import org.kevm.rpc.LocalAccount
 import java.lang.Exception
 import java.math.BigInteger
 import java.time.Clock
@@ -40,6 +42,19 @@ class DslTest {
         assertThat(
             accounts.balanceOf(Address("0x4e7d932c0f12cfe14295b86824b37bb1062bc29e"))
         ).isEqualTo("1000000000000000000")
+    }
+
+    @Test
+    fun `created account has default balance of 100 ETH`() {
+        val accounts = kevm {
+            account {
+                address = "0xADD7E55"
+            }
+        }.accounts
+
+        assertThat(
+            accounts.balanceOf(Address("0xADD7E55"))
+        ).isEqualTo("100000000000000000000")
     }
 
     @Test
@@ -126,4 +141,79 @@ class DslTest {
 
         assertThat(coinbase).isEqualTo("0x123456")
     }
+
+    @Test
+    fun `can create accounts using valid mnemonic`() {
+        val evm = kevm {
+            mnemonicAccounts {
+                mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
+                balance = eth(3)
+                numAccounts = 2
+            }
+        }
+
+        assertThat(evm.accounts.list()).hasSize(2)
+
+        assertThat(
+            evm.accounts.balanceOf(Address("0x4e7d932c0f12cfe14295b86824b37bb1062bc29e"))
+        ).isEqualTo("3000000000000000000")
+
+        assertThat(
+            evm.accounts.balanceOf(Address("0x6e69847df277bb9c3e88f170be883d4a6195f180"))
+        ).isEqualTo("3000000000000000000")
+
+        assertThat(evm.localAccounts.toSet()).isEqualTo(
+            setOf(
+                LocalAccount(
+                    Address("0x4e7d932c0f12cfe14295b86824b37bb1062bc29e"),
+                    toByteList("0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395"),
+                    false
+                ),
+                LocalAccount(
+                    Address("0x6e69847df277bb9c3e88f170be883d4a6195f180"),
+                    toByteList("0xc2a4b649d0516ea346b41e6524b4cc43d87f14f9eb33a63469bba75a10842147"),
+                    false
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `mnemonic account has default balance of 100 ETH`() {
+        val evm = kevm {
+            mnemonicAccounts {
+                mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
+                numAccounts = 1
+            }
+        }
+
+        assertThat(
+            evm.accounts.balanceOf(Address("0x4e7d932c0f12cfe14295b86824b37bb1062bc29e"))
+        ).isEqualTo("100000000000000000000")
+    }
+
+    @Test
+    fun `one mnemonic account is created by default`() {
+        val evm = kevm {
+            mnemonicAccounts {
+                mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
+            }
+        }
+
+        assertThat(evm.accounts.list()).hasSize(1)
+    }
+
+    @Test
+    fun `invalid mnemonic creates exception when creating mnemonic account`() {
+        val exception: KevmException = assertThrows {
+            kevm {
+                mnemonicAccounts {
+                    mnemonic = "INVALID stay jeans limb improve struggle return predict flower assume giraffe mother spring"
+                }
+            }
+        }
+
+        assertThat(exception.message).contains("invalid mnemonic")
+    }
+
 }
