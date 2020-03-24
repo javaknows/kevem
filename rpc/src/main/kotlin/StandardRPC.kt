@@ -18,7 +18,7 @@ data class AppConfig(
     val peerCount: Int = 0,
     val coinbase: String = "0x0",
     val hashRate: BigInteger = BigInteger.ZERO,
-    val clientVersion: String = "KEVM TestRPC", // TODO - generate real client version
+    val clientVersion: String = "KEVM TestRPC", // TODO - generate real client version - https://github.com/wjsrobertson/kevm/issues/22
     val difficulty: BigInteger = BigInteger.ZERO, // 17,171,480,576
     val extraData: Word = Word.Zero,
     val gasPrice: BigInteger = BigInteger("20000000000"),
@@ -112,7 +112,7 @@ class StandardRPC(
 
         val s = zeroPadTruncate(signed.r.toList(), 32) +
                 zeroPadTruncate(signed.s.toList(), 32) +
-                signed.v.map{ (it.toInt() - 27).toByte() }.toList() // not sure if subtracting the 27 is correct here
+                signed.v.map { (it.toInt() - 27).toByte() }.toList() // not sure if subtracting the 27 is correct here
 
         return bytesToString(s.map { Byte(it.toInt() and 0xFF) })
     }

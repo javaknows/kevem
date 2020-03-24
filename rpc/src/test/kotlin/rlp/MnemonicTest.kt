@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.kevm.common.KevmException
 import org.kevm.rpc.KeyPair
-import org.kevm.rpc.keyPairsFromMnemonic
+import org.kevm.rpc.Mnemonic
+
 
 class MnemonicTest {
 
@@ -14,7 +15,7 @@ class MnemonicTest {
         val mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
         val numAccounts = 2
 
-        val generated = keyPairsFromMnemonic(mnemonic, numAccounts)
+        val generated = Mnemonic.keyPairsFromMnemonic(mnemonic, numAccounts)
 
         assertThat(generated).isEqualTo(
             listOf(
@@ -36,7 +37,7 @@ class MnemonicTest {
         val numAccounts = 2
 
         val exception: KevmException = assertThrows {
-            keyPairsFromMnemonic(mnemonic, numAccounts)
+            Mnemonic.keyPairsFromMnemonic(mnemonic, numAccounts)
         }
 
         assertThat(exception.message).contains("invalid mnemonic")

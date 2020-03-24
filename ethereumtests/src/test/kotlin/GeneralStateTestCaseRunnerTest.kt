@@ -16,7 +16,6 @@ import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.rpc.*
-import org.kevm.web.EvmContextCreator
 import org.kevm.web.Server
 import org.kevm.web.module.EthSendTransactionRequest
 import org.kevm.web.module.EvmContext

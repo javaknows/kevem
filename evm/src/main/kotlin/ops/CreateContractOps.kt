@@ -14,7 +14,7 @@ object CreateContractOps {
         val (elements, newStack) = stack.popWords(3)
         val (v, p, s) = elements
 
-        val sender = context.currentCallCtx.caller
+        val sender = context.currentCallCtx.contractAddress ?: context.currentCallCtx.caller
         val nonce = context.accounts.nonceOf(sender)
         val newContractAddress = generateAddressFromSenderAndNonce(sender, nonce)
 

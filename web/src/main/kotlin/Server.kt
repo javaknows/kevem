@@ -19,10 +19,12 @@ class Server {
 
     private var jaxRsServer: org.apache.cxf.endpoint.Server? = null // guarded by runningLock
 
-    fun start(port: Int, keepAlive: Boolean = false, evmContext: EvmContext) = locked(runningLock) {
+    fun start(port: Int, keepAlive: Boolean = false, evmContext: EvmContext, onStart: () -> Unit = {}) = locked(runningLock) {
         jaxRsServer = createServer(port, evmContext)
         jaxRsServer?.start()
         running = true
+
+        onStart()
 
         if (keepAlive) {
             while (running) {

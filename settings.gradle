@@ -7,5 +7,6 @@ include 'web3'
 include 'dsl'
 include 'web'
 include 'ethereumtests'
+include 'app'
 
 rootProject.name = 'kevm'

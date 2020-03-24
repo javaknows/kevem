@@ -508,6 +508,7 @@ Feature: Single Opcode Execution
       | 0xC |
       | 0xD |
 
+  @Only
   Scenario: a contract is created and deployed with CREATE
     Given the contract address is 0xEE
     And the account with address 0xEE has balance 0x9
@@ -517,9 +518,9 @@ Feature: Single Opcode Execution
     And 0x4 is pushed onto the stack
     When opcode CREATE is executed
     Then the balance of account 0xEE is now 5
-    And the balance of account 0xbd770416a3345f91e4b34576cb804a576fa48eb1 is now 4
-    And the code at address 0xbd770416a3345f91e4b34576cb804a576fa48eb1 is 0x123456
-    And the stack contains 0xbd770416a3345f91e4b34576cb804a576fa48eb1
+    And the balance of account 0xcb5e6c71453ca7b77d1bdce5d5bbac1c3ef28730 is now 4
+    And the code at address 0xcb5e6c71453ca7b77d1bdce5d5bbac1c3ef28730 is 0x123456
+    And the stack contains 0xcb5e6c71453ca7b77d1bdce5d5bbac1c3ef28730
 
 
   Scenario: a contract is created and deployed with CREATE2

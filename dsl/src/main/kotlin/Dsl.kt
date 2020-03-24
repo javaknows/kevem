@@ -43,7 +43,7 @@ class EvmCreationResult(
     val clock: Clock,
     val evmConfig: EvmConfig
 ) {
-    fun toWeb3j() = Web3ServiceCreator.createWeb3(appConfig, LocalAccounts(localAccounts), accounts, clock, evmConfig)
+    fun toWeb3j() = Web3ServiceBuilder.buildWeb3(appConfig, LocalAccounts(localAccounts), accounts, clock, evmConfig)
 }
 
 @Boundary
@@ -95,7 +95,7 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
         val mnemonic = accountCreator.mnemonic
 
         val keyPairs =
-            if (mnemonic != null) keyPairsFromMnemonic(mnemonic, numAccounts)
+            if (mnemonic != null) Mnemonic.keyPairsFromMnemonic(mnemonic, numAccounts)
             else throw KevmException("mnemonic field must be set in mnemonicAccounts")
 
         keyPairs.forEach { kp ->
