@@ -1,6 +1,6 @@
-package org.kevm.web
+package org.kevm.rpc
 
-import org.kevm.web.module.EvmContext
+import org.kevm.rpc.module.EvmContext
 
 import org.kevm.evm.Executor
 import org.kevm.evm.StatefulTransactionProcessor

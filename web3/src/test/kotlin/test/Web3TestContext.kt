@@ -8,11 +8,10 @@ import org.kevm.evm.model.*
 import org.kevm.evm.model.Byte
 import org.kevm.evm.toByteList
 import org.kevm.rpc.*
-import org.kevm.web.KevmWebRpcService
-import org.kevm.web.module.EthModule
-import org.kevm.web.module.EvmContext
-import org.kevm.web.module.NetModule
-import org.kevm.web.module.WebModule
+import org.kevm.rpc.module.EthModule
+import org.kevm.rpc.module.EvmContext
+import org.kevm.rpc.module.NetModule
+import org.kevm.rpc.module.WebModule
 import org.kevm.web3.AdapterKevmWeb3jService
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
@@ -104,7 +103,7 @@ object Web3TestContext {
 
         return Web3j.build(
             AdapterKevmWeb3jService(
-                KevmWebRpcService(listOf(WebModule, NetModule, EthModule), evmContext)
+                KevmRpcService(listOf(WebModule, NetModule, EthModule), evmContext)
             )
         )
     }

@@ -3,6 +3,7 @@ import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.fail
 import org.kevm.app.ApacheCommonsCliCommandLineParser
+import org.kevm.app.CommandLineArguments
 import java.math.BigInteger
 
 class ApacheCommonsCliCommandLineParserTest {
@@ -26,11 +27,130 @@ class ApacheCommonsCliCommandLineParserTest {
             assertThat(commandLine.gasLimit).isEqualTo(BigInteger("1000000000000000000000000000000"))
             assertThat(commandLine.networkId).isEqualTo(1)
             assertThat(commandLine.chainId).isEqualTo(0)
+            assertThat(commandLine.verbose).isEqualTo(false)
             assertThat(commandLine.version).isEqualTo(false)
             assertThat(commandLine.help).isEqualTo(false)
         } else {
             fail("commandLine is null")
         }
+    }
+
+    @Test
+    internal fun `check long opt verbose flag is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--verbose"), true) { it.verbose }
+
+    @Test
+    internal fun `check verbose flag is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-v"), true) { it.verbose }
+
+    @Test
+    internal fun `check long opt port is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--port", "6666"), 6666) { it.port }
+
+    @Test
+    internal fun `check port is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-p", "6666"), 6666) { it.port }
+
+    @Test
+    internal fun `check long opt host is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--host", "example.com"), "example.com") { it.host }
+
+    @Test
+    internal fun `check host is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-h", "example.com"), "example.com") { it.host }
+
+    @Test
+    internal fun `check long opt numAccounts is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--numAccounts", "10"), 10) { it.numAccounts }
+
+    @Test
+    internal fun `check numAccounts is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-n", "10"), 10) { it.numAccounts }
+
+    @Test
+    internal fun `check long opt mnemonic is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--mnemonic", "foo"), "foo") { it.mnemonic }
+
+    @Test
+    internal fun `check mnemonic is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-mnemonic", "foo"), "foo") { it.mnemonic }
+
+    @Test
+    internal fun `check long opt defaultBalanceEther is parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("--defaultBalanceEther", "100"),
+            BigInteger("100")
+        ) { it.defaultBalanceEther }
+
+    @Test
+    internal fun `check defaultBalanceEther is parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("-defaultBalanceEther", "100"),
+            BigInteger("100")
+        ) { it.defaultBalanceEther }
+
+
+    @Test
+    internal fun `check long opt gasPrice is parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("--gasPrice", "100"),
+            BigInteger("100")
+        ) { it.gasPrice }
+
+    @Test
+    internal fun `check gasPrice is parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("-gasPrice", "100"),
+            BigInteger("100")
+        ) { it.gasPrice }
+
+    @Test
+    internal fun `check long opt gasLimit is parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("--gasLimit", "100"),
+            BigInteger("100")
+        ) { it.gasLimit }
+
+    @Test
+    internal fun `check gasLimit is parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("-gasLimit", "100"),
+            BigInteger("100")
+        ) { it.gasLimit }
+
+    @Test
+    internal fun `check long opt networkId is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--networkId", "10"), 10) { it.networkId }
+
+    @Test
+    internal fun `check networkId is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-i", "10"), 10) { it.networkId }
+
+    @Test
+    internal fun `check long opt chainId is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--chainId", "10"), 10) { it.chainId }
+
+    @Test
+    internal fun `check chainId is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-c", "10"), 10) { it.chainId }
+
+    @Test
+    internal fun `check long opt version flag is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--version"), true) { it.version }
+
+    @Test
+    internal fun `check long opt help flag is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--help"), true) { it.help }
+
+    internal fun <T> assertParsedArgumentValueMatches(
+        args: Array<String>,
+        value: T,
+        check: (cmd: CommandLineArguments) -> T
+    ) {
+        val commandLine = underTest.parseCommandLine(args).commandLine!!
+        val actual = check(commandLine)
+
+        assertThat(actual).isEqualTo(value)
     }
 
     @Test
@@ -48,5 +168,6 @@ class ApacheCommonsCliCommandLineParserTest {
             .contains("--numAccounts")
             .contains("--port")
             .contains("--version")
+            .contains("--verbose")
     }
 }

@@ -1,4 +1,4 @@
-package org.kevm.web.module
+package org.kevm.rpc.module
 
 import org.kevm.rpc.SetChainParamsRequestDTO
 import org.kevm.rpc.toBigInteger

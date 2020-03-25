@@ -1,4 +1,4 @@
-package org.kevm.web.module
+package org.kevm.rpc.module
 
 import org.kevm.rpc.StandardRPC
 import org.kevm.rpc.TestRPC

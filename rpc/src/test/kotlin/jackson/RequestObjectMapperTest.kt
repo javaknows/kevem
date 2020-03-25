@@ -1,4 +1,4 @@
-package org.kevm.web.jackson
+package org.kevm.rpc.jackson
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-import org.kevm.web.module.RpcRequest
+import org.kevm.rpc.module.RpcRequest
 
 class TestClientVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<String>>(jsonrpc, method, id, emptyList())

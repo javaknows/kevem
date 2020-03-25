@@ -14,10 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.kevm.evm.collections.BigIntegerIndexedList
 import org.kevm.evm.model.*
 import org.kevm.evm.toByteList
-import org.kevm.rpc.AppConfig
-import org.kevm.rpc.LocalAccount
-import org.kevm.rpc.LocalAccounts
-import org.kevm.rpc.toBigInteger
+import org.kevm.rpc.*
 import java.math.BigInteger
 import java.time.Instant
 
@@ -31,7 +28,7 @@ class RpcServerIntegrationTest {
     @BeforeEach
     internal fun setUp() {
         server.start(
-            9002, false, createTestEvmContext()
+            "localhost", 9002, false, createTestEvmContext()
         )
     }
 

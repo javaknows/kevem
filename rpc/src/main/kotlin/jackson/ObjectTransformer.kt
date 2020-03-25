@@ -1,4 +1,4 @@
-package org.kevm.web.jackson
+package org.kevm.rpc.jackson
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper

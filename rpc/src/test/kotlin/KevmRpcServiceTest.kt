@@ -4,10 +4,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.kevm.web.KevmWebRpcService
-import org.kevm.web.module.*
+import org.kevm.rpc.KevmRpcService
+import org.kevm.rpc.module.*
 
-class KevmWebRpcServiceTest {
+class KevmRpcServiceTest {
 
     @Test
     internal fun `module chain executes only one matching request`() {
@@ -17,7 +17,7 @@ class KevmWebRpcServiceTest {
         val secondModule = mock<RpcModule> {
             on { process(any(), any()) } doReturn  ClientVersionResponse(ClientVersionRequest("", "", 2), "")
         }
-        val underTest = KevmWebRpcService(
+        val underTest = KevmRpcService(
             listOf(firstModule, secondModule), mock()
         )
 

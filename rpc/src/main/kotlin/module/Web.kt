@@ -1,6 +1,6 @@
-package org.kevm.web.module
+package org.kevm.rpc.module
 
-import org.kevm.web.module.Method.Companion.create
+import org.kevm.rpc.module.Method.Companion.create
 
 class ClientVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<Int>>(jsonrpc, method, id, emptyList())

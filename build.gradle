@@ -1,5 +1,6 @@
-group 'com.gammadex'
-version '1.0-SNAPSHOT'
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
+}
 
 ext {
     junitParamsVersion = '5.4.0'
@@ -14,12 +15,15 @@ ext {
     jacksonJsonProviderVersion = '2.10.2.1'
     jacksonYamlDataFormatVersion = '2.10.2'
     jacksonModuleKotlin = '2.10.2'
-    httpComponentsVersion= '4.5.11'
+    httpComponentsVersion = '4.5.11'
 }
 
 allprojects {
+    group 'org.kevm'
+    version '0.1-SNAPSHOT'
+
     apply plugin: 'java'
-    apply plugin: 'jacoco' // TODO re-enable when back online
+    apply plugin: 'jacoco'
 
     sourceCompatibility = 1.10
     targetCompatibility = 1.10
@@ -41,10 +45,10 @@ allprojects {
 
 task codeCoverageReport(type: JacocoReport) {
     dependsOn = subprojects.test
-    executionData = fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+    getExecutionData().from("**/build/jacoco/*.exec")
 
     subprojects.each {
-        if (! it.path.contains("compat")) {
+        if (!it.path.contains("compat") && !it.path.contains("ethereumtests") ) {
             sourceSets(it.sourceSets.main)
         }
     }

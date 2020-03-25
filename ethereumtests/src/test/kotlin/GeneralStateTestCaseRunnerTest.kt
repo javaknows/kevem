@@ -17,8 +17,8 @@ import org.kevm.evm.gas.*
 import org.kevm.evm.model.*
 import org.kevm.rpc.*
 import org.kevm.web.Server
-import org.kevm.web.module.EthSendTransactionRequest
-import org.kevm.web.module.EvmContext
+import org.kevm.rpc.module.EthSendTransactionRequest
+import org.kevm.rpc.module.EvmContext
 import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.Keys
 import java.math.BigInteger
@@ -118,7 +118,7 @@ class GeneralStateTestCaseRunnerTest {
 
         val evmContext = EvmContext(standardRpc, testRpc)
 
-        server.start(9002, false, evmContext)
+        server.start("localhost", 9002, false, evmContext)
 
         val txRequest = EthSendTransactionRequest(
             "2.0", "eth_sendTransaction", 1L, listOf(

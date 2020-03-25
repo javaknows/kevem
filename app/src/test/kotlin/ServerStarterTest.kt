@@ -1,11 +1,14 @@
 import com.nhaarman.mockitokotlin2.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.BeforeEach
 import org.kevm.app.*
 import org.kevm.web.Server
-import org.kevm.web.module.EvmContext
+import org.kevm.rpc.module.EvmContext
+import org.mockito.ArgumentMatchers.matches
 import org.mockito.Mockito.reset
+import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.RuntimeException
 
@@ -92,7 +95,7 @@ internal class ServerStarterTest {
             on { create(any()) } doReturn Pair(evmContext, "")
         }
         val server = mock<Server> {
-            on { start(eq(9000), eq(true), eq(evmContext), any()) } doThrow RuntimeException("startup problem")
+            on { start(eq("example.com"), eq(9000), eq(true), eq(evmContext), any()) } doThrow RuntimeException("startup problem")
         }
 
         val underTest = ServerStarter(commandLineParser, evmContextCreator, server, outStream, errStream)
@@ -116,7 +119,114 @@ internal class ServerStarterTest {
         val underTest = ServerStarter(commandLineParser, evmContextCreator, server, outStream, errStream)
         underTest.startServer()
 
-        verify(server).start(eq(9000), eq(true), eq(evmContext), any())
+        verify(server).start(eq("example.com"), eq(9000), eq(true), eq(evmContext), any())
     }
 
+    @Test
+    internal fun `server exception with no cause and no message has unknown error message`() {
+        val commandLineParser = mock<CommandLineParser> {
+            on { parseCommandLine(any()) } doReturn CommandLineParseResult(
+                CommandLineArguments(port = 9000, host = "example.com")
+            )
+        }
+        val evmContextCreator = mock<ServerEvmContextCreator> {
+            on { create(any()) } doThrow exceptionWithNoMessageAndNoCause()
+        }
+
+        val underTest = ServerStarter(commandLineParser, evmContextCreator, server, outStream, errStream)
+        underTest.startServer()
+
+        verify(errStream).println("Error starting app: unknown error. Try running with --verbose option for more information")
+    }
+
+    @Test
+    internal fun `server exception with no message and cause with no message has unknown error message`() {
+        val commandLineParser = mock<CommandLineParser> {
+            on { parseCommandLine(any()) } doReturn CommandLineParseResult(
+                CommandLineArguments(port = 9000, host = "example.com")
+            )
+        }
+        val evmContextCreator = mock<ServerEvmContextCreator> {
+            on { create(any()) } doThrow exceptionWithNoMessageAndCauseWithNoMessage()
+        }
+
+        val underTest = ServerStarter(commandLineParser, evmContextCreator, server, outStream, errStream)
+        underTest.startServer()
+
+        verify(errStream).println("Error starting app: unknown error. Try running with --verbose option for more information")
+    }
+
+    @Test
+    internal fun `server exception with no message and cause with a message has the message from cause`() {
+        val commandLineParser = mock<CommandLineParser> {
+            on { parseCommandLine(any()) } doReturn CommandLineParseResult(
+                CommandLineArguments(port = 9000, host = "example.com")
+            )
+        }
+        val evmContextCreator = mock<ServerEvmContextCreator> {
+            on { create(any()) } doThrow makeExceptionWithNoMessageAndCauseWithMessage()
+        }
+
+        val underTest = ServerStarter(commandLineParser, evmContextCreator, server, outStream, errStream)
+        underTest.startServer()
+
+        verify(errStream).println("Error starting app: foo message")
+    }
+
+    @Test
+    internal fun `server exception with verbose flag set prints exception stack trace`() {
+        val commandLineParser = mock<CommandLineParser> {
+            on { parseCommandLine(any()) } doReturn CommandLineParseResult(
+                CommandLineArguments(port = 9000, host = "example.com", verbose = true)
+            )
+        }
+        val evmContextCreator = mock<ServerEvmContextCreator> {
+            on { create(any()) } doThrow exceptionWithNoMessageAndNoCause()
+        }
+
+        val outputStream = ByteArrayOutputStream()
+        val errStream = PrintStream(outputStream)
+
+        val underTest = ServerStarter(commandLineParser, evmContextCreator, server, outStream, errStream)
+        underTest.startServer()
+
+        val errOutput = outputStream.toString()
+
+        assertThat(errOutput)
+            .contains("java.lang.RuntimeException")
+            .contains("at org.kevm.app.ServerEvmContextCreator.create")
+            .contains("at org.kevm.app.ServerStarter.startServer")
+    }
+
+    private fun exceptionWithNoMessageAndNoCause(): Exception {
+        try {
+            throw RuntimeException()
+        } catch (e: Exception) {
+            return e
+        }
+    }
+
+    private fun exceptionWithNoMessageAndCauseWithNoMessage(): Exception {
+        try {
+            throw RuntimeException()
+        } catch (e: Exception) {
+            try {
+                throw RuntimeException(null, e)
+            } catch (e2: Exception) {
+                return e2
+            }
+        }
+    }
+
+    private fun makeExceptionWithNoMessageAndCauseWithMessage(): Exception {
+        try {
+            throw RuntimeException()
+        } catch (e: Exception) {
+            try {
+                throw RuntimeException("foo message", e)
+            } catch (e2: Exception) {
+                return e2
+            }
+        }
+    }
 }

@@ -8,7 +8,6 @@ import org.kevm.evm.numbers.generateAddress
 import org.kevm.evm.numbers.generateAddressFromSenderAndNonce
 import java.math.BigInteger
 
-// TODO - create a compatibility pack around this
 object CreateContractOps {
     fun create(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, newStack) = stack.popWords(3)
@@ -81,5 +80,3 @@ object CreateContractOps {
         }
     }
 }
-
-

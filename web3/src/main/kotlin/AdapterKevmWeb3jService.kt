@@ -2,9 +2,9 @@ package org.kevm.web3
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Flowable
-import org.kevm.web.KevmWebRpcService
-import org.kevm.web.jackson.RequestObjectMapper
-import org.kevm.web.module.*
+import org.kevm.rpc.jackson.RequestObjectMapper
+import org.kevm.rpc.module.*
+import org.kevm.rpc.KevmRpcService
 import org.web3j.protocol.ObjectMapperFactory
 import org.web3j.protocol.Web3jService
 import org.web3j.protocol.core.Request
@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 import org.web3j.protocol.core.Response.Error as Web3jError
 
 class AdapterKevmWeb3jService(
-    val service: KevmWebRpcService,
+    val service: KevmRpcService,
     val web3jObjectMapper: ObjectMapper = ObjectMapperFactory.getObjectMapper(false),
     val kevmObjectMapper: ObjectMapper = RequestObjectMapper().create(
         WebModule.supported() + NetModule.supported() + EthModule.supported()

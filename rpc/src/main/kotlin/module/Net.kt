@@ -1,4 +1,4 @@
-package org.kevm.web.module
+package org.kevm.rpc.module
 
 class NetVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<Int>>(jsonrpc, method, id, emptyList())

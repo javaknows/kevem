@@ -9,8 +9,8 @@ import org.kevm.rpc.AppConfig
 import org.kevm.rpc.LocalAccount
 import org.kevm.rpc.LocalAccounts
 import org.kevm.rpc.Mnemonic
-import org.kevm.web.EvmContextBuilder
-import org.kevm.web.module.EvmContext
+import org.kevm.rpc.EvmContextBuilder
+import org.kevm.rpc.module.EvmContext
 import java.math.BigInteger
 
 class ServerEvmContextCreator(

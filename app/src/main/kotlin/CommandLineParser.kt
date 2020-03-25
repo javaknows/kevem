@@ -15,6 +15,7 @@ data class CommandLineArguments(
     val defaultBalanceEther: BigInteger = BigInteger("100"),
     val gasPrice: BigInteger = BigInteger("20000000000"),
     val gasLimit: BigInteger = BigInteger("1000000000000000000000000000000"), // ganache is 6721975
+    val verbose: Boolean = false,
     val networkId: Int = 1,
     val chainId: Int = 0,
     val version: Boolean = false,
@@ -45,8 +46,9 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
         addOption(Option("l", "gasLimit", true, "block gas limit in wei"))
         addOption(Option("i", "networkId", true, "network ID"))
         addOption(Option("c", "chainId", true, "chain ID"))
-        addOption(Option(null, "version", true, "display version then exit"))
-        addOption(Option(null, "help", true, "display help then exit"))
+        addOption(Option("v", "verbose", false, "print extra output including stack traces for startup errors"))
+        addOption(Option(null, "version", false, "display version then exit"))
+        addOption(Option(null, "help", false, "display help then exit"))
     }
 
     override fun parseCommandLine(args: Array<String>): CommandLineParseResult {
@@ -64,6 +66,7 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
                 gasLimit = bigIntValue("gasLimit", parsed, defaults.gasLimit),
                 networkId = intValue("networkId", parsed, defaults.networkId),
                 chainId = intValue("chainId", parsed, defaults.chainId),
+                verbose = booleanValue("verbose", parsed, defaults.verbose),
                 version = booleanValue("version", parsed, defaults.version),
                 help = booleanValue("help", parsed, defaults.help)
             )
@@ -84,7 +87,7 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
         parsedCommandLine.getOptionValue(argName)?.toBigInteger() ?: default
 
     private fun booleanValue(argName: String, parsedCommandLine: ApacheCommandLine, default: Boolean) =
-        parsedCommandLine.getOptionValue(argName)?.toLowerCase()?.toBoolean() ?: default
+        parsedCommandLine.hasOption(argName)
 
     override fun help(): String {
         val writer = StringWriter()

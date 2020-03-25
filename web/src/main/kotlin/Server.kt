@@ -5,10 +5,10 @@ import org.apache.cxf.endpoint.Server
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider
 import org.kevm.evm.locking.locked
-import org.kevm.web.jackson.RequestObjectMapper
-import org.kevm.web.module.*
+import org.kevm.rpc.KevmRpcService
+import org.kevm.rpc.jackson.RequestObjectMapper
+import org.kevm.rpc.module.*
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.reflect.KClass
 
 class Server {
     private val runningLock = ReentrantLock()
@@ -19,8 +19,8 @@ class Server {
 
     private var jaxRsServer: org.apache.cxf.endpoint.Server? = null // guarded by runningLock
 
-    fun start(port: Int, keepAlive: Boolean = false, evmContext: EvmContext, onStart: () -> Unit = {}) = locked(runningLock) {
-        jaxRsServer = createServer(port, evmContext)
+    fun start(host: String, port: Int, keepAlive: Boolean = false, evmContext: EvmContext, onStart: () -> Unit = {}) = locked(runningLock) {
+        jaxRsServer = createServer(host, port, evmContext)
         jaxRsServer?.start()
         running = true
 
@@ -42,19 +42,19 @@ class Server {
 
     fun isRunning() = running
 
-    private fun createServer(port: Int, evmContext: EvmContext): Server {
+    private fun createServer(host: String, port: Int, evmContext: EvmContext): Server {
         val modules = listOf(WebModule, NetModule, EthModule, TestModule)
 
         return JAXRSServerFactoryBean().apply {
             providers = listOf<Any>(JacksonJsonProvider(RequestObjectMapper().create(
                 modules.fold(emptyMap()) { a, m -> a + m.supported() }
             )))
-            address = "http://localhost:$port/"
+            address = "http://$host:$port/"
 
             setResourceClasses(KevmWebRpcService::class.java)
             setResourceProvider(
                 KevmWebRpcService::class.java, SingletonResourceProvider(
-                    KevmWebRpcService(modules, evmContext)
+                    KevmWebRpcService(KevmRpcService(modules, evmContext))
                 )
             )
         }.create()

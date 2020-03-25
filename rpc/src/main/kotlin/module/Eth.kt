@@ -1,7 +1,7 @@
-package org.kevm.web.module
+package org.kevm.rpc.module
 
 import org.kevm.rpc.*
-import org.kevm.web.jackson.ObjectTransformer
+import org.kevm.rpc.jackson.ObjectTransformer
 
 class EthProtocolVersionRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<Int>>(jsonrpc, method, id, emptyList())
