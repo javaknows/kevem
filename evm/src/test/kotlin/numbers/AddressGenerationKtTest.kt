@@ -4,8 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import org.kevm.evm.model.Address
-import org.kevm.evm.numbers.generateAddressFromSenderAndNonce
+import org.kevem.evm.model.Address
+import org.kevem.evm.numbers.generateAddressFromSenderAndNonce
 import java.math.BigInteger
 
 internal class AddressGenerationKtTest {

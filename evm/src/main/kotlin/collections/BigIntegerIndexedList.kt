@@ -1,7 +1,7 @@
-package org.kevm.evm.collections
+package org.kevem.evm.collections
 
-import org.kevm.evm.model.Byte
-import org.kevm.evm.toByteList
+import org.kevem.evm.model.Byte
+import org.kevem.evm.toByteList
 import java.math.BigInteger
 
 /**

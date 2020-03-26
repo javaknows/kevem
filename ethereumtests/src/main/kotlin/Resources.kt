@@ -1,4 +1,4 @@
-package org.kevm.ethereumtests
+package org.kevem.ethereumtests
 
 class Resources
 

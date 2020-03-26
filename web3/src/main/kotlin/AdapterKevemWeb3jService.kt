@@ -1,10 +1,10 @@
-package org.kevm.web3
+package org.kevem.web3
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Flowable
-import org.kevm.rpc.jackson.RequestObjectMapper
-import org.kevm.rpc.module.*
-import org.kevm.rpc.KevmRpcService
+import org.kevem.rpc.jackson.RequestObjectMapper
+import org.kevem.rpc.module.*
+import org.kevem.rpc.KevemRpcService
 import org.web3j.protocol.ObjectMapperFactory
 import org.web3j.protocol.Web3jService
 import org.web3j.protocol.core.Request
@@ -14,32 +14,32 @@ import java.lang.RuntimeException
 import java.util.concurrent.CompletableFuture
 import org.web3j.protocol.core.Response.Error as Web3jError
 
-class AdapterKevmWeb3jService(
-    val service: KevmRpcService,
+class AdapterKevemWeb3jService(
+    val service: KevemRpcService,
     val web3jObjectMapper: ObjectMapper = ObjectMapperFactory.getObjectMapper(false),
-    val kevmObjectMapper: ObjectMapper = RequestObjectMapper().create(
+    val kevemObjectMapper: ObjectMapper = RequestObjectMapper().create(
         WebModule.supported() + NetModule.supported() + EthModule.supported()
     )
 ) : Web3jService {
 
     override fun <T : Response<*>?> send(request: Request<*, out Response<*>>, responseType: Class<T>): T {
         return try {
-            val kevmRequest = web3RequestToKevm(request)
-            val kevmResponse = service.processRequest(kevmRequest)
-            kevmResponseToWeb3j(kevmResponse, responseType)
+            val kevemRequest = web3RequestToKevem(request)
+            val kevemResponse = service.processRequest(kevemRequest)
+            kevemResponseToWeb3j(kevemResponse, responseType)
         } catch (e: Exception) {
             createErrorResponse(responseType, e, request)
         }
     }
 
-    private fun <T : Response<*>?> kevmResponseToWeb3j(response: RpcResponse<*>?, responseType: Class<T>): T {
-        val responseJson = kevmObjectMapper.writeValueAsString(response)
+    private fun <T : Response<*>?> kevemResponseToWeb3j(response: RpcResponse<*>?, responseType: Class<T>): T {
+        val responseJson = kevemObjectMapper.writeValueAsString(response)
         return web3jObjectMapper.readValue(responseJson, responseType)
     }
 
-    private fun web3RequestToKevm(request: Request<*, out Response<*>>): RpcRequest<*> {
+    private fun web3RequestToKevem(request: Request<*, out Response<*>>): RpcRequest<*> {
         val requestJson = web3jObjectMapper.writeValueAsString(request)
-        return kevmObjectMapper.readValue(requestJson, RpcRequest::class.java)
+        return kevemObjectMapper.readValue(requestJson, RpcRequest::class.java)
     }
 
     @Suppress("UNCHECKED_CAST")

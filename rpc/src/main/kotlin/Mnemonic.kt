@@ -1,9 +1,8 @@
-package org.kevm.rpc
+package org.kevem.rpc
 
-import org.kevm.common.KevmException
+import org.kevem.common.KevemException
 import org.web3j.crypto.Bip32ECKeyPair
 import org.web3j.crypto.Credentials
-import org.web3j.crypto.Keys
 import org.web3j.crypto.MnemonicUtils
 
 /*
@@ -15,7 +14,7 @@ object Mnemonic {
 
     fun keyPairsFromMnemonic(mnemonic: String, numAccounts: Int): List<KeyPair> {
         if (!MnemonicUtils.validateMnemonic(mnemonic)) {
-            throw KevmException("invalid mnemonic: $mnemonic")
+            throw KevemException("invalid mnemonic: $mnemonic")
         }
 
         val masterKey = Bip32ECKeyPair.generateKeyPair(

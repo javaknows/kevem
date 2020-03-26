@@ -1,12 +1,12 @@
-package org.kevm.rpc
+package org.kevem.rpc
 
-import org.kevm.common.KevmException
-import org.kevm.evm.bytesToString
-import org.kevm.evm.crypto.keccak256
-import org.kevm.evm.model.*
-import org.kevm.evm.model.Byte
-import org.kevm.evm.toByteList
-import org.kevm.evm.toStringHexPrefix
+import org.kevem.common.KevemException
+import org.kevem.evm.bytesToString
+import org.kevem.evm.crypto.keccak256
+import org.kevem.evm.model.*
+import org.kevem.evm.model.Byte
+import org.kevem.evm.toByteList
+import org.kevem.evm.toStringHexPrefix
 import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.Sign
 import java.math.BigInteger
@@ -18,7 +18,7 @@ data class AppConfig(
     val peerCount: Int = 0,
     val coinbase: String = "0x0",
     val hashRate: BigInteger = BigInteger.ZERO,
-    val clientVersion: String = "KEVM TestRPC", // TODO - generate real client version - https://github.com/wjsrobertson/kevm/issues/22
+    val clientVersion: String = "Kevem TestRPC", // TODO - generate real client version - https://github.com/wjsrobertson/kevem/issues/22
     val difficulty: BigInteger = BigInteger.ZERO, // 17,171,480,576
     val extraData: Word = Word.Zero,
     val gasPrice: BigInteger = BigInteger("20000000000"),
@@ -26,9 +26,9 @@ data class AppConfig(
     val genesisBlockTimestamp: Instant = Instant.parse("2015-06-30T03:26:28.00Z")
 )
 
-class RpcException(msg: String) : KevmException(msg)
+class RpcException(msg: String) : KevemException(msg)
 
-class CategorisedRpcException(val code: Int, msg: String) : KevmException(msg)
+class CategorisedRpcException(val code: Int, msg: String) : KevemException(msg)
 
 /**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC

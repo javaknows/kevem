@@ -1,6 +1,6 @@
-package org.kevm.app
+package org.kevem.app
 
-import org.kevm.web.Server
+import org.kevem.web.Server
 
 fun main(args: Array<String>) {
     createServerStarter().startServer(args)

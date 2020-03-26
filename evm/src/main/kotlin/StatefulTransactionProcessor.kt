@@ -1,15 +1,15 @@
-package org.kevm.evm
+package org.kevem.evm
 
-import org.kevm.common.KevmException
-import org.kevm.evm.crypto.keccak256
-import org.kevm.evm.locking.readLock
-import org.kevm.evm.locking.writeLock
-import org.kevm.evm.model.*
+import org.kevem.common.KevemException
+import org.kevem.evm.crypto.keccak256
+import org.kevem.evm.locking.readLock
+import org.kevem.evm.locking.writeLock
+import org.kevem.evm.model.*
 import java.math.BigInteger
 import java.time.Clock
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import org.kevm.evm.model.Byte
+import org.kevem.evm.model.Byte
 
 // TODO - generate block hash properly
 /**
@@ -91,7 +91,7 @@ class StatefulTransactionProcessor(
         worldState.blocks
             .flatMap { it.transactions }
             .find { it.message.hash == txHash }
-            ?.let { it: MinedTransaction -> it.result } ?: throw KevmException("unknown transaction")
+            ?.let { it: MinedTransaction -> it.result } ?: throw KevemException("unknown transaction")
     }
 
     fun revertToBlock(number: BigInteger) = writeLock(lock) {

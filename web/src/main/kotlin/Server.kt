@@ -1,13 +1,13 @@
-package org.kevm.web
+package org.kevem.web
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
 import org.apache.cxf.endpoint.Server
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider
-import org.kevm.evm.locking.locked
-import org.kevm.rpc.KevmRpcService
-import org.kevm.rpc.jackson.RequestObjectMapper
-import org.kevm.rpc.module.*
+import org.kevem.evm.locking.locked
+import org.kevem.rpc.KevemRpcService
+import org.kevem.rpc.jackson.RequestObjectMapper
+import org.kevem.rpc.module.*
 import java.util.concurrent.locks.ReentrantLock
 
 class Server {
@@ -51,10 +51,10 @@ class Server {
             )))
             address = "http://$host:$port/"
 
-            setResourceClasses(KevmWebRpcService::class.java)
+            setResourceClasses(KevemWebRpcService::class.java)
             setResourceProvider(
-                KevmWebRpcService::class.java, SingletonResourceProvider(
-                    KevmWebRpcService(KevmRpcService(modules, evmContext))
+                KevemWebRpcService::class.java, SingletonResourceProvider(
+                    KevemWebRpcService(KevemRpcService(modules, evmContext))
                 )
             )
         }.create()

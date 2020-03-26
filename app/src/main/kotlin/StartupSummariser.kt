@@ -1,10 +1,10 @@
-package org.kevm.app
+package org.kevem.app
 
-import org.kevm.evm.bytesToString
-import org.kevm.evm.model.Account
-import org.kevm.rpc.AppConfig
-import org.kevm.rpc.LocalAccount
-import org.kevm.rpc.Mnemonic
+import org.kevem.evm.bytesToString
+import org.kevem.evm.model.Account
+import org.kevem.rpc.AppConfig
+import org.kevem.rpc.LocalAccount
+import org.kevem.rpc.Mnemonic
 import java.math.BigInteger
 
 /**
@@ -17,7 +17,7 @@ class StartupSummariser {
         accounts: List<Account>,
         localAccounts: List<LocalAccount>
     ): String = StringBuilder().apply {
-        appendLine("KEViM")
+        appendLine("Kevem")
         appendLine("")
 
         appendSection("Available Accounts",

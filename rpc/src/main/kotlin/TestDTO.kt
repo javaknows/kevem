@@ -1,4 +1,4 @@
-package org.kevm.rpc
+package org.kevem.rpc
 
 class SetChainParamsGenesisDTO(
     val author: String?,

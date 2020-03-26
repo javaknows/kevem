@@ -1,4 +1,4 @@
-package org.kevm.evm
+package org.kevem.evm
 
 enum class HardFork(val eip: EIP) {
     Homestead(EIP.EIP606),

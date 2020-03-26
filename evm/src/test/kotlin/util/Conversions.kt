@@ -1,7 +1,7 @@
-package org.kevm.evm.util
+package org.kevem.evm.util
 
-import org.kevm.evm.model.Byte
-import org.kevm.evm.Opcode
+import org.kevem.evm.model.Byte
+import org.kevem.evm.Opcode
 import java.math.BigInteger
 
 fun toInt(number: String) = toBigInteger(number).toInt()

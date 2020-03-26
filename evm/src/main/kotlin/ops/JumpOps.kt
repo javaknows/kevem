@@ -1,7 +1,7 @@
-package org.kevm.evm.ops
+package org.kevem.evm.ops
 
-import org.kevm.evm.Opcode
-import org.kevm.evm.model.*
+import org.kevem.evm.Opcode
+import org.kevem.evm.model.*
 
 object JumpOps {
 

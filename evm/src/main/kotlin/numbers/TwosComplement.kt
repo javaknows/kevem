@@ -1,7 +1,7 @@
-package org.kevm.evm.numbers
+package org.kevem.evm.numbers
 
-import org.kevm.evm.model.Byte
-import org.kevm.evm.model.Word
+import org.kevem.evm.model.Byte
+import org.kevem.evm.model.Word
 import java.math.BigInteger
 
 

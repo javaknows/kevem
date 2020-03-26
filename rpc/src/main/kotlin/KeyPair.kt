@@ -1,4 +1,4 @@
-package org.kevm.rpc
+package org.kevem.rpc
 
 data class KeyPair(val address: String, val privateKey: String)
 

@@ -1,9 +1,9 @@
-package org.kevm.evm.ops
+package org.kevem.evm.ops
 
-import org.kevm.evm.crypto.keccak256
-import org.kevm.evm.model.Byte
-import org.kevm.evm.model.ExecutionContext
-import org.kevm.evm.model.Word
+import org.kevem.evm.crypto.keccak256
+import org.kevem.evm.model.Byte
+import org.kevem.evm.model.ExecutionContext
+import org.kevem.evm.model.Word
 
 object DataOps {
 

@@ -1,4 +1,4 @@
-package org.kevm.evm.locking
+package org.kevem.evm.locking
 
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantLock

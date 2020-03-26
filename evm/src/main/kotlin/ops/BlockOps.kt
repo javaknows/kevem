@@ -1,7 +1,7 @@
-package org.kevm.evm.ops
+package org.kevem.evm.ops
 
-import org.kevm.evm.model.ExecutionContext
-import org.kevm.evm.model.Word
+import org.kevem.evm.model.ExecutionContext
+import org.kevem.evm.model.Word
 
 object BlockOps {
 

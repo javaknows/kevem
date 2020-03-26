@@ -1,4 +1,4 @@
-package org.kevm.ethereumtests
+package org.kevem.ethereumtests
 
 import com.fasterxml.jackson.core.type.TypeReference
 

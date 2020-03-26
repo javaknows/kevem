@@ -1,7 +1,7 @@
-package org.kevm.evm.lang
+package org.kevem.evm.lang
 
-import org.kevm.evm.model.Byte
-import org.kevm.evm.model.Word
+import org.kevem.evm.model.Byte
+import org.kevem.evm.model.Word
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat

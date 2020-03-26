@@ -3,9 +3,9 @@ package rlp
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.kevm.common.KevmException
-import org.kevm.rpc.KeyPair
-import org.kevm.rpc.Mnemonic
+import org.kevem.common.KevemException
+import org.kevem.rpc.KeyPair
+import org.kevem.rpc.Mnemonic
 
 
 class MnemonicTest {
@@ -36,7 +36,7 @@ class MnemonicTest {
         val mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother"
         val numAccounts = 2
 
-        val exception: KevmException = assertThrows {
+        val exception: KevemException = assertThrows {
             Mnemonic.keyPairsFromMnemonic(mnemonic, numAccounts)
         }
 

@@ -2,8 +2,8 @@ import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.fail
-import org.kevm.app.ApacheCommonsCliCommandLineParser
-import org.kevm.app.CommandLineArguments
+import org.kevem.app.ApacheCommonsCliCommandLineParser
+import org.kevem.app.CommandLineArguments
 import java.math.BigInteger
 
 class ApacheCommonsCliCommandLineParserTest {

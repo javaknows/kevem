@@ -1,8 +1,8 @@
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.kevm.evm.EIP
+import org.kevem.evm.EIP
 
-import org.kevm.evm.HardFork
+import org.kevem.evm.HardFork
 
 class HardForkTest {
 

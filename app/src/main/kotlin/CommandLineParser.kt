@@ -1,4 +1,4 @@
-package org.kevm.app
+package org.kevem.app
 
 import org.apache.commons.cli.*
 import java.io.PrintWriter
@@ -95,7 +95,7 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
         HelpFormatter().printHelp(
             PrintWriter(writer),
             HelpFormatter.DEFAULT_WIDTH,
-            "kevim",
+            "kevem",
             "",
             options,
             HelpFormatter.DEFAULT_LEFT_PAD,

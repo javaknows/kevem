@@ -1,6 +1,6 @@
-package org.kevm.compat.runner
+package org.kevem.compat.runner
 
-import org.kevm.compat.generated.AdvancedFunctions
+import org.kevem.compat.generated.AdvancedFunctions
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService

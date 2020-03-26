@@ -2,8 +2,8 @@
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
-import org.kevm.evm.PrecompiledContractExecutor
-import org.kevm.evm.model.Address
+import org.kevem.evm.PrecompiledContractExecutor
+import org.kevem.evm.model.Address
 
 class PrecompiledContractExecutorTest {
 

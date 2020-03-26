@@ -24,7 +24,7 @@ vmEnvironmentalInfo/calldatacopy_DataIndexTooHigh_return
 # the out data in this test has one extra 00 byte
 
 vmPerformance
-# performance is not a goal for kevm and a few of the vmPerformance tests perform millions of operations
+# performance is not a goal for kevem and a few of the vmPerformance tests perform millions of operations
 
 vmIOandFlowOperations/loop_stacklimit_1020
 # not sure about this test - could be a valid failure but hard to figure out

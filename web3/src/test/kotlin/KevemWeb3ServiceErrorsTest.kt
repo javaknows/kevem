@@ -1,10 +1,10 @@
-package org.kevm.web3
+package org.kevem.web3
 
-import org.kevm.web3.test.Web3TestContext
+import org.kevem.web3.test.Web3TestContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class KevmWeb3ServiceErrorsTest {
+class KevemWeb3ServiceErrorsTest {
 
     var web3 = Web3TestContext.createTestWeb3()
 

@@ -1,9 +1,9 @@
-package org.kevm.dsl
+package org.kevem.dsl
 
-import org.kevm.common.KevmException
-import org.kevm.evm.model.*
-import org.kevm.evm.toByteList
-import org.kevm.rpc.*
+import org.kevem.common.KevemException
+import org.kevem.evm.model.*
+import org.kevem.evm.toByteList
+import org.kevem.rpc.*
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -74,14 +74,14 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
             privateKey != null -> {
                 val address = privateKeyToAddress(privateKey)
                 if (providedAddress != null && providedAddress != address) {
-                    throw KevmException("Address must match private key - provided ${providedAddress} but require ${address}. Either don't set address explicitly or provide matching value.")
+                    throw KevemException("Address must match private key - provided ${providedAddress} but require ${address}. Either don't set address explicitly or provide matching value.")
                 }
                 Pair(Account(Address(address), balance), LocalAccount(Address(address), toByteList(privateKey), false))
             }
             providedAddress != null -> {
                 Pair(Account(Address(providedAddress), balance), null)
             }
-            else -> throw KevmException("Cannot create account without providing address or private key")
+            else -> throw KevemException("Cannot create account without providing address or private key")
         }
 
         creationContext.addAccount(account, localAccount)
@@ -96,7 +96,7 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
 
         val keyPairs =
             if (mnemonic != null) Mnemonic.keyPairsFromMnemonic(mnemonic, numAccounts)
-            else throw KevmException("mnemonic field must be set in mnemonicAccounts")
+            else throw KevemException("mnemonic field must be set in mnemonicAccounts")
 
         keyPairs.forEach { kp ->
             val account = Account(Address(kp.address), balance)
@@ -119,7 +119,7 @@ data class Config(
     val genesisBlockTimestamp: String? = null
 )
 
-fun kevm(
+fun kevem(
     config: Config = Config(),
     clock: Clock = Clock.systemUTC(),
     create: EvmCreator.() -> Unit = {}

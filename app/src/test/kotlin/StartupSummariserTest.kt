@@ -1,10 +1,10 @@
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.kevm.app.CommandLineArguments
-import org.kevm.app.StartupSummariser
-import org.kevm.evm.model.Account
-import org.kevm.evm.model.Address
-import org.kevm.rpc.LocalAccount
+import org.kevem.app.CommandLineArguments
+import org.kevem.app.StartupSummariser
+import org.kevem.evm.model.Account
+import org.kevem.evm.model.Address
+import org.kevem.rpc.LocalAccount
 import java.math.BigInteger
 
 internal class StartupSummariserTest {
@@ -39,7 +39,7 @@ internal class StartupSummariserTest {
         )
 
         assertThat(summary).isEqualTo(
-            """KEViM
+            """Kevem
 
 Available Accounts
 ==================

@@ -3,9 +3,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.BeforeEach
-import org.kevm.app.*
-import org.kevm.web.Server
-import org.kevm.rpc.module.EvmContext
+import org.kevem.app.*
+import org.kevem.web.Server
+import org.kevem.rpc.module.EvmContext
 import org.mockito.ArgumentMatchers.matches
 import org.mockito.Mockito.reset
 import java.io.ByteArrayOutputStream
@@ -194,8 +194,8 @@ internal class ServerStarterTest {
 
         assertThat(errOutput)
             .contains("java.lang.RuntimeException")
-            .contains("at org.kevm.app.ServerEvmContextCreator.create")
-            .contains("at org.kevm.app.ServerStarter.startServer")
+            .contains("at org.kevem.app.ServerEvmContextCreator.create")
+            .contains("at org.kevem.app.ServerStarter.startServer")
     }
 
     private fun exceptionWithNoMessageAndNoCause(): Exception {

@@ -3,8 +3,8 @@ package collections
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
-import org.kevm.evm.collections.BigIntegerIndexedList
-import org.kevm.evm.model.Byte
+import org.kevem.evm.collections.BigIntegerIndexedList
+import org.kevem.evm.model.Byte
 import java.math.BigInteger
 
 class BigIntegerIndexedListTest {

@@ -1,18 +1,18 @@
-package org.kevm.web3.test
+package org.kevem.web3.test
 
-import org.kevm.evm.Executor
-import org.kevm.evm.StatefulTransactionProcessor
-import org.kevm.evm.TransactionProcessor
-import org.kevm.evm.gas.*
-import org.kevm.evm.model.*
-import org.kevm.evm.model.Byte
-import org.kevm.evm.toByteList
-import org.kevm.rpc.*
-import org.kevm.rpc.module.EthModule
-import org.kevm.rpc.module.EvmContext
-import org.kevm.rpc.module.NetModule
-import org.kevm.rpc.module.WebModule
-import org.kevm.web3.AdapterKevmWeb3jService
+import org.kevem.evm.Executor
+import org.kevem.evm.StatefulTransactionProcessor
+import org.kevem.evm.TransactionProcessor
+import org.kevem.evm.gas.*
+import org.kevem.evm.model.*
+import org.kevem.evm.model.Byte
+import org.kevem.evm.toByteList
+import org.kevem.rpc.*
+import org.kevem.rpc.module.EthModule
+import org.kevem.rpc.module.EvmContext
+import org.kevem.rpc.module.NetModule
+import org.kevem.rpc.module.WebModule
+import org.kevem.web3.AdapterKevemWeb3jService
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.tx.RawTransactionManager
@@ -102,8 +102,8 @@ object Web3TestContext {
         val evmContext =  EvmContext(standardRPC, testRpc)
 
         return Web3j.build(
-            AdapterKevmWeb3jService(
-                KevmRpcService(listOf(WebModule, NetModule, EthModule), evmContext)
+            AdapterKevemWeb3jService(
+                KevemRpcService(listOf(WebModule, NetModule, EthModule), evmContext)
             )
         )
     }

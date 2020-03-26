@@ -9,4 +9,4 @@ include 'web'
 include 'ethereumtests'
 include 'app'
 
-rootProject.name = 'kevm'
+rootProject.name = 'kevem'

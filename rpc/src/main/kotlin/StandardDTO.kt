@@ -1,4 +1,4 @@
-package org.kevm.rpc
+package org.kevem.rpc
 
 data class RequestDTO<T>(val jsonrpc: String, val id: Int, val params: List<T>)
 

@@ -1,4 +1,4 @@
-package org.kevm.evm.numbers
+package org.kevem.evm.numbers
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test

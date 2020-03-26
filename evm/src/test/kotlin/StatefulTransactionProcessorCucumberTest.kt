@@ -1,4 +1,4 @@
-import org.kevm.evm.StatefulTransactionProcessor
+import org.kevem.evm.StatefulTransactionProcessor
 import io.cucumber.junit.Cucumber
 import io.cucumber.junit.CucumberOptions
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
     features = ["src/test/resources/features/stateful_transaction_processor"],
     tags = ["not @Ignore"],
     //tags = ["@Only"],
-    glue = ["org.kevm.evm.test.transaction_processor"]
+    glue = ["org.kevem.evm.test.transaction_processor"]
 )
 class StatefulTransactionProcessorCucumberTest {
 

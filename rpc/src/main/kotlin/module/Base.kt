@@ -1,7 +1,7 @@
-package org.kevm.rpc.module
+package org.kevem.rpc.module
 
-import org.kevm.rpc.StandardRPC
-import org.kevm.rpc.TestRPC
+import org.kevem.rpc.StandardRPC
+import org.kevem.rpc.TestRPC
 import kotlin.reflect.KClass
 
 class EvmContext(

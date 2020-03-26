@@ -1,8 +1,8 @@
-package org.kevm.evm.crypto.zksnarks
+package org.kevem.evm.crypto.zksnarks
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.kevm.evm.crypto.bn128.Fq12
+import org.kevem.evm.crypto.bn128.Fq12
 
 /**
  * Adapted from the altbn128 (Apache 2 License) java implementation:

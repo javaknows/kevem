@@ -1,4 +1,4 @@
-package org.kevm.compat.generated.sample;
+package org.kevem.compat.generated.sample;
 
 import java.math.BigInteger;
 import java.util.Arrays;

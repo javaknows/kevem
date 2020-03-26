@@ -1,6 +1,6 @@
-package org.kevm.app
+package org.kevem.app
 
-import org.kevm.web.Server
+import org.kevem.web.Server
 import java.io.PrintStream
 
 class ServerStarter(
@@ -15,7 +15,7 @@ class ServerStarter(
             error != null -> err.println("Error parsing command line: $error")
             commandLine != null -> when {
                 commandLine.help -> out.println(parser.help())
-                commandLine.version -> out.println("KEVM") // https://github.com/wjsrobertson/kevm/issues/22
+                commandLine.version -> out.println("Kevem") // https://github.com/wjsrobertson/kevem/issues/22
                 else -> try {
                     val (evmContext, summary) = serverEvmContextCreator.create(commandLine)
 

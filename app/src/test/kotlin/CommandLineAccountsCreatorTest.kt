@@ -1,11 +1,11 @@
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
-import org.kevm.app.CommandLineAccountsCreator
-import org.kevm.app.CommandLineArguments
-import org.kevm.evm.model.Account
-import org.kevm.evm.model.Address
-import org.kevm.rpc.LocalAccount
+import org.kevem.app.CommandLineAccountsCreator
+import org.kevem.app.CommandLineArguments
+import org.kevem.evm.model.Account
+import org.kevem.evm.model.Address
+import org.kevem.rpc.LocalAccount
 import java.math.BigInteger
 
 class CommandLineAccountsCreatorTest {

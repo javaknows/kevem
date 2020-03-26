@@ -35,7 +35,7 @@ compileTestKotlin {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'org.kevm.app.ApplicationKt'
+        attributes 'Main-Class': 'org.kevem.app.ApplicationKt'
     }
 }
 

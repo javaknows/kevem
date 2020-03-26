@@ -1,16 +1,16 @@
-package org.kevm.dsl
+package org.kevem.dsl
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.kevm.compat.generated.NumberFunctions
-import org.kevm.web3.test.Web3TestContext
+import org.kevem.compat.generated.NumberFunctions
+import org.kevem.web3.test.Web3TestContext
 import org.web3j.protocol.core.DefaultBlockParameterName
 import org.web3j.utils.Numeric
 import java.math.BigInteger
 
 class DslWeb3jExectionTest {
 
-    val web3j = kevm {
+    val web3j = kevem {
         account {
             balance = eth(1)
             privateKey = "0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395"

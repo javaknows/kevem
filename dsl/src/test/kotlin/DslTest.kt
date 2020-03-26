@@ -1,14 +1,13 @@
-package org.kevm.dsl
+package org.kevem.dsl
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.kevm.common.KevmException
+import org.kevem.common.KevemException
 
-import org.kevm.evm.model.Address
-import org.kevm.evm.toByteList
-import org.kevm.rpc.LocalAccount
-import java.lang.Exception
+import org.kevem.evm.model.Address
+import org.kevem.evm.toByteList
+import org.kevem.rpc.LocalAccount
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -18,7 +17,7 @@ class DslTest {
 
     @Test
     fun `can create account with balance`() {
-        val accounts = kevm {
+        val accounts = kevem {
             account {
                 balance = eth(1)
                 address = "0xADD7E55"
@@ -32,7 +31,7 @@ class DslTest {
 
     @Test
     fun `can create account from primary key`() {
-        val accounts = kevm {
+        val accounts = kevem {
             account {
                 balance = eth(1)
                 privateKey = "0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395"
@@ -46,7 +45,7 @@ class DslTest {
 
     @Test
     fun `created account has default balance of 100 ETH`() {
-        val accounts = kevm {
+        val accounts = kevem {
             account {
                 address = "0xADD7E55"
             }
@@ -59,7 +58,7 @@ class DslTest {
 
     @Test
     fun `can set address when setting primary key if it matches`() {
-        val accounts = kevm {
+        val accounts = kevem {
             account {
                 balance = eth(1)
                 privateKey = "0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395"
@@ -74,8 +73,8 @@ class DslTest {
 
     @Test
     fun `setting address fails when setting private key if they do not match`() {
-        val exception: KevmException = assertThrows {
-            kevm {
+        val exception: KevemException = assertThrows {
+            kevem {
                 account {
                     balance = eth(1)
                     privateKey = "0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395"
@@ -89,8 +88,8 @@ class DslTest {
 
     @Test
     fun `cannot create account without providing address or private key`() {
-        val exception: KevmException = assertThrows {
-            kevm {
+        val exception: KevemException = assertThrows {
+            kevem {
                 account {
                     balance = eth(1)
                 }
@@ -102,31 +101,31 @@ class DslTest {
 
     @Test
     fun `config values can be set`() {
-        val kevm = kevm(
+        val kevem = kevem(
             config = Config(
                 coinbase = "0xABCDEF",
                 blockGasLimit = BigInteger.TEN
             )
         )
 
-        assertThat(kevm.appConfig.coinbase).isEqualTo("0xABCDEF")
-        assertThat(kevm.appConfig.blockGasLimit).isEqualTo(BigInteger.TEN)
+        assertThat(kevem.appConfig.coinbase).isEqualTo("0xABCDEF")
+        assertThat(kevem.appConfig.blockGasLimit).isEqualTo(BigInteger.TEN)
     }
 
     @Test
     fun `clock can be set`() {
         val fixedClock = Clock.fixed(Instant.parse("2015-06-30T03:26:28.00Z"), ZoneId.systemDefault())
 
-        val kevm = kevm(
+        val kevem = kevem(
             clock = fixedClock
         )
 
-        assertThat(kevm.clock).isEqualTo(fixedClock)
+        assertThat(kevem.clock).isEqualTo(fixedClock)
     }
 
     @Test
     fun `can create usable web3j`() {
-        val web3j = kevm(
+        val web3j = kevem(
             config = Config(
                 coinbase = "0x123456"
             )
@@ -144,7 +143,7 @@ class DslTest {
 
     @Test
     fun `can create accounts using valid mnemonic`() {
-        val evm = kevm {
+        val evm = kevem {
             mnemonicAccounts {
                 mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
                 balance = eth(3)
@@ -180,7 +179,7 @@ class DslTest {
 
     @Test
     fun `mnemonic account has default balance of 100 ETH`() {
-        val evm = kevm {
+        val evm = kevem {
             mnemonicAccounts {
                 mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
                 numAccounts = 1
@@ -194,7 +193,7 @@ class DslTest {
 
     @Test
     fun `one mnemonic account is created by default`() {
-        val evm = kevm {
+        val evm = kevem {
             mnemonicAccounts {
                 mnemonic = "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
             }
@@ -205,8 +204,8 @@ class DslTest {
 
     @Test
     fun `invalid mnemonic creates exception when creating mnemonic account`() {
-        val exception: KevmException = assertThrows {
-            kevm {
+        val exception: KevemException = assertThrows {
+            kevem {
                 mnemonicAccounts {
                     mnemonic = "INVALID stay jeans limb improve struggle return predict flower assume giraffe mother spring"
                 }

@@ -1,9 +1,9 @@
-package org.kevm.evm.crypto.zksnarks
+package org.kevem.evm.crypto.zksnarks
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.kevm.evm.crypto.bn128.AltBn128Fq2Point
-import org.kevm.evm.crypto.bn128.FieldElement
+import org.kevem.evm.crypto.bn128.AltBn128Fq2Point
+import org.kevem.evm.crypto.bn128.FieldElement
 import java.math.BigInteger
 
 /**

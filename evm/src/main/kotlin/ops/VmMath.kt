@@ -1,10 +1,10 @@
-package org.kevm.evm.ops
+package org.kevem.evm.ops
 
-import org.kevm.evm.model.Byte
-import org.kevm.evm.model.Word
-import org.kevm.evm.model.Word.Companion.coerceFrom
-import org.kevm.evm.numbers.fromTwosComplement
-import org.kevm.evm.numbers.toTwosComplement
+import org.kevem.evm.model.Byte
+import org.kevem.evm.model.Word
+import org.kevem.evm.model.Word.Companion.coerceFrom
+import org.kevem.evm.numbers.fromTwosComplement
+import org.kevem.evm.numbers.toTwosComplement
 import java.math.BigInteger
 
 object VmMath {
