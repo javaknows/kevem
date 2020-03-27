@@ -66,7 +66,7 @@ class AdapterKevemWeb3jService(
         unsubscribeMethod: String?,
         responseType: Class<T>?
     ): Flowable<T> {
-        TODO("not implemented")
+        TODO("not implemented - https://github.com/wjsrobertson/kevem/issues/24")
     }
 
     override fun close() {

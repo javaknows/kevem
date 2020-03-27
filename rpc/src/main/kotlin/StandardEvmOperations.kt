@@ -121,7 +121,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
         return when (block) {
             is LatestBlock -> ws.accounts.balanceOf(address)
             is PendingBlock -> ws.accounts.balanceOf(address)
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
         }
     }
 
@@ -130,7 +130,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
             return when (block) {
                 is LatestBlock -> ws.accounts.storageAt(address, location)
                 is PendingBlock -> ws.accounts.storageAt(address, location)
-                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
             }
         }
 
@@ -155,7 +155,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
             return when (block) {
                 is LatestBlock -> ws.accounts.contractAt(address)?.code ?: emptyByteList()
                 is PendingBlock -> ws.accounts.contractAt(address)?.code ?: emptyByteList()
-                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
             }.toList()
         }
 
@@ -168,7 +168,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
                 is LatestBlock -> ws.blocks.last()
                 is NumericBlock -> ws.blocks.find { it.block.number == block.number }
                 is EarliestBlock -> ws.blocks.first()
-                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
             }
         }
 
@@ -201,7 +201,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
             is LatestBlock -> getPairOfBlockAndTxByIndex(ws.blocks.last(), txIndex)
             is NumericBlock -> getPairOfBlockAndTxByIndex(ws.blocks.find { it.block.number == block.number }, txIndex)
             is EarliestBlock -> getPairOfBlockAndTxByIndex(ws.blocks.first(), txIndex)
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
         }
     }
 
@@ -213,7 +213,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
         return when (block) {
             is LatestBlock -> evm.call(tx).gasUsed
             is PendingBlock -> evm.call(tx).gasUsed
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
         }
     }
 
@@ -221,7 +221,7 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
         return when (block) {
             is LatestBlock -> evm.call(tx).returnData
             is PendingBlock -> evm.call(tx).returnData
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks
+            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
         }
     }
 
