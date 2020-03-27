@@ -1,5 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.31'
+    id "java"
+    id 'jacoco'
 }
 
 ext {
@@ -40,23 +42,28 @@ allprojects {
         testLogging {
             events "passed", "skipped", "failed"
         }
+
+        maxParallelForks = 2
     }
 }
 
-task codeCoverageReport(type: JacocoReport) {
-    dependsOn = subprojects.test
-    getExecutionData().from("**/build/jacoco/*.exec")
+def publishedProjects = subprojects.findAll { ! it.path.contains(":compat") && ! it.path.contains(":ethereumtests") }
 
-    subprojects.each {
-        if (!it.path.contains("compat") && !it.path.contains("ethereumtests") ) {
-            sourceSets(it.sourceSets.main)
-        }
-    }
+task jacocoMerge(type: JacocoMerge) {
+    executionData = files(publishedProjects.collect() {file("${it.buildDir}/jacoco/test.exec")}).filter{ it.exists() }
+    destinationFile = file("${buildDir}/jacoco/test.exec")
+}
+
+jacocoTestReport {
+    dependsOn = tasks.withType(Test) + [jacocoMerge]
+
+    executionData jacocoMerge.destinationFile
+    getClassDirectories().from(files(publishedProjects.sourceSets.main.output))
+    getSourceDirectories().from(publishedProjects.collect() {file("${it.projectDir}/src/main/kotlin")})
+    getAdditionalSourceDirs().from(publishedProjects.collect() {file("${it.projectDir}/src/main/kotlin")})
 
     reports {
-        xml.enabled = true
         html.enabled = true
-        csv.enabled = false
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+        xml.enabled = true
     }
 }
