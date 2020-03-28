@@ -6,7 +6,7 @@
 Kevem
 #####
 
-.. image:: images/kevem_k_color_border_path.svg
+.. image:: kevem_k_color_border_path.svg
     :width: 200px
     :alt: Kevem logo
     :align: center
