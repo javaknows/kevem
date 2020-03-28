@@ -39,6 +39,8 @@ val contract = HelloWorld.deploy(web3j, txManager, gasProvider).send()
 val txHash = contract.callHello().send().transactionHash
 ```
 
+For full information and options see the [kotlin DSL](https://kevem.readthedocs.io/en/latest/kotlin-dsl.html) documentation on readthedocs.
+
 ## Running as a standalone application
 
 Use java 1.8 or greater to execute the `kevem-app-0.1.0-SNAPSHOT.jar` jar 
@@ -49,30 +51,7 @@ e.g. start on localhost, port 8545 generating 10 accounts:
 java -jar kevem-app-0.1.0-SNAPSHOT.jar
 ```
 
-e.g. start on port 8888, generate two accounts using a specific mnemonic phrase:
-
-```bash
-java -jar kevem-app-0.1.0-SNAPSHOT.jar -p 8888 -n 2 -m "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
-```
-
-At startup Kevem prints out the balance and private keys of the generated accounts in similar format to Ganache. These accounts will all be unlocked.
-
-### All command line arguments
-
-| flag | long flag                 | description |
-|----|-----------------------------|-------------------------------------------------|
-| -p | --port <arg>                |  port web RPC service listens on (8545) |
-| -h | --host <arg>                |  hostname web RPC service listens on (localhost) |
-| -n | --numAccounts <arg>         |  number of accounts to create when using (10) |  mnemonic |
-| -m | --mnemonic <arg>            |  bip39 mnemonic phrase for account generation (hard-coded default) |
-| -e | --defaultBalanceEther <arg> |  balance for each generated account (100) |
-| -g | --gasPrice <arg>            |  block gas price in wei |
-| -l | --gasLimit <arg>            |  block gas limit in wei |
-| -c | --chainId <arg>             |  chain ID (0) |
-| -i | --networkId <arg>           |  network ID (1) |
-| -v | --verbose                   |  print extra output including stack traces for startup errors |
-|    | --help                      |  display help then exit |
-|    | --version                   |  display version then exit |
+For full standalone execution instructions and options see the [running standalone](https://kevem.readthedocs.io/en/latest/running-standalone.html) documentation on readthedocs.
 
 ## Building
 
