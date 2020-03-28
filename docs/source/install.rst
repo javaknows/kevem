@@ -1,7 +1,7 @@
-Installation
-############
+Install
+#######
 
-.. _installation:
+.. _install:
 
 Installation With Gradle
 ========================

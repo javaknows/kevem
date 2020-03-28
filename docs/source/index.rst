@@ -6,7 +6,7 @@
 Kevem
 #####
 
-.. image:: kevem_k_color_border_path.svg
+.. image:: kevem_k_color_border_path_padded.svg
     :width: 200px
     :alt: Kevem logo
     :align: center
@@ -71,7 +71,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   installation.rst
+   install.rst
    kotlin-dsl.rst
    java-fluent-api.rst
    running-standalone.rst
