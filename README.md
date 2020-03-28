@@ -15,9 +15,9 @@ Kevem supports most EVM / Ethereum JSON-RPC behaviour but a list of missing feat
 
 ## Running in-process 
 
-For full information and options see the [kotlin DSL](https://kevem.readthedocs.io/en/latest/kotlin-dsl.html) documentation on readthedocs.
+:large_blue_diamond: For full information and options on running in-process see the [kotlin DSL](https://kevem.readthedocs.io/en/latest/kotlin-dsl.html) documentation on readthedocs.
 
-Ensure `kevem-dsl-nodep.jar` is on your classpath along with `kotlin-stdlib` plus `web3j` version `5.3.x` and it's transitive dependencies.  
+Ensure `kevem-dsl-nodep.jar` is on your classpath along with `kotlin-stdlib` plus `web3j` version `5.3.x` and its transitive dependencies.  
 
 Then use the Kotlin DSL to create a web3j instance. This example creates one account with one ETH balance based on a specified primary key:
 
@@ -44,7 +44,7 @@ val txHash = contract.callHello().send().transactionHash
 
 ## Running as a standalone application
 
-For full standalone execution instructions and options see the [running standalone](https://kevem.readthedocs.io/en/latest/running-standalone.html) documentation on readthedocs.
+:large_blue_diamond: For full standalone execution instructions and options see the [running standalone](https://kevem.readthedocs.io/en/latest/running-standalone.html) documentation on readthedocs.
 
 Use java 1.8 or greater to execute the `kevem-app-0.1.0-SNAPSHOT.jar` jar 
 

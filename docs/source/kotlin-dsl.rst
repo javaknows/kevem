@@ -1,7 +1,7 @@
 Kotlin DSL
 ##########
 
-.. _`kotlin-dsl`:
+.. _kotlin-dsl:
 
 Kevem supports a DSL for configuring the EVM instance. This lets you set up accounts and balances.
 

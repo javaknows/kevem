@@ -53,8 +53,8 @@ Creating An In-Process Node
 
 Kevem supports two ways to initialise an in-process EVM node and linked web3j client:
 
-* Using the `Kotlin DSL <kotlin-dsl>`_ - good for Kotlin users
-* Using the `Java Fluent API <java-fluent-api>`_ - good for Java and other JVM users
+* Using the :ref:`Kotlin DSL <kotlin-dsl>` - good for Kotlin users
+* Using the :ref:`Java Fluent API <java-fluent-api>` - good for Java and other JVM users
 
 Database Analogy
 ****************
