@@ -10,7 +10,6 @@ Kevem
     :width: 200px
     :alt: Kevem logo
     :align: center
-    :align: center
 
 Kevem is an Ethereum test client for testing web3j-based Kotlin/Java/JVM code.
 
@@ -27,8 +26,7 @@ User code then connects to this using web3j to interact with the Ethereum node o
 
 .. hint::
 
-   If you just want to try Kevem out quickly you can run it as a :ref:`standalone application <running-standalone>` and
-connect to it remotely as if you were using Ganache or Parity.
+   If you just want to try Kevem out quickly you can run it as a :ref:`standalone application <running-standalone>` and connect to it remotely as if you were using Ganache or Parity.
 
 External Process Drawbacks
 ==========================
