@@ -1,6 +1,8 @@
 package org.kevem.evm
 
+import org.kevem.common.Logger
 import org.kevem.evm.gas.GasCostCalculator
+import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
 import org.kevem.evm.model.Byte
 import org.kevem.evm.ops.*
@@ -8,7 +10,10 @@ import java.math.BigInteger
 
 // TODO - don't accept certain operations depending on fork version configured
 
-class Executor(private val gasCostCalculator: GasCostCalculator) {
+class Executor(
+    private val gasCostCalculator: GasCostCalculator,
+    private val log: Logger = Logger.createLogger(Executor::class)
+) {
     tailrec fun executeAll(executionCtx: ExecutionContext): ExecutionContext =
         if (executionCtx.completed) executionCtx
         else executeAll(executeNextOpcode(executionCtx))
@@ -19,6 +24,10 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
         else {
             val byteCode = currentCallCtx.code[currentLocation.toBigInteger()]
             val opcode = Opcode.byCode[byteCode]
+
+            val args = currentCallCtx.stack.peekWords(opcode?.numArgs ?: 0).map { it.toString().replace("0x0*".toRegex(), "0x") }
+            val stack = executionCtx.currentCallCtx.stack.toShortString()
+            log.trace("processing opcode $opcode @ loc $currentLocation of ${executionCtx.currentCallCtx.contractAddress}, call depth: ${executionCtx.callStack.size}, args: ${args}, stack: ${stack}")
 
             when {
                 opcode == null -> HaltOps.fail(
@@ -49,6 +58,8 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
         val cost = gasCostCalculator.calculateCost(opcode, executionCtx)
         val isOutOfGas = cost > executionCtx.currentCallCtx.gasRemaining
 
+        //log.debug("${executionCtx.currentCallCtx.gasRemaining} gas remaining")
+
         val newCtx = executionCtx.updateCurrentCallCtx(
             gasUsed = executionCtx.currentCallCtx.gasUsed + cost
         )
@@ -69,7 +80,7 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
         (callCtx.stack.size() - Opcode.numArgs(opcode) + Opcode.numReturn(opcode)) > 1024
 
     private fun isEndOfContract(callCtx: CallContext?) =
-        callCtx != null && callCtx.currentLocation !in callCtx.code.indices().map{ it.toInt() }
+        callCtx != null && callCtx.currentLocation !in callCtx.code.indices().map { it.toInt() }
 
     private fun processOpcode(currentContext: ExecutionContext, opcode: Opcode): ExecutionContext {
         val updatedContext = when (opcode) {
@@ -222,10 +233,10 @@ class Executor(private val gasCostCalculator: GasCostCalculator) {
 
     private fun incrementLocation(executionCtx: ExecutionContext, opcode: Opcode?): ExecutionContext =
         when {
-            Opcode.isHaltingOpcode(opcode) || Opcode.isJumpOpcode(opcode) || executionCtx.completed -> executionCtx
-            Opcode.isCallOpcode(opcode) -> executionCtx.updatePreviousCallCtxIfPresent { ctx ->
-                ctx.copy(currentLocation = ctx.currentLocation + Opcode.numBytes(opcode))
-            }
+            Opcode.isCallOpcode(opcode) || Opcode.isHaltingOpcode(opcode) || Opcode.isJumpOpcode(opcode) || executionCtx.completed -> executionCtx
+            //Opcode.isCallOpcode(opcode) -> executionCtx.updatePreviousCallCtxIfPresent { ctx ->
+            //    ctx.copy(currentLocation = ctx.currentLocation + Opcode.numBytes(opcode))
+            //}
             else -> executionCtx.updateCurrentCallCtxIfPresent { ctx ->
                 ctx.copy(currentLocation = ctx.currentLocation + Opcode.numBytes(opcode))
             }

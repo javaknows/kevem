@@ -17,6 +17,8 @@ dependencies {
     testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
     testImplementation "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${mockitoKotlinVersion}"
+    testRuntimeOnly project(":compat:generated")
 }
 
 compileKotlin {

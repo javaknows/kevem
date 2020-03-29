@@ -315,7 +315,7 @@ class Storage(private val data: Map<BigInteger, Word> = emptyMap()) {
     override fun hashCode(): Int = data.hashCode()
 }
 
-class Stack(private val backing: List<List<Byte>> = emptyList()) {
+class Stack(val backing: List<List<Byte>> = emptyList()) {
 
     fun push(data: List<Byte>): Stack =
         Stack(backing.plusElement(data))
@@ -371,6 +371,14 @@ class Stack(private val backing: List<List<Byte>> = emptyList()) {
     }
 
     fun size() = backing.size
+
+    override fun toString() = backing.map {
+        bytesToString(it)
+    }.joinToString(", ")
+
+    fun toShortString() = backing.map {
+        bytesToString(it).replace("0x0*".toRegex(), "0x")
+    }.joinToString(", ")
 }
 
 enum class ErrorCode {

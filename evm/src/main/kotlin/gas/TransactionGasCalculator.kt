@@ -29,9 +29,9 @@ class TransactionGasCalculator {
         return GasCost.Transaction.costBigInt + createCost + dataCost
     }
 
-    fun contractCreationCost(transaction: TransactionMessage, executionResult: ExecutionContext): BigInteger =
+    fun contractCreationGas(transaction: TransactionMessage, executionResult: ExecutionContext): BigInteger =
         if (transaction.to == null)
-            GasCost.CodeDeposit.costBigInt * executionResult.lastReturnData.size() * transaction.gasPrice
+            GasCost.CodeDeposit.costBigInt * executionResult.lastReturnData.size()
         else
             BigInteger.ZERO
 

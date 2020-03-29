@@ -508,7 +508,6 @@ Feature: Single Opcode Execution
       | 0xC |
       | 0xD |
 
-  @Only
   Scenario: a contract is created and deployed with CREATE
     Given the contract address is 0xEE
     And the account with address 0xEE has balance 0x9

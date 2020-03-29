@@ -1,5 +1,7 @@
 package org.kevem.evm.ops
 
+import org.kevem.common.Logger
+import org.kevem.evm.Executor
 import org.kevem.evm.coerceByteListToSize
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
@@ -8,14 +10,18 @@ import org.kevem.evm.model.*
 import java.math.BigInteger
 
 object HaltOps {
+    private val log: Logger = Logger.createLogger(HaltOps::class)
+
     fun stop(context: ExecutionContext): ExecutionContext = with(context) {
         val caller = currentCallCtx.caller
         val refund = currentCallCtx.gasRemaining * currentTransaction.gasPrice
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)
-            ctx.copy(stack = newStack)
+            ctx.copy(stack = newStack, currentLocation = ctx.currentLocation + 1)
         }
+
+        log.debug("Stack size before drop: ${callStack.size} and after: ${newCallStack.size}")
 
         return context
             .refund(caller, refund)
@@ -23,7 +29,8 @@ object HaltOps {
                 completed = newCallStack.isEmpty(),
                 callStack = newCallStack,
                 lastReturnData = emptyByteList(),
-                gasUsed = gasUsed + currentCallCtx.gasUsed
+                gasUsed = gasUsed + currentCallCtx.gasUsed,
+                lastCallError = EvmError.None
             )
     }
 
@@ -40,7 +47,7 @@ object HaltOps {
             val newMemory = ctx.memory.write(oldCtx.returnLocation, data)
             val newStack = ctx.stack.pushWord(Word.One)
 
-            ctx.copy(memory = newMemory, stack = newStack)
+            ctx.copy(memory = newMemory, stack = newStack, currentLocation = ctx.currentLocation + 1)
         }
 
         return context
@@ -49,7 +56,8 @@ object HaltOps {
                 completed = newCallStack.isEmpty(),
                 callStack = newCallStack,
                 lastReturnData = BigIntegerIndexedList.fromBytes(returnData),
-                gasUsed = gasUsed + currentCallCtx.gasUsed
+                gasUsed = gasUsed + currentCallCtx.gasUsed,
+                lastCallError = EvmError.None
             )
     }
 
@@ -59,6 +67,8 @@ object HaltOps {
     }
 
     fun fail(context: ExecutionContext, error: EvmError): ExecutionContext = with(context) {
+        log.info("failing with $error")
+
         val callingContext = currentCallCtx.callingContext ?: context.copy(
             callStack = context.callStack.dropLast(1)
         )
@@ -66,7 +76,7 @@ object HaltOps {
 
         val callStack = updateLastCallCtxIfPresent(callingContext.callStack) { ctx ->
             val newStack = ctx.stack.pushWord(Word.Zero)
-            ctx.copy(stack = newStack)
+            ctx.copy(stack = newStack, currentLocation = ctx.currentLocation + 1)
         }
 
         return callingContext.copy(
@@ -97,7 +107,7 @@ object HaltOps {
             val newMemory = ctx.memory.write(oldCtx.returnLocation, data)
             val newStack = ctx.stack.pushWord(Word.Zero)
 
-            ctx.copy(memory = newMemory, stack = newStack)
+            ctx.copy(memory = newMemory, stack = newStack, currentLocation = ctx.currentLocation + 1)
         }
 
         return callingContext
@@ -106,7 +116,8 @@ object HaltOps {
                 callStack = callStack,
                 completed = completed,
                 lastReturnData = BigIntegerIndexedList.fromBytes(returnData),
-                gasUsed = gasUsed + currentCallCtx.gasUsed
+                gasUsed = gasUsed + currentCallCtx.gasUsed,
+                lastCallError = EvmError.None
             )
     }
 
@@ -119,7 +130,7 @@ object HaltOps {
 
         val newCallStack = dropLastCtxAndUpdateCurrentCtx(callStack) { ctx, _ ->
             val newStack = ctx.stack.pushWord(Word.One)
-            ctx.copy(stack = newStack)
+            ctx.copy(stack = newStack, currentLocation = ctx.currentLocation + 1)
         }
 
         val contractAddress =
@@ -141,7 +152,8 @@ object HaltOps {
                 lastReturnData = emptyByteList(),
                 accounts = newEvmState,
                 callStack = newCallStack,
-                gasUsed = gasUsed + currentCallCtx.gasUsed
+                gasUsed = gasUsed + currentCallCtx.gasUsed,
+                lastCallError = EvmError.None
             )
     }
 

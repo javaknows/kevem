@@ -8,8 +8,8 @@ import org.junit.runner.RunWith
 @CucumberOptions(
     plugin = ["pretty"],
     features = ["src/test/resources/features/transaction_processor"],
-    tags = ["not @Ignore"],
-    //tags = ["@Only"],
+    //tags = ["not @Ignore"],
+    tags = ["@Only"],
     glue=["org.kevem.evm.test.transaction_processor"]
 )
 // TODO - possibly get rid of this in favour of only StatefulTransactionProcessorCucumberTest

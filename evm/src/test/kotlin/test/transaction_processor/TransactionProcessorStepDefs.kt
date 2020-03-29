@@ -46,15 +46,24 @@ class TransactionProcessorStepDefs : En {
         Given("a transaction with contents:") { dataTable: DataTable ->
             val row: List<String> = dataTable.asLists().drop(1).first()
 
-            transaction = TransactionMessage(
-                Address(row[0]),
-                if (row[1].isEmpty()) null else Address(row[1]),
-                toBigInteger(row[2]),
-                toBigInteger(row[3]),
-                toBigInteger(row[4]),
-                toCodeList(row[5]),
-                toBigInteger(row[6])
-            )
+            transaction =
+                if (row.size >= 7) TransactionMessage(
+                    Address(row[0]),
+                    if (row[1].isEmpty()) null else Address(row[1]),
+                    toBigInteger(row[2]),
+                    toBigInteger(row[3]),
+                    toBigInteger(row[4]),
+                    toCodeList(row[5]),
+                    toBigInteger(row[6])
+                ) else TransactionMessage(
+                    Address(row[0]),
+                    if (row[1].isEmpty()) null else Address(row[1]),
+                    toBigInteger(row[2]),
+                    toBigInteger(row[3]),
+                    toBigInteger(row[4]),
+                    emptyList(),
+                    toBigInteger(row[5])
+                )
         }
 
         Given("account (0x[a-zA-Z0-9]+) has balance (.*)") { a: String, b: String ->
@@ -193,6 +202,10 @@ class TransactionProcessorStepDefs : En {
             val hardFork = HardFork.valueOf(forkName)
             features = Features(features.eips + hardFork.eips())
         }
+
+        Given("transaction has data from classpath file \"(.*)\"") { file: String ->
+            transaction = transaction.copy(data = toByteList(loadFromClasspath(file)))
+        }
     }
 
     private fun toCodeList(code: String): List<Byte> =
@@ -200,5 +213,10 @@ class TransactionProcessorStepDefs : En {
             byteCodeOrDataFromNamesOrHex(code.replace("[\\[\\]]".toRegex(), ""))
         else
             toByteList(code)
+
+    private fun loadFromClasspath(path: String): String =
+        TransactionProcessorStepDefs::class.java.classLoader.getResource(path)
+            ?.readText()
+            ?: throw IllegalStateException("not found on classpath - $path")
 
 }

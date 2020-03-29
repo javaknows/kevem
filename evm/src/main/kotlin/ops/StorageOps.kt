@@ -1,5 +1,6 @@
 package org.kevem.evm.ops
 
+import org.kevem.common.Logger
 import org.kevem.evm.EIP
 import org.kevem.evm.gas.GasCost
 import org.kevem.evm.gas.Refund
@@ -9,6 +10,8 @@ import org.kevem.evm.model.ExecutionContext
 import org.kevem.evm.model.Word
 
 object StorageOps {
+    private val log: Logger = Logger.createLogger(StorageOps::class)
+
     fun sLoad(context: ExecutionContext): ExecutionContext = with(context) {
         val (word, newStack) = stack.popWord()
         val index = word.toBigInt()
@@ -29,9 +32,10 @@ object StorageOps {
         val originalValue = context.originalAccounts.storageAt(address, slot.toBigInt())
         val currentValue = accounts.storageAt(address, slot.toBigInt())
 
-        if (context.config.features.isEnabled(EIP.EIP2200) && currentCallCtx.gasRemaining <= GasCost.CallStipend.costBigInt - GasCost.SLoadEip2200.costBigInt)
+        if (context.config.features.isEnabled(EIP.EIP2200) && currentCallCtx.gasRemaining <= GasCost.CallStipend.costBigInt - GasCost.SLoadEip2200.costBigInt) {
+            log.debug("Failing due to eip2200 gas remaining")
             HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
-        else {
+        } else {
             val newAccounts = accounts.updateStorage(address, slot.toBigInt(), newValue)
             val newCtx = updateCurrentCallCtx(stack = newStack).copy(accounts = newAccounts)
 

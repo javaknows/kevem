@@ -16,7 +16,7 @@ class TransactionValidator(
 
         when {
             transaction.nonce != worldState.accounts.nonceOf(transaction.from) -> {
-                log.info("nonce is invalid - ${transaction.nonce} but expected ${worldState.accounts.nonceOf(transaction.from)}")
+                log.info("nonce of ${transaction.from} is invalid - tx has ${transaction.nonce} but expected ${worldState.accounts.nonceOf(transaction.from)}")
                 false
             }
             intrinsicGas > transaction.gasLimit -> {
