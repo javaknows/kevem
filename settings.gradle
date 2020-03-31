@@ -8,5 +8,6 @@ include 'dsl'
 include 'web'
 include 'ethereumtests'
 include 'app'
+include 'eth'
 
 rootProject.name = 'kevem'

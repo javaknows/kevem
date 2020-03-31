@@ -16,6 +16,7 @@ dependencies {
     implementation project(":evm")
     implementation project(":common")
     implementation project(":web")
+    implementation project(":eth")
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitParamsVersion}"

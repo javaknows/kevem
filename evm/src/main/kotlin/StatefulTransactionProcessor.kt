@@ -9,7 +9,7 @@ import java.math.BigInteger
 import java.time.Clock
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 
 // TODO - generate block hash properly
 /**

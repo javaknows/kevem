@@ -1,8 +1,8 @@
 package org.kevem.evm.precompiled
 
 import org.kevem.evm.*
-import org.kevem.evm.model.Byte
-import org.kevem.evm.model.Byte.Companion.padRightToSize
+import org.kevem.common.Byte
+import org.kevem.common.Byte.Companion.padRightToSize
 
 import java.math.BigInteger
 

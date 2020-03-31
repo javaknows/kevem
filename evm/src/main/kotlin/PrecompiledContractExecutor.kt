@@ -3,7 +3,7 @@ package org.kevem.evm
 import org.kevem.common.KevemException
 import org.kevem.evm.crypto.*
 import org.kevem.evm.model.Address
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.ExecutionContext
 import org.kevem.evm.model.Word
 import org.kevem.evm.ops.CallArguments

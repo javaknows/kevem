@@ -1,6 +1,6 @@
 package org.kevem.evm
 
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat

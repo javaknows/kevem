@@ -4,7 +4,7 @@ import org.kevem.common.Logger
 import org.kevem.evm.gas.GasCostCalculator
 import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.ops.*
 import java.math.BigInteger
 

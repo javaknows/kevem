@@ -2,6 +2,7 @@ package org.kevem.evm.ops
 
 import org.kevem.evm.Opcode
 import org.kevem.evm.model.*
+import org.kevem.common.Byte
 
 object JumpOps {
 

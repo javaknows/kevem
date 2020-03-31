@@ -3,7 +3,7 @@ package org.kevem.rpc
 import org.kevem.evm.StatefulTransactionProcessor
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.model.*
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.toByteList
 import java.math.BigInteger
 import java.time.Clock

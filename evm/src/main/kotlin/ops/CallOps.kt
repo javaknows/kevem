@@ -6,11 +6,11 @@ import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.crypto.*
 import org.kevem.evm.gas.CallGasCostCalc
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.lang.*
 import org.kevem.evm.model.*
-import org.kevem.evm.model.Byte.Companion.trimAndPadLeft
-import org.kevem.evm.model.Byte.Companion.trimAndPadRight
+import org.kevem.common.Byte.Companion.trimAndPadLeft
+import org.kevem.common.Byte.Companion.trimAndPadRight
 import org.kevem.evm.precompiled.expmod
 import java.math.BigInteger
 import org.kevem.evm.PrecompiledContractExecutor as Precompiled

@@ -1,26 +1,18 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id "com.github.johnrengelman.shadow" version "5.2.0"
-    id 'java'
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.web3j:core:${web3Version}" // TODO - remove me when possible
-    implementation project(":evm")
-    implementation project(":rpc")
+    implementation "org.web3j:core:${web3Version}"
     implementation project(":common")
-    implementation project(":web3")
-    implementation project(":eth")
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${junitParamsVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitParamsVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitParamsVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitParamsVersion}"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
     testImplementation "org.mockito:mockito-junit-jupiter:${junitMockitoVersion}"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
-    testImplementation project(":compat:generated")
-    testImplementation project(':web3').sourceSets.test.output
 }
 
 compileKotlin {
@@ -28,15 +20,4 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-shadowJar {
-    archiveBaseName = "${parent.project.name}-${project.name}"
-    archiveClassifier = 'nodep'
-
-    dependencies {
-        exclude(dependency {
-            it.moduleGroup != project.group
-        })
-    }
 }

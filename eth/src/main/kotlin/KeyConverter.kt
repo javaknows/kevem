@@ -1,4 +1,4 @@
-package org.kevem.dsl
+package org.kevem.eth
 
 import org.web3j.crypto.Credentials
 

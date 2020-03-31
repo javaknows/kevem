@@ -1,4 +1,4 @@
-package org.kevem.rpc.rlp
+package org.kevem.eth.rlp
 
 import java.lang.RuntimeException
 

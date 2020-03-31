@@ -13,7 +13,7 @@ import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.crypto.sha256
 import org.kevem.evm.gas.*
 import org.kevem.evm.model.*
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.toByteList
 import java.lang.Exception
 import java.math.BigInteger

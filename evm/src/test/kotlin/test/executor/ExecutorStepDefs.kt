@@ -3,7 +3,7 @@ package org.kevem.evm.test.executor
 import org.kevem.evm.gas.*
 import org.kevem.evm.model.*
 import org.kevem.evm.lang.*
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat

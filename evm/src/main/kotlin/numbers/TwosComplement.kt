@@ -1,6 +1,6 @@
 package org.kevem.evm.numbers
 
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.Word
 import java.math.BigInteger
 

@@ -1,7 +1,7 @@
 package org.kevem.evm
 
 import org.kevem.evm.gas.GasCost
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 
 enum class Opcode(val code: Byte, val numArgs: Int, val numReturn: Int, val numBytes: Int, val cost: GasCost) {
     STOP(0x00, 0, 0, 1, GasCost.Zero),

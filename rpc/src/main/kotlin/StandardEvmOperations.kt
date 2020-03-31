@@ -7,7 +7,7 @@ import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.crypto.keccak256
 import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.toByteList
 import org.web3j.crypto.SignedRawTransaction
 import org.web3j.crypto.TransactionDecoder

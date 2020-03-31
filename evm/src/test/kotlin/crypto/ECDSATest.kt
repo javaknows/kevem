@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.kevem.evm.bytesToString
 import org.kevem.evm.crypto.ecdsarecover
 import org.kevem.evm.toByteList
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 
 class ECDSATest {
 

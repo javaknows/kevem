@@ -1,7 +1,7 @@
 package org.kevem.evm.ops
 
 import org.kevem.evm.crypto.keccak256
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.ExecutionContext
 import org.kevem.evm.model.Word
 

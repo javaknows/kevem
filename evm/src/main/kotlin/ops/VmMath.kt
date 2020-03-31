@@ -1,6 +1,6 @@
 package org.kevem.evm.ops
 
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.Word
 import org.kevem.evm.model.Word.Companion.coerceFrom
 import org.kevem.evm.numbers.fromTwosComplement

@@ -1,4 +1,4 @@
-package org.kevem.rpc.rlp
+package org.kevem.eth.rlp
 
 /**
  * RLP decoder as per  https://github.com/ethereum/wiki/wiki/RLP

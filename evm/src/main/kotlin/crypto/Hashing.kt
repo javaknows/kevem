@@ -1,7 +1,7 @@
 package org.kevem.evm.crypto
 
 import org.bouncycastle.jcajce.provider.digest.*
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.bouncycastle.util.encoders.Hex
 import org.kevem.evm.toByteList
 import java.security.MessageDigest

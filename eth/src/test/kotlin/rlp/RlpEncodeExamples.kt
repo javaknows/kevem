@@ -1,10 +1,6 @@
-package rlp
+package org.kevem.eth.rlp
 
-import org.kevem.evm.model.Byte
-import org.kevem.evm.toByteList
-import org.kevem.evm.toStringHexPrefix
-import org.kevem.rpc.rlp.RlpList
-import org.kevem.rpc.rlp.RlpString
+import org.kevem.common.Byte
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
@@ -133,3 +129,19 @@ class RlpEncodeExamples : ArgumentsProvider {
 
 private fun argumentsStream(vararg args: Any): Stream<out Arguments> =
     Stream.of(* args.map { arguments(it) }.toTypedArray())
+
+/*
+TODO - remove when Conversions.kt is in common
+ */
+
+private fun toByteList(bytes: String?): List<Byte> =
+    if (bytes != null) {
+        val noPrefixStack = bytes.replaceFirst("0x", "")
+        val cleanStack = if (noPrefixStack.length % 2 == 0) noPrefixStack else "0$noPrefixStack"
+
+        cleanStack.chunked(2).map { Byte(it) }
+    } else emptyList()
+
+fun Int.toStringHexPrefix() = hexPrefix(toString(16))
+
+fun hexPrefix(num: String) = "0x$num"

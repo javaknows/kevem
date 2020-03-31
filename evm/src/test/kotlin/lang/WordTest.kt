@@ -1,6 +1,6 @@
 package org.kevem.evm.lang
 
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.Word
 import org.junit.jupiter.api.Test
 

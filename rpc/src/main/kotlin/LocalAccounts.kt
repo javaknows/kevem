@@ -3,7 +3,7 @@ package org.kevem.rpc
 import org.kevem.evm.locking.readLock
 import org.kevem.evm.locking.writeLock
 import org.kevem.evm.model.Address
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.toByteList
 import org.web3j.abi.datatypes.Bool
 import java.util.concurrent.locks.ReadWriteLock

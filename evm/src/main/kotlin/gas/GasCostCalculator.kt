@@ -6,8 +6,8 @@ import org.kevem.evm.Executor
 import org.kevem.evm.Opcode
 import org.kevem.evm.bytesToBigInteger
 import org.kevem.evm.model.Address
-import org.kevem.evm.model.Byte
-import org.kevem.evm.model.Byte.Companion.padRightToSize
+import org.kevem.common.Byte
+import org.kevem.common.Byte.Companion.padRightToSize
 import org.kevem.evm.model.ExecutionContext
 import org.kevem.evm.model.Features
 import org.kevem.evm.numbers.BigIntMath

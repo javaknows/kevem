@@ -1,4 +1,4 @@
-package org.kevem.rpc
+package org.kevem.eth
 
 import org.kevem.common.KevemException
 import org.web3j.crypto.Bip32ECKeyPair

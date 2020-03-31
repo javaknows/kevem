@@ -1,6 +1,6 @@
 package org.kevem.evm
 
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import java.math.BigInteger
 
 fun toBytes(num: BigInteger): List<Byte> = ("0" + num.toString(16))

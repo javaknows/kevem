@@ -6,7 +6,7 @@ import org.kevem.evm.gas.TransactionGasCalculator
 import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
 import java.math.BigInteger
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.numbers.generateAddressFromSenderAndNonce
 
 typealias ProcessResult = Pair<WorldState, TransactionResult>

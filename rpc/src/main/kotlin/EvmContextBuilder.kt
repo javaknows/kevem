@@ -10,6 +10,7 @@ import org.kevem.evm.gas.*
 import org.kevem.evm.model.*
 import java.math.BigInteger
 import java.time.Clock
+import org.kevem.common.Byte
 
 object EvmContextBuilder {
 

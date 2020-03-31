@@ -2,7 +2,7 @@ package org.kevem.evm.numbers
 
 import org.kevem.evm.crypto.keccak256
 import org.kevem.evm.model.Address
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.Word
 import org.kevem.evm.toByteList
 import org.web3j.rlp.RlpEncoder

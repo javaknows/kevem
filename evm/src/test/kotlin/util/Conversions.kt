@@ -1,6 +1,6 @@
 package org.kevem.evm.util
 
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.Opcode
 import org.kevem.evm.toByteList
 import java.math.BigInteger

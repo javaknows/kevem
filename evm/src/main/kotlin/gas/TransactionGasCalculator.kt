@@ -1,7 +1,7 @@
 package org.kevem.evm.gas
 
 import org.kevem.evm.EIP
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.ExecutionContext
 import org.kevem.evm.model.Features
 import org.kevem.evm.model.TransactionMessage

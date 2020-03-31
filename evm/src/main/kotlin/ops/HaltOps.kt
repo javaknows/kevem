@@ -1,5 +1,6 @@
 package org.kevem.evm.ops
 
+import org.kevem.common.Byte
 import org.kevem.common.Logger
 import org.kevem.evm.Executor
 import org.kevem.evm.coerceByteListToSize

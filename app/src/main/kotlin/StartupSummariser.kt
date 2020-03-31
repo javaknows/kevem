@@ -4,7 +4,7 @@ import org.kevem.evm.bytesToString
 import org.kevem.evm.model.Account
 import org.kevem.rpc.AppConfig
 import org.kevem.rpc.LocalAccount
-import org.kevem.rpc.Mnemonic
+import org.kevem.eth.Mnemonic
 import java.math.BigInteger
 
 /**
@@ -36,7 +36,7 @@ class StartupSummariser {
 
         appendSection(
             "Wallet", listOf(
-                "Mnemonic: ${commandLine.mnemonic}",
+                "Mnemonic: ${commandLine.mnemonic ?: defaultMnemonic}",
                 "Path:     ${Mnemonic.path}/{account_index}"
             )
         )

@@ -3,9 +3,9 @@ package org.kevem.evm.crypto
 import org.kevem.evm.bytesToBigInteger
 import org.kevem.evm.crypto.bn128.*
 import org.kevem.evm.lang.component6
-import org.kevem.evm.model.Byte
-import org.kevem.evm.model.Byte.Companion.padRightToMultipleOf
-import org.kevem.evm.model.Byte.Companion.padRightToSize
+import org.kevem.common.Byte
+import org.kevem.common.Byte.Companion.padRightToMultipleOf
+import org.kevem.common.Byte.Companion.padRightToSize
 import org.kevem.evm.model.Word
 
 fun bnAdd(input: List<Byte>): List<Byte> {

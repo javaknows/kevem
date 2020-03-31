@@ -44,4 +44,49 @@ class CommandLineAccountsCreatorTest {
             )
         )
     }
+
+    @Test
+    internal fun `check accounts are created for private key`() {
+        val (accounts, localAccounts) = underTest.parseAccounts(
+            CommandLineArguments(
+                accounts = listOf(
+                    "0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395",
+                    "0xc2a4b649d0516ea346b41e6524b4cc43d87f14f9eb33a63469bba75a10842147"
+                ),
+                defaultBalanceEther = BigInteger("200")
+            )
+        )
+
+        assertThat(accounts).isEqualTo(
+            listOf(
+                Account(Address("0x4e7d932c0f12cfe14295b86824b37bb1062bc29e"), BigInteger("200000000000000000000")),
+                Account(Address("0x6e69847df277bb9c3e88f170be883d4a6195f180"), BigInteger("200000000000000000000"))
+            )
+        )
+
+        assertThat(localAccounts).isEqualTo(
+            listOf(
+                LocalAccount(
+                    "0x4e7d932c0f12cfe14295b86824b37bb1062bc29e",
+                    "0x68598e3adfd9904dbefaa024153e7c05fa2e95ccfc8846d80bd7f973cbce5395",
+                    false
+                ),
+                LocalAccount(
+                    "0x6e69847df277bb9c3e88f170be883d4a6195f180",
+                    "0xc2a4b649d0516ea346b41e6524b4cc43d87f14f9eb33a63469bba75a10842147",
+                    false
+                )
+            )
+        )
+    }
+
+    @Test
+    internal fun `accounts are created for if no address or primary keys supplied`() {
+        val (accounts, localAccounts) = underTest.parseAccounts(
+            CommandLineArguments()
+        )
+
+        assertThat(accounts).hasSize(10)
+        assertThat(localAccounts).hasSize(10)
+    }
 }

@@ -22,7 +22,7 @@ class ApacheCommonsCliCommandLineParserTest {
             assertThat(commandLine.port).isEqualTo(8545)
             assertThat(commandLine.host).isEqualTo("localhost")
             assertThat(commandLine.numAccounts).isEqualTo(10)
-            assertThat(commandLine.mnemonic).isEqualTo("spell novel real kidney pride thank dust another despair consider donate festival")
+            assertThat(commandLine.mnemonic).isNull()
             assertThat(commandLine.defaultBalanceEther).isEqualTo(BigInteger("100"))
             assertThat(commandLine.gasPrice).isEqualTo(BigInteger("20000000000"))
             assertThat(commandLine.gasLimit).isEqualTo(BigInteger("1000000000000000000000000000000"))
@@ -162,6 +162,20 @@ class ApacheCommonsCliCommandLineParserTest {
     @Test
     internal fun `check hard fork is parsed`() =
         assertParsedArgumentValueMatches(arrayOf("-k", "Petersburg"), HardFork.Petersburg) { it.hardFork }
+
+    @Test
+    internal fun `check accounts are parsed`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("-a", "account1", "-a", "account2"),
+            listOf("account1", "account2")
+        ) { it.accounts }
+
+    @Test
+    internal fun `check accounts are parsed with long opt`() =
+        assertParsedArgumentValueMatches(
+            arrayOf("-account", "account1", "-account", "account2"),
+            listOf("account1", "account2")
+        ) { it.accounts }
 
     @Test
     internal fun `check help has all options`() {

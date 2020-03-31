@@ -4,6 +4,7 @@ import org.kevem.common.KevemException
 import org.kevem.evm.model.*
 import org.kevem.evm.toByteList
 import org.kevem.rpc.*
+import org.kevem.eth.*
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant

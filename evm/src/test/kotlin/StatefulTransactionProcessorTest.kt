@@ -7,7 +7,7 @@ import org.kevem.evm.StatefulTransactionProcessor
 import org.kevem.evm.TransactionProcessor
 import org.kevem.evm.gas.*
 import org.kevem.evm.model.Address
-import org.kevem.evm.model.Byte
+import org.kevem.common.Byte
 import org.kevem.evm.model.TransactionMessage
 import test.TestObjects
 import java.math.BigInteger

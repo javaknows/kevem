@@ -1,12 +1,9 @@
-package rlp
+package org.kevem.eth
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.kevem.common.KevemException
-import org.kevem.rpc.KeyPair
-import org.kevem.rpc.Mnemonic
-
 
 class MnemonicTest {
 
