@@ -1,6 +1,8 @@
 package org.kevem.evm.gas
 
+import org.kevem.common.Logger
 import org.kevem.evm.EIP
+import org.kevem.evm.Executor
 import org.kevem.evm.Opcode
 import org.kevem.evm.bytesToBigInteger
 import org.kevem.evm.model.Address
@@ -16,11 +18,14 @@ import kotlin.math.ceil
 
 class GasCostCalculator(
     private val baseGasCostCalculator: BaseGasCostCalculator,
-    private val memoryUsageCostCalculator: MemoryUsageGasCostCalculator
+    private val memoryUsageCostCalculator: MemoryUsageGasCostCalculator,
+    private val log: Logger = Logger.createLogger(GasCostCalculator::class)
 ) {
     fun calculateCost(opcode: Opcode, executionCtx: ExecutionContext): BigInteger {
         val baseCost = baseGasCostCalculator.baseCost(opcode, executionCtx)
         val memCost = memoryUsageCostCalculator.memoryUsageCost(opcode, executionCtx)
+
+        log.debug("${baseCost + memCost} gas consumed processing $opcode, ($baseCost base cost and $memCost memory cost)")
 
         return baseCost + memCost
     }
@@ -55,20 +60,16 @@ class CallGasCostCalc {
 
         val extraFee = (GasCost.Call.cost + newAccountFee + transferFee).toBigInteger()
 
-        // TODO - gas cap is in the yellow paper but not in parity or ganache - look into this maybe an EIP defines different behvaiour
-        /*
         val callerGas = executionCtx.currentCallCtx.gas
         val gasCap =
             if (callerGas > extraFee) BigIntMath.min(allButOne64th(callerGas - extraFee), gas)
             else gas
-            */
-        val gasCap = gas
 
         val callGas =
             if (value > BigInteger.ZERO) gasCap + GasCost.CallStipend.cost.toBigInteger()
             else gasCap
 
-        val callCost = gasCap + extraFee
+        val callCost = extraFee
 
         return Pair(callCost, callGas)
     }

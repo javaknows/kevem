@@ -2,7 +2,6 @@ package org.kevem.evm
 
 import org.kevem.common.Logger
 import org.kevem.evm.collections.BigIntegerIndexedList
-import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.gas.TransactionGasCalculator
 import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
@@ -46,8 +45,10 @@ class TransactionProcessor(
 
         return if (execResult.lastCallError == EvmError.None) {
             finaliseSuccessfulExecution(tx, execResult, worldState, recipient, newWorldState)
-        } else
+        } else {
+            log.info("EVM error ${execResult.lastCallError}")
             consumeGasLimitAndFailResult(worldState, tx)
+        }
     }
 
     private fun rejectInvalidTx(
@@ -64,7 +65,7 @@ class TransactionProcessor(
         recipient: Address,
         newWorldState: WorldState
     ): ProcessResult {
-        val contractCreationGas = txGasCalculator.contractCreationCost(tx, execResult)
+        val contractCreationGas = txGasCalculator.contractCreationGas(tx, execResult)
 
         return if (contractCreationGas + execResult.gasUsed > tx.gasLimit)
             consumeGasLimitAndFailResult(worldState, tx)

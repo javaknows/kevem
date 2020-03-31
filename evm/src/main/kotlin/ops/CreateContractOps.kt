@@ -1,14 +1,18 @@
 package org.kevem.evm.ops
 
 import org.kevem.common.KevemException
+import org.kevem.common.Logger
 import org.kevem.evm.EIP
 import org.kevem.evm.collections.BigIntegerIndexedList
+import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
 import org.kevem.evm.numbers.generateAddress
 import org.kevem.evm.numbers.generateAddressFromSenderAndNonce
 import java.math.BigInteger
 
 object CreateContractOps {
+    private val log: Logger = Logger.createLogger(CreateContractOps::class)
+
     fun create(context: ExecutionContext): ExecutionContext = with(context) {
         val (elements, newStack) = stack.popWords(3)
         val (v, p, s) = elements
@@ -59,10 +63,13 @@ object CreateContractOps {
             }
             else -> {
                 val (newContractCode, newMemory) = memory.read(p.toBigInteger(), s) // TODO - can overflow
-                if (context.config.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
+
+                if (context.config.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000) {
+                    log.debug("Failing execution with OUT_OF_GAS due to eip170 contract size breach")
                     HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
-                else {
-                    val contractAddress = context.currentCallCtx.contractAddress ?: throw KevemException("can't determine contract address")
+                } else {
+                    val contractAddress = context.currentCallCtx.contractAddress
+                        ?: throw KevemException("can't determine contract address")
                     val contract = Contract(BigIntegerIndexedList.fromBytes(newContractCode))
                     val balance = v.toBigInt()
                     val newEvmState = accounts

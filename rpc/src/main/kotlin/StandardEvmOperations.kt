@@ -1,9 +1,11 @@
 package org.kevem.rpc
 
+import org.kevem.common.Logger
 import org.kevem.evm.StatefulTransactionProcessor
 import org.kevem.evm.bytesToString
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.crypto.keccak256
+import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
 import org.kevem.evm.model.Byte
 import org.kevem.evm.toByteList
@@ -57,7 +59,11 @@ fun toAddress(a: String?) = Address(checkNotNull(a) { "address field is null" })
 
 fun isEmptyHex(to: String?): Boolean = to == null || to == "0x" || to == ""
 
-class StandardEvmOperations(private val evm: StatefulTransactionProcessor, private val evmConfig: EvmConfig) {
+class StandardEvmOperations(
+    private val evm: StatefulTransactionProcessor,
+    private val evmConfig: EvmConfig,
+    private val log: Logger = Logger.createLogger(StandardEvmOperations::class)
+) {
 
     fun getTransactionCount(address: Address, block: BlockReference): BigInteger = evm.getWorldState().let { ws ->
         return getTransactions(address, block, ws).size.toBigInteger()
@@ -85,6 +91,8 @@ class StandardEvmOperations(private val evm: StatefulTransactionProcessor, priva
             tran.nonce,
             hash
         )
+
+        log.debug("received raw tx with nonce ${tran.nonce} / ${tx.nonce}")
 
         return sendTransaction(tx)
     }

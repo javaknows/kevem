@@ -67,6 +67,8 @@ class StatefulTransactionProcessor(
 
         previousStates += worldState
         this.worldState = newWorldState.copy(blocks = newWorldState.blocks + newMinedBlock)
+
+        pendingTransactions = emptyList()
     }
 
     private fun processTransactions(

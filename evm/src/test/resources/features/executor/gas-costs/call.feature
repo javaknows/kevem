@@ -9,8 +9,8 @@ Feature: Gas costs for CALL type operations
     Given there is no existing account with address 0xADD7E55
     And the stack contains elements [0x1, 0xADD7E55, 0x100, 0x0, 0x0, 0x0, 0x0]
     When opcode <opcode> is executed
-    Then 34701 gas is now used by the previous call context
-    # G_call + G_newaccount + G_callvalue + gas = 700 + 25000 + 9000 + 1 = 34701
+    Then 34700 gas is now used by the previous call context
+    # G_call + G_newaccount + G_callvalue = 700 + 25000 + 9000 = 34700
 
     Examples:
       | opcode   |
@@ -21,8 +21,8 @@ Feature: Gas costs for CALL type operations
     Given an account with address 0xADD7E55 exists
     And the stack contains elements [0x1, 0xADD7E55, 0x100, 0x0, 0x0, 0x0, 0x0]
     When opcode <opcode> is executed
-    Then 9701 gas is now used by the previous call context
-    # G_call + G_callvalue + gas = 700 + 9000 + 1 = 9701
+    Then 9700 gas is now used by the previous call context
+    # G_call + G_callvalue = 700 + 9000 = 9700
 
     Examples:
       | opcode   |
@@ -32,8 +32,8 @@ Feature: Gas costs for CALL type operations
   Scenario Outline: Gas cost for <opcode> with no value
     Given the stack contains elements <stack>
     When opcode <opcode> is executed
-    Then 701 gas is now used by the previous call context
-    # G_call + gas = 700 + 1 = 701
+    Then 700 gas is now used by the previous call context
+    # G_call = 700
 
     Examples:
       | opcode       | stack                                     |

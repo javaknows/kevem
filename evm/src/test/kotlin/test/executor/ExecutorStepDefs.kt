@@ -208,7 +208,7 @@ class ExecutorStepDefs : En {
             }
         }
 
-        Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([A-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
+        Given("contract at address (0x[a-zA-Z0-9]+) has code \\[([xA-Z0-9, ]+)\\]") { address: String, byteCodeNames: String ->
             val byteCode = byteCodeOrDataFromNamesOrHex(byteCodeNames)
             val newAddress = Address(address)
             val newContract = Contract(BigIntegerIndexedList.fromBytes(byteCode))

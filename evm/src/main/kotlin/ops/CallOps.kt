@@ -1,8 +1,11 @@
 package org.kevem.evm.ops
 
+import org.kevem.common.Logger
+import org.kevem.evm.bytesToString
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.crypto.*
+import org.kevem.evm.gas.CallGasCostCalc
 import org.kevem.evm.model.Byte
 import org.kevem.evm.lang.*
 import org.kevem.evm.model.*
@@ -23,6 +26,8 @@ data class CallArguments(
 )
 
 object CallOps {
+    private val log: Logger = Logger.createLogger(CallOps::class)
+
     fun call(context: ExecutionContext): ExecutionContext = with(context) {
         val (callArguments, newStack) = popCallArgsFromStack(context.stack, withValue = true)
 
@@ -62,6 +67,9 @@ object CallOps {
                     val newEvmState2 = newEvmState
                         .updateBalance(nextCallerAddress, startBalance - value)
 
+                    // TODO - DI CallGasCostCalc class
+                    val callGas = CallGasCostCalc().calcCallCostAndCallGas(value, address, gas, context).second
+
                     val (callData, newMemory) = memory.read(inLocation, inSize)
                     val newCall = CallContext(
                         nextCallerAddress,
@@ -70,7 +78,7 @@ object CallOps {
                         value,
                         accounts.codeAt(callArguments.address),
                         context,
-                        gas,
+                        callGas,
                         outLocation,
                         outSize,
                         contractAddress = currentCallCtx.contractAddress,
@@ -100,6 +108,9 @@ object CallOps {
             with(callArguments) {
                 val code = accounts.contractAt(address)?.code ?: emptyByteList() // TODO - what if code is empty
 
+                // TODO - DI CallGasCostCalc class
+                val callGas = CallGasCostCalc().calcCallCostAndCallGas(currentCallCtx.value, address, gas, context).second
+
                 val (callData, newMemory) = memory.read(inLocation, inSize)
                 val newCall = CallContext(
                     currentCallCtx.caller,
@@ -108,7 +119,7 @@ object CallOps {
                     currentCallCtx.value,
                     code,
                     context,
-                    gas,
+                    callGas,
                     outLocation,
                     outSize,
                     contractAddress = callArguments.address,
@@ -143,7 +154,6 @@ object CallOps {
                     val message = "$nextCaller has balance of $callerBalance but attempted to send $value"
                     HaltOps.fail(context, EvmError(ErrorCode.INSUFFICIENT_FUNDS, message))
                 } else {
-
                     val (destBalance, destContract) = accounts.balanceAndContractAt(address)
                     val newEvmState = accounts
                         .updateBalance(address, destBalance + value)
@@ -153,6 +163,12 @@ object CallOps {
                         .updateBalance(nextCaller, startBalance - value)
 
                     val (callData, newMemory) = memory.read(inLocation, inSize)
+
+                    log.debug("call from $nextCaller to $address, value: $value, data size: $inSize, gas: $gas, calldata: ${bytesToString(callData)}")
+
+                    // TODO - DI CallGasCostCalc class
+                    val callGas = CallGasCostCalc().calcCallCostAndCallGas(value, address, gas, context).second
+
                     val callContractCode = destContract?.code ?: emptyByteList()
                     val newCall = CallContext(
                         nextCaller,
@@ -161,7 +177,7 @@ object CallOps {
                         value,
                         callContractCode,
                         context,
-                        gas,
+                        callGas,
                         outLocation,
                         outSize,
                         contractAddress = address,
