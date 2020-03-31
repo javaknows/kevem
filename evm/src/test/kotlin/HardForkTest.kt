@@ -97,4 +97,18 @@ class HardForkTest {
             ).sorted()
         )
     }
+
+    @Test
+    internal fun `check Byzantium hard fork can be parsed in lowercase`() {
+        val parsed = HardFork.fromStringOrNull("byzantium")
+
+        assertThat(parsed).isEqualTo(HardFork.Byzantium)
+    }
+
+    @Test
+    internal fun `check Istanbul hard fork can be parsed in mixed case`() {
+        val parsed = HardFork.fromStringOrNull("istanbul")
+
+        assertThat(parsed).isEqualTo(HardFork.Istanbul)
+    }
 }

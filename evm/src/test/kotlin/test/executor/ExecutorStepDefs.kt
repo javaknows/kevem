@@ -356,14 +356,18 @@ class ExecutorStepDefs : En {
         }
 
         Given("EIP ([0-9A-Za-z]+) is enabled") { eipName: String ->
-            updateExecutionContext {
-                it.copy(features = Features(it.features.eips + listOf( EIP.valueOf(eipName))))
+            updateExecutionContext { ctx ->
+                ctx.copy(
+                    config = ctx.config.copy(features = Features(ctx.config.features.eips + listOf(EIP.valueOf(eipName))))
+                )
             }
         }
 
         Given("EIP ([0-9A-Za-z]+) is not enabled") { eipName: String ->
-            updateExecutionContext {
-                it.copy(features = Features(it.features.eips - EIP.valueOf(eipName)))
+            updateExecutionContext { ctx ->
+                ctx.copy(
+                    config = ctx.config.copy(features = Features(ctx.config.features.eips - listOf(EIP.valueOf(eipName))))
+                )
             }
         }
 

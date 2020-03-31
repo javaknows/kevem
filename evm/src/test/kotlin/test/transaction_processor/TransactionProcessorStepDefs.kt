@@ -82,7 +82,7 @@ class TransactionProcessorStepDefs : En {
         }
 
         When("the transaction is executed") {
-            val tp = TransactionProcessor(executor, features)
+            val tp = TransactionProcessor(executor, EvmConfig(features = features))
             val (ws, tr) = tp.process(worldState, transaction, currentBlock)
 
             worldStateResult = ws
@@ -90,7 +90,7 @@ class TransactionProcessorStepDefs : En {
         }
 
         When("the transaction is mined via stateful transaction processor") {
-            val tp = TransactionProcessor(executor, features)
+            val tp = TransactionProcessor(executor, EvmConfig(features = features))
             val stp = StatefulTransactionProcessor(tp, clock, worldState)
 
             val txReceipt = stp.enqueTransaction(transaction)

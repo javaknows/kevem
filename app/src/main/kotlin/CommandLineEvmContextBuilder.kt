@@ -1,9 +1,7 @@
 package org.kevem.app
 
-import org.kevem.evm.model.Account
-import org.kevem.evm.model.Accounts
-import org.kevem.evm.model.Address
-import org.kevem.evm.model.EvmConfig
+import org.kevem.evm.EIP
+import org.kevem.evm.model.*
 import org.kevem.evm.toByteList
 import org.kevem.rpc.AppConfig
 import org.kevem.rpc.LocalAccount
@@ -72,7 +70,8 @@ class CommandLineEvmContextBuilder {
 
     private fun buildEvmConfig(commandLine: CommandLineArguments): EvmConfig =
         EvmConfig(
-            chainId = commandLine.chainId.toBigInteger()
+            chainId = commandLine.chainId.toBigInteger(),
+            features = Features(commandLine.hardFork.eips())
         )
 
     private fun buildEvmContext(

@@ -44,12 +44,12 @@ class BaseGasCostCalculator(
         } else opcode.cost.cost.toBigInteger()
 
     private fun extCodeHashCost(executionContext: ExecutionContext): BigInteger = when {
-        executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.ExtCodeHashEip1884.costBigInt
+        executionContext.config.features.isEnabled(EIP.EIP1884) -> GasCost.ExtCodeHashEip1884.costBigInt
         else -> GasCost.ExtCodeHashEip1052.costBigInt
     }
 
     private fun balanceCost(executionContext: ExecutionContext): BigInteger = when {
-        executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.BalanceEip1884.costBigInt
+        executionContext.config.features.isEnabled(EIP.EIP1884) -> GasCost.BalanceEip1884.costBigInt
         else -> GasCost.BalanceHomestead.costBigInt
     }
 
@@ -74,7 +74,7 @@ class BaseGasCostCalculator(
         val accountExists = executionContext.accounts.accountExists(address)
 
         val (selfDestructCost, newAccountCost) =
-            if (executionContext.features.isEnabled(EIP.EIP150))
+            if (executionContext.config.features.isEnabled(EIP.EIP150))
                 Pair(GasCost.SelfDestructEip150, GasCost.NewAccountEip150)
             else
                 Pair(GasCost.SelfDestructHomestead, GasCost.NewAccountHomestead)
@@ -106,7 +106,7 @@ class BaseGasCostCalculator(
         val currentValue = executionContext.accounts.storageAt(storageAddress, location.toBigInt())
         val originalValue = executionContext.originalAccounts.storageAt(storageAddress, location.toBigInt())
 
-        return if (executionContext.features.isEnabled(EIP.EIP2200)) {
+        return if (executionContext.config.features.isEnabled(EIP.EIP2200)) {
             eip2200SStoreCost(currentValue, newValue, originalValue)
         } else {
             homesteadSStoreCost(newValue, currentValue)
@@ -133,8 +133,8 @@ class BaseGasCostCalculator(
             GasCost.SReset.costBigInt
 
     private fun sLoadCost(executionContext: ExecutionContext): BigInteger = when {
-        executionContext.features.isEnabled(EIP.EIP1884) -> GasCost.SLoadEip1884.costBigInt
-        executionContext.features.isEnabled(EIP.EIP150) -> GasCost.SLoadEip150.costBigInt
+        executionContext.config.features.isEnabled(EIP.EIP1884) -> GasCost.SLoadEip1884.costBigInt
+        executionContext.config.features.isEnabled(EIP.EIP150) -> GasCost.SLoadEip150.costBigInt
         else -> GasCost.SLoadHomestead.costBigInt
     }
 
@@ -171,7 +171,7 @@ class BaseGasCostCalculator(
         val (_, exp) = elements.map { it.toBigInt() }
 
         val byteCost =
-            if (executionContext.features.isEnabled(EIP.EIP160)) GasCost.ExpByteEip160
+            if (executionContext.config.features.isEnabled(EIP.EIP160)) GasCost.ExpByteEip160
             else GasCost.ExpByteHomestead
 
         return if (exp == BigInteger.ZERO) GasCost.Exp.costBigInt

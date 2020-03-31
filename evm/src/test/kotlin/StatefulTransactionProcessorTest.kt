@@ -10,7 +10,6 @@ import org.kevem.evm.model.Address
 import org.kevem.evm.model.Byte
 import org.kevem.evm.model.TransactionMessage
 import test.TestObjects
-import java.lang.RuntimeException
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant

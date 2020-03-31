@@ -93,12 +93,12 @@ class PredefinedContractGasCostCalc {
             4 -> BigInteger("15") + BigInteger("3") * numWords
             5 -> expModGasCost(data)
             6 ->
-                if (executionCtx.features.isEnabled(EIP.EIP1108)) BigInteger("150")
+                if (executionCtx.config.features.isEnabled(EIP.EIP1108)) BigInteger("150")
                 else BigInteger("500")
             7 ->
-                if (executionCtx.features.isEnabled(EIP.EIP1108)) BigInteger("6000")
+                if (executionCtx.config.features.isEnabled(EIP.EIP1108)) BigInteger("6000")
                 else BigInteger("40000")
-            8 -> snarkvGasCost(numBytes, executionCtx.features)
+            8 -> snarkvGasCost(numBytes, executionCtx.config.features)
             9 -> blake2bfGasCost(data)
             else -> TODO()
         }

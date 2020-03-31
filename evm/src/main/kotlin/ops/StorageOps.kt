@@ -29,13 +29,13 @@ object StorageOps {
         val originalValue = context.originalAccounts.storageAt(address, slot.toBigInt())
         val currentValue = accounts.storageAt(address, slot.toBigInt())
 
-        if (context.features.isEnabled(EIP.EIP2200) && currentCallCtx.gasRemaining <= GasCost.CallStipend.costBigInt - GasCost.SLoadEip2200.costBigInt)
+        if (context.config.features.isEnabled(EIP.EIP2200) && currentCallCtx.gasRemaining <= GasCost.CallStipend.costBigInt - GasCost.SLoadEip2200.costBigInt)
             HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
         else {
             val newAccounts = accounts.updateStorage(address, slot.toBigInt(), newValue)
             val newCtx = updateCurrentCallCtx(stack = newStack).copy(accounts = newAccounts)
 
-            if (context.features.isEnabled(EIP.EIP2200) && currentValue != newValue) {
+            if (context.config.features.isEnabled(EIP.EIP2200) && currentValue != newValue) {
                 sStoreEip2200Refunds(originalValue, currentValue, newValue, newCtx)
             } else if (isSettingNonZeroToZero(currentValue, newValue))
                 newCtx.refund(currentTransaction.origin, Refund.StorageClear.wei.toBigInteger())

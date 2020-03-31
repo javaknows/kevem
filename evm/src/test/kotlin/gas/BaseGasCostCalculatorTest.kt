@@ -98,17 +98,16 @@ class BaseGasCostCalculatorTest {
             stack = stack
         )
 
-        val context = ExecutionContext(
+        return ExecutionContext(
             currentBlock = TestObjects.block2,
             currentTransaction = Transaction(Address("0x0"), BigInteger.ONE),
             callStack = listOf(callContext),
             accounts = accounts,
-            features = Features(eips),
             config = EvmConfig(
                 chainId = BigInteger.TWO,
-                coinbase = Address("0xFFEEDD")
+                coinbase = Address("0xFFEEDD"),
+                features = Features(eips)
             )
         )
-        return context
     }
 }

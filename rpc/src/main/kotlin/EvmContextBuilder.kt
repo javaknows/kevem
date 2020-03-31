@@ -5,12 +5,9 @@ import org.kevem.rpc.module.EvmContext
 import org.kevem.evm.Executor
 import org.kevem.evm.StatefulTransactionProcessor
 import org.kevem.evm.TransactionProcessor
-import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.crypto.keccak256
 import org.kevem.evm.gas.*
 import org.kevem.evm.model.*
-import org.kevem.evm.toByteList
-import org.kevem.rpc.*
 import java.math.BigInteger
 import java.time.Clock
 

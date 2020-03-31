@@ -59,7 +59,10 @@ class GeneralStateTestCaseRunnerTest {
 
         val features = Features(emptyList())
 
-        val evmConfig = EvmConfig(coinbase = Address(env.currentCoinbase))
+        val evmConfig = EvmConfig(
+            coinbase = Address(env.currentCoinbase),
+            features = features
+        )
 
         val instant = Instant.ofEpochSecond(toBigInteger(env.currentTimestamp).toLong())
 
@@ -77,7 +80,6 @@ class GeneralStateTestCaseRunnerTest {
 
         val tp = TransactionProcessor(
             executor = createExecutor(),
-            features = features,
             config = evmConfig
         )
 
@@ -154,7 +156,7 @@ class GeneralStateTestCaseRunnerTest {
             if (expectedResult.shouldnotexist == "1")
                 assertThat(wsResult.accounts.accountExists(address)).isFalse()
             //else
-                //assertThat(wsResult.accounts.accountExists(address)).isTrue()
+            //assertThat(wsResult.accounts.accountExists(address)).isTrue()
 
             expectedResult.balance?.also { expectedBalance ->
                 val balance = wsResult.accounts.balanceOf(address)

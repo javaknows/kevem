@@ -111,9 +111,9 @@ class VMTestCaseRunnerTest {
             callStack = listOf(callContext),
             accounts = accounts,
             previousBlocks = mapOf(Pair(BigInteger.ONE, Word(sha256(listOf(Byte(1)))))),
-            features = Features(HardFork.Homestead.eips()),
             config = EvmConfig(
-                coinbase = Address(env.currentCoinbase)
+                coinbase = Address(env.currentCoinbase),
+                features = Features(HardFork.Homestead.eips())
             )
         )
     }

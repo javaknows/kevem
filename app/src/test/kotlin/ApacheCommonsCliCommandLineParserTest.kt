@@ -4,11 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.fail
 import org.kevem.app.ApacheCommonsCliCommandLineParser
 import org.kevem.app.CommandLineArguments
+import org.kevem.evm.HardFork
 import java.math.BigInteger
 
 class ApacheCommonsCliCommandLineParserTest {
 
-    val underTest = ApacheCommonsCliCommandLineParser()
+    private val underTest = ApacheCommonsCliCommandLineParser()
 
     @Test
     internal fun `check default are set when no arguments`() {
@@ -25,6 +26,7 @@ class ApacheCommonsCliCommandLineParserTest {
             assertThat(commandLine.defaultBalanceEther).isEqualTo(BigInteger("100"))
             assertThat(commandLine.gasPrice).isEqualTo(BigInteger("20000000000"))
             assertThat(commandLine.gasLimit).isEqualTo(BigInteger("1000000000000000000000000000000"))
+            assertThat(commandLine.hardFork).isEqualTo(HardFork.Istanbul)
             assertThat(commandLine.networkId).isEqualTo(1)
             assertThat(commandLine.chainId).isEqualTo(0)
             assertThat(commandLine.verbose).isEqualTo(false)
@@ -154,6 +156,14 @@ class ApacheCommonsCliCommandLineParserTest {
     }
 
     @Test
+    internal fun `check long opt hard fork is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("--hardFork", "Petersburg"), HardFork.Petersburg) { it.hardFork }
+
+    @Test
+    internal fun `check hard fork is parsed`() =
+        assertParsedArgumentValueMatches(arrayOf("-k", "Petersburg"), HardFork.Petersburg) { it.hardFork }
+
+    @Test
     internal fun `check help has all options`() {
         val value = underTest.help()
 
@@ -164,6 +174,7 @@ class ApacheCommonsCliCommandLineParserTest {
             .contains("--help")
             .contains("--networkId")
             .contains("--gasLimit")
+            .contains("--hardFork")
             .contains("--mnemonic")
             .contains("--numAccounts")
             .contains("--port")

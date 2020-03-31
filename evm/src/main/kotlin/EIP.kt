@@ -10,6 +10,11 @@ enum class HardFork(val eip: EIP) {
     Petersburg(EIP.EIP1716);
 
     fun eips(): List<EIP> = eipsAcc(setOf(eip)).sorted()
+
+    companion object {
+        fun fromStringOrNull(string: String): HardFork? =
+            values().find { it.name.toLowerCase() == string.toLowerCase() }
+    }
 }
 
 enum class EIP(val description: String, val immediateDependencies: List<EIP> = emptyList()) {

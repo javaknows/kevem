@@ -59,7 +59,7 @@ object CreateContractOps {
             }
             else -> {
                 val (newContractCode, newMemory) = memory.read(p.toBigInteger(), s) // TODO - can overflow
-                if (context.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
+                if (context.config.features.isEnabled(EIP.EIP170) && newContractCode.size > 0x6000)
                     HaltOps.fail(context, EvmError(ErrorCode.OUT_OF_GAS, "Out of gas"))
                 else {
                     val contractAddress = context.currentCallCtx.contractAddress ?: throw KevemException("can't determine contract address")

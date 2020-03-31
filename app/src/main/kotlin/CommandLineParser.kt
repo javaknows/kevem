@@ -1,6 +1,7 @@
 package org.kevem.app
 
 import org.apache.commons.cli.*
+import org.kevem.evm.HardFork
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.math.BigInteger
@@ -15,6 +16,7 @@ data class CommandLineArguments(
     val defaultBalanceEther: BigInteger = BigInteger("100"),
     val gasPrice: BigInteger = BigInteger("20000000000"),
     val gasLimit: BigInteger = BigInteger("1000000000000000000000000000000"), // ganache is 6721975
+    val hardFork: HardFork = HardFork.Istanbul,
     val verbose: Boolean = false,
     val networkId: Int = 1,
     val chainId: Int = 0,
@@ -44,6 +46,7 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
         addOption(Option("e", "defaultBalanceEther", true, "balance for each generated account  (100)"))
         addOption(Option("g", "gasPrice", true, "block gas price in wei"))
         addOption(Option("l", "gasLimit", true, "block gas limit in wei"))
+        addOption(Option("k", "hardFork", true, "hard fork to use byzantium, constantinople, petersburg, istanbul"))
         addOption(Option("i", "networkId", true, "network ID (1)"))
         addOption(Option("c", "chainId", true, "chain ID (0)"))
         addOption(Option("v", "verbose", false, "print extra output including stack traces for startup errors"))
@@ -64,11 +67,12 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
                 defaultBalanceEther = bigIntValue("defaultBalanceEther", parsed, defaults.defaultBalanceEther),
                 gasPrice = bigIntValue("gasPrice", parsed, defaults.gasPrice),
                 gasLimit = bigIntValue("gasLimit", parsed, defaults.gasLimit),
+                hardFork = hardForkValue("hardFork", parsed, defaults.hardFork),
                 networkId = intValue("networkId", parsed, defaults.networkId),
                 chainId = intValue("chainId", parsed, defaults.chainId),
-                verbose = booleanValue("verbose", parsed, defaults.verbose),
-                version = booleanValue("version", parsed, defaults.version),
-                help = booleanValue("help", parsed, defaults.help)
+                verbose = booleanValue("verbose", parsed),
+                version = booleanValue("version", parsed),
+                help = booleanValue("help", parsed)
             )
 
             CommandLineParseResult(cmdLine, null)
@@ -86,8 +90,11 @@ class ApacheCommonsCliCommandLineParser : CommandLineParser {
     private fun bigIntValue(argName: String, parsedCommandLine: ApacheCommandLine, default: BigInteger) =
         parsedCommandLine.getOptionValue(argName)?.toBigInteger() ?: default
 
-    private fun booleanValue(argName: String, parsedCommandLine: ApacheCommandLine, default: Boolean) =
+    private fun booleanValue(argName: String, parsedCommandLine: ApacheCommandLine) =
         parsedCommandLine.hasOption(argName)
+
+    private fun hardForkValue(argName: String, parsedCommandLine: ApacheCommandLine, default: HardFork) =
+        parsedCommandLine.getOptionValue(argName)?.let { HardFork.fromStringOrNull(it) } ?: default
 
     override fun help(): String {
         val writer = StringWriter()

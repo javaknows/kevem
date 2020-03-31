@@ -439,7 +439,8 @@ data class Features(
 
 data class EvmConfig(
     val chainId: BigInteger = BigInteger.ZERO,
-    val coinbase: Address = Address("0x0")
+    val coinbase: Address = Address("0x0"),
+    val features: Features = Features(HardFork.Byzantium.eips())
 )
 
 data class ExecutionContext(
@@ -455,7 +456,6 @@ data class ExecutionContext(
     val refunds: Map<Address, BigInteger> = emptyMap(),
     val suicidedAccounts: List<Address> = emptyList(),
     val gasUsed: BigInteger = BigInteger.ZERO,
-    val features: Features = Features(HardFork.Byzantium.eips()),
     val config: EvmConfig = EvmConfig(),
     val originalAccounts: Accounts = Accounts()
 ) {
