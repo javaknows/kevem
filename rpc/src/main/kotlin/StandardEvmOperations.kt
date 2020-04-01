@@ -5,9 +5,9 @@ import org.kevem.evm.StatefulTransactionProcessor
 import org.kevem.evm.bytesToString
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.crypto.keccak256
-import org.kevem.evm.gas.TransactionValidator
 import org.kevem.evm.model.*
 import org.kevem.common.Byte
+import org.kevem.common.CategorisedKevemException
 import org.kevem.evm.toByteList
 import org.web3j.crypto.SignedRawTransaction
 import org.web3j.crypto.TransactionDecoder
@@ -15,16 +15,16 @@ import java.math.BigInteger
 
 sealed class BlockReference {
     companion object {
-        fun fromString(blockValue: String?) =
-            when (blockValue?.toLowerCase()) {
-                null, "latest" -> LatestBlock
-                "pending" -> PendingBlock
-                "earliest" -> EarliestBlock
-                else -> NumericBlock(
-                    toBigInteger(
-                        blockValue
-                    )
-                )
+        fun fromString(blockValue: String?): BlockReference =
+            when {
+                blockValue == null || blockValue == "latest" || blockValue == "" -> LatestBlock
+                blockValue == "pending" -> PendingBlock
+                blockValue == "earliest" -> EarliestBlock
+                !blockValue.startsWith("0x") ->
+                    throw CategorisedKevemException("Invalid block number - missing 0x prefix", -32602)
+                !blockValue.matches("^0x[0-9a-faA-F]+$".toRegex()) ->
+                    throw CategorisedKevemException("Invalid block number", -32602)
+                else -> NumericBlock(toBigInteger(blockValue))
             }
     }
 }
@@ -60,16 +60,15 @@ fun toAddress(a: String?) = Address(checkNotNull(a) { "address field is null" })
 fun isEmptyHex(to: String?): Boolean = to == null || to == "0x" || to == ""
 
 class StandardEvmOperations(
-    private val evm: StatefulTransactionProcessor,
+    private val stp: StatefulTransactionProcessor,
     private val evmConfig: EvmConfig,
     private val log: Logger = Logger.createLogger(StandardEvmOperations::class)
 ) {
 
-    fun getTransactionCount(address: Address, block: BlockReference): BigInteger = evm.getWorldState().let { ws ->
+    fun getTransactionCount(address: Address, block: BlockReference): BigInteger = stp.getWorldState().let { ws ->
         return getTransactions(address, block, ws).size.toBigInteger()
     }
 
-    // TODO - remove web3 dependency for TX decoding (RLP)
     fun sendRawTransaction(signedTxData: List<Byte>): List<Byte> {
         val tran = TransactionDecoder.decode(bytesToString(signedTxData)) as SignedRawTransaction
 
@@ -98,7 +97,7 @@ class StandardEvmOperations(
     }
 
     fun sendTransaction(tx: TransactionMessage): List<Byte> {
-        evm.process(tx)
+        stp.process(tx)
         return tx.hash
     }
 
@@ -123,29 +122,22 @@ class StandardEvmOperations(
 
     fun coinbase(): Address = evmConfig.coinbase
 
-    fun blockNumber(): BigInteger = evm.getWorldState().blocks.last().block.number
+    fun blockNumber(): BigInteger = stp.getWorldState().blocks.last().block.number
 
-    fun getBalance(address: Address, block: BlockReference?): BigInteger = evm.getWorldState().let { ws ->
-        return when (block) {
-            is LatestBlock -> ws.accounts.balanceOf(address)
-            is PendingBlock -> ws.accounts.balanceOf(address)
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
+    fun getBalance(address: Address, block: BlockReference?): BigInteger =
+        processWorldStateAtBlock(block) { ws ->
+            ws.accounts.balanceOf(address)
         }
-    }
 
     fun getStorageAt(address: Address, location: BigInteger, block: BlockReference): Word =
-        evm.getWorldState().let { ws ->
-            return when (block) {
-                is LatestBlock -> ws.accounts.storageAt(address, location)
-                is PendingBlock -> ws.accounts.storageAt(address, location)
-                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
-            }
+        processWorldStateAtBlock(block) { ws ->
+            ws.accounts.storageAt(address, location)
         }
 
     fun getBlockTransactionCountByHash(hash: List<Byte>): Int =
-        evm.getWorldState().blocks.find { it.hash == hash }?.transactions?.size ?: 0
+        stp.getWorldState().blocks.find { it.hash == hash }?.transactions?.size ?: 0
 
-    fun getBlockTransactionCountByNumber(block: BlockReference): Int = evm.getWorldState().let { ws ->
+    fun getBlockTransactionCountByNumber(block: BlockReference): Int = stp.getWorldState().let { ws ->
         return when (block) {
             is LatestBlock -> ws.blocks.last().transactions.size
             is EarliestBlock -> ws.blocks.first().transactions.size
@@ -159,31 +151,22 @@ class StandardEvmOperations(
     fun getUncleCountByBlockNumber(block: BlockReference): BigInteger = BigInteger.ZERO
 
     fun getCode(address: Address, block: BlockReference): List<Byte> =
-        evm.getWorldState().let { ws ->
-            return when (block) {
-                is LatestBlock -> ws.accounts.contractAt(address)?.code ?: emptyByteList()
-                is PendingBlock -> ws.accounts.contractAt(address)?.code ?: emptyByteList()
-                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
-            }.toList()
+        processWorldStateAtBlock(block) { ws ->
+            ws.accounts.contractAt(address)?.code?.toList() ?: emptyList()
         }
 
     fun getBlockByHash(hash: List<Byte>): MinedBlock? =
-        evm.getWorldState().blocks.find { it.hash == hash }
+        stp.getWorldState().blocks.find { it.hash == hash }
 
     fun getBlockByNumber(block: BlockReference): MinedBlock? =
-        evm.getWorldState().let { ws ->
-            return when (block) {
-                is LatestBlock -> ws.blocks.last()
-                is NumericBlock -> ws.blocks.find { it.block.number == block.number }
-                is EarliestBlock -> ws.blocks.first()
-                else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
-            }
+        processWorldStateAtBlock(block) { ws ->
+            ws.blocks.last()
         }
 
     fun getTransactionByHash(txHash: List<Byte>) = getTxAndBlockByTxHash(txHash)
 
     private fun getTxAndBlockByTxHash(txHash: List<Byte>): Pair<MinedTransaction, MinedBlock>? =
-        evm.getWorldState().let { ws ->
+        stp.getWorldState().let { ws ->
             val block = ws.blocks.find { b ->
                 b.transactions.any { it.message.hash == txHash }
             }
@@ -195,7 +178,7 @@ class StandardEvmOperations(
     fun getTransactionByBlockHashAndIndex(
         blockHash: List<Byte>,
         txIndex: BigInteger
-    ): Pair<MinedTransaction, MinedBlock>? = evm.getWorldState().let { ws ->
+    ): Pair<MinedTransaction, MinedBlock>? = stp.getWorldState().let { ws ->
         val block = ws.blocks.find { it.hash == blockHash }
 
         return getPairOfBlockAndTxByIndex(block, txIndex)
@@ -204,34 +187,28 @@ class StandardEvmOperations(
     fun getTransactionByBlockNumberAndIndex(
         block: BlockReference,
         txIndex: BigInteger
-    ): Pair<MinedTransaction, MinedBlock>? = evm.getWorldState().let { ws ->
-        return when (block) {
-            is LatestBlock -> getPairOfBlockAndTxByIndex(ws.blocks.last(), txIndex)
-            is NumericBlock -> getPairOfBlockAndTxByIndex(ws.blocks.find { it.block.number == block.number }, txIndex)
-            is EarliestBlock -> getPairOfBlockAndTxByIndex(ws.blocks.first(), txIndex)
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
-        }
+    ): Pair<MinedTransaction, MinedBlock>? = when (block) {
+        is LatestBlock -> getPairOfBlockAndTxByIndex(stp.getWorldState().blocks.last(), txIndex)
+        is NumericBlock -> getPairOfBlockAndTxByIndex(
+            stp.getWorldState().blocks.find { it.block.number == block.number }, txIndex
+        )
+        is EarliestBlock -> getPairOfBlockAndTxByIndex(stp.getWorldState().blocks.first(), txIndex)
+        is PendingBlock -> getPairOfBlockAndTxByIndex(stp.getPendingWorldState().blocks.last(), txIndex)
     }
 
-    fun getNonce(address: Address): BigInteger = evm.getWorldState().accounts.nonceOf(address)
+    fun getNonce(address: Address): BigInteger = stp.getWorldState().accounts.nonceOf(address)
 
-    fun pendingBlockGasLimit(): BigInteger = evm.getWorldState().blocks.last().block.gasLimit
+    fun pendingBlockGasLimit(): BigInteger = stp.getWorldState().blocks.last().block.gasLimit
 
-    fun estimateGas(tx: TransactionMessage, block: BlockReference): BigInteger = evm.getWorldState().let { ws ->
-        return when (block) {
-            is LatestBlock -> evm.call(tx).gasUsed
-            is PendingBlock -> evm.call(tx).gasUsed
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
+    fun estimateGas(tx: TransactionMessage, block: BlockReference): BigInteger =
+        processWorldStateAtBlock(block) { ws ->
+            stp.call(tx, ws).gasUsed
         }
-    }
 
-    fun call(tx: TransactionMessage, block: BlockReference): List<Byte> = evm.getWorldState().let { ws ->
-        return when (block) {
-            is LatestBlock -> evm.call(tx).returnData
-            is PendingBlock -> evm.call(tx).returnData
-            else -> throw RuntimeException("only latest block is supported") // TODO - support historical blocks - https://github.com/wjsrobertson/kevem/issues/18
+    fun call(tx: TransactionMessage, block: BlockReference): List<Byte> =
+        processWorldStateAtBlock(block) { ws ->
+            stp.call(tx, ws).returnData
         }
-    }
 
     fun getLogs(
         from: BlockReference? = null,
@@ -239,7 +216,7 @@ class StandardEvmOperations(
         address: List<Address>? = null,
         topics: List<Word>? = null,
         blockHash: List<Byte>? = null
-    ) = evm.getWorldState().let { ws ->
+    ) = stp.getWorldState().let { ws ->
         val fromBlock = getBlockNumber(from, ws) ?: ws.blocks.first().block.number
         val toBlock = getBlockNumber(to, ws) ?: ws.blocks.last().block.number
 
@@ -266,6 +243,22 @@ class StandardEvmOperations(
         }
     }
 
+    private fun <T> processWorldStateAtBlock(
+        block: BlockReference?,
+        op: (ws: WorldState) -> T
+    ): T {
+        return when (block) {
+            is PendingBlock -> op(stp.getPendingWorldState())
+            is EarliestBlock -> op(stp.getEarliestWorldState())
+            is NumericBlock -> {
+                val ws = stp.findWorldStateAtBlock(block.number)
+                if (ws != null) op(ws)
+                else throw CategorisedKevemException("Unknown block number", -32602)
+            }
+            else -> op(stp.getWorldState())
+        }
+    }
+
     private fun getPairOfBlockAndTxByIndex(
         block: MinedBlock?,
         txIndex: BigInteger
@@ -276,5 +269,4 @@ class StandardEvmOperations(
             if (tx == null) null
             else Pair(tx, block)
         }
-
 }

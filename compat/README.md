@@ -1,6 +1,6 @@
-# Local Development Nodes 
+# Compatability Checks
 
-Use for checking and compatibility checks with Kevem
+Use for checking and compatibility of Kevem with Ganache and Parity
 
 ## Ganache
 

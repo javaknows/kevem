@@ -50,8 +50,7 @@ class StatefulTransactionProcessor(
         this.clock = clock
     }
 
-    // TODO - should use previous world state
-    fun call(tx: TransactionMessage): TransactionResult = readLock(lock) {
+    fun call(tx: TransactionMessage, worldState: WorldState = this.worldState): TransactionResult = readLock(lock) {
         val (_, result) = transactionProcessor.process(getWorldState(), tx, worldState.blocks.last().block)
         result
     }
@@ -107,6 +106,19 @@ class StatefulTransactionProcessor(
                 (maxBxBlock == null) || maxBxBlock < number
             }
         }
+    }
+
+    fun getEarliestWorldState(): WorldState = readLock(lock) {
+        previousStates[0]
+    }
+
+    fun getPendingWorldState(): WorldState = readLock(lock) {
+        worldState.copy(blocks = worldState.blocks + createBlock())
+    }
+
+    fun findWorldStateAtBlock(blockNumber: BigInteger): WorldState? = readLock(lock) {
+        if (blockNumber == worldState.blocks.last().block.number) worldState
+        else previousStates.find { it.blocks.last().block.number == blockNumber }
     }
 
     private fun createBlock(): MinedBlock {

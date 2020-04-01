@@ -2,7 +2,7 @@
   "jsonrpc": "2.0",
   "method": "eth_getBlockByNumber",
   "params": [
-    "1",
+    "0x1",
     true
   ],
   "id": 1
