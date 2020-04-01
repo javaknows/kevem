@@ -1,7 +1,7 @@
 package org.kevem.rpc.module
 
 import org.kevem.rpc.SetChainParamsRequestDTO
-import org.kevem.rpc.toBigInteger
+import org.kevem.common.conversions.toBigInteger
 
 class TestSetChainParamsRequest(jsonrpc: String, method: String, id: Long) :
     RpcRequest<List<SetChainParamsRequestDTO>>(jsonrpc, method, id, emptyList())

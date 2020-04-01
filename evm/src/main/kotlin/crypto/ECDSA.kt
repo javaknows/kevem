@@ -1,8 +1,8 @@
 package org.kevem.evm.crypto
 
-import org.kevem.evm.bytesToBigInteger
+import org.kevem.common.conversions.bytesToBigInteger
 import org.kevem.common.Byte
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.web3j.crypto.ECDSASignature
 import org.web3j.crypto.Keys
 import org.web3j.crypto.Sign

@@ -2,7 +2,7 @@ package org.kevem.evm.util
 
 import org.kevem.common.Byte
 import org.kevem.evm.Opcode
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import java.math.BigInteger
 
 fun toInt(number: String) = toBigInteger(number).toInt()

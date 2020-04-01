@@ -1,16 +1,17 @@
 package org.kevem.rpc
 
 import org.kevem.common.KevemException
-import org.kevem.evm.bytesToString
+import org.kevem.common.conversions.bytesToString
 import org.kevem.evm.crypto.keccak256
 import org.kevem.evm.model.*
 import org.kevem.common.Byte
-import org.kevem.evm.toByteList
-import org.kevem.evm.toStringHexPrefix
+import org.kevem.common.conversions.toByteList
+import org.kevem.common.conversions.toStringHexPrefix
 import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.Sign
 import java.math.BigInteger
 import java.time.Instant
+import org.kevem.common.conversions.*
 
 data class AppConfig(
     val chainId: Int = 0,
@@ -40,7 +41,11 @@ class StandardRPC(
 
     fun web3clientVersion(): String = config.clientVersion
 
-    fun web3sha3(data: String): String = bytesToString(keccak256(toByteList(data)))
+    fun web3sha3(data: String): String = bytesToString(
+        keccak256(
+            toByteList(data)
+        )
+    )
 
     fun netVersion(): String = config.netVersion.toString(10)
 
@@ -82,7 +87,11 @@ class StandardRPC(
     }
 
     fun ethGetBlockTransactionCountByHash(hash: String): String =
-        standardEvmOperations.getBlockTransactionCountByHash(toByteList(hash)).toStringHexPrefix()
+        standardEvmOperations.getBlockTransactionCountByHash(
+            toByteList(
+                hash
+            )
+        ).toStringHexPrefix()
 
     fun ethGetBlockTransactionCountByNumber(block: String?): String =
         standardEvmOperations.getBlockTransactionCountByNumber(BlockReference.fromString(block)).toStringHexPrefix()
@@ -181,7 +190,12 @@ class StandardRPC(
             emptyList()
         )
 
-        return bytesToString(standardEvmOperations.call(tx, BlockReference.fromString(block)))
+        return bytesToString(
+            standardEvmOperations.call(
+                tx,
+                BlockReference.fromString(block)
+            )
+        )
     }
 
     fun ethEstimateGas(transaction: SendCallParamDTO, block: String? = "latest"): String {
@@ -216,13 +230,20 @@ class StandardRPC(
     }
 
     fun ethGetTransactionByHash(hash: String): TransactionDTO? {
-        val pair = standardEvmOperations.getTransactionByHash(toByteList(hash))
+        val pair = standardEvmOperations.getTransactionByHash(
+            toByteList(
+                hash
+            )
+        )
 
         return toTransactionDTOOrNull(pair)
     }
 
     fun ethGetTransactionByBlockHashAndIndex(hash: String, index: String): TransactionDTO? {
-        val pair = standardEvmOperations.getTransactionByBlockHashAndIndex(toByteList(hash), toBigInteger(index))
+        val pair = standardEvmOperations.getTransactionByBlockHashAndIndex(
+            toByteList(
+                hash
+            ), toBigInteger(index))
 
         return toTransactionDTOOrNull(pair)
     }
@@ -463,4 +484,6 @@ class StandardRPC(
             emptyList()
         )
     }
+
+    fun toAddress(a: String?) = Address(checkNotNull(a) { "address field is null" })
 }

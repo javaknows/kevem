@@ -3,7 +3,7 @@ package org.kevem.evm.crypto
 import org.bouncycastle.jcajce.provider.digest.*
 import org.kevem.common.Byte
 import org.bouncycastle.util.encoders.Hex
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import java.security.MessageDigest
 
 fun keccak256(input: List<Byte>): List<Byte> = hash(input, Keccak.Digest256())

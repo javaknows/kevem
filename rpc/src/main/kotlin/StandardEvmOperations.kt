@@ -2,16 +2,16 @@ package org.kevem.rpc
 
 import org.kevem.common.Logger
 import org.kevem.evm.StatefulTransactionProcessor
-import org.kevem.evm.bytesToString
-import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
+import org.kevem.common.conversions.bytesToString
 import org.kevem.evm.crypto.keccak256
 import org.kevem.evm.model.*
 import org.kevem.common.Byte
 import org.kevem.common.CategorisedKevemException
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.web3j.crypto.SignedRawTransaction
 import org.web3j.crypto.TransactionDecoder
 import java.math.BigInteger
+import org.kevem.common.conversions.*
 
 sealed class BlockReference {
     companion object {
@@ -33,31 +33,6 @@ data class NumericBlock(val number: BigInteger) : BlockReference()
 object LatestBlock : BlockReference()
 object PendingBlock : BlockReference()
 object EarliestBlock : BlockReference()
-
-// TODO - move these conversion functions to common location
-
-fun toBigInteger(number: String) =
-    if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
-    else BigInteger(number)
-
-fun toBigIntegerOrNull(number: String?) =
-    if (number == null) null
-    else if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
-    else BigInteger(number)
-
-fun toBigIntegerOrZero(number: String?) = toBigIntegerOr(number, BigInteger.ZERO)
-
-fun toBigIntegerOr(number: String?, default: BigInteger) = when {
-    number == null -> default
-    number.startsWith("0x") -> BigInteger(cleanHexNumber(number), 16)
-    else -> BigInteger(number)
-}
-
-private fun cleanHexNumber(number: String) = number.replaceFirst("0x0+", "0x0").replaceFirst("0x", "")
-
-fun toAddress(a: String?) = Address(checkNotNull(a) { "address field is null" })
-
-fun isEmptyHex(to: String?): Boolean = to == null || to == "0x" || to == ""
 
 class StandardEvmOperations(
     private val stp: StatefulTransactionProcessor,

@@ -1,6 +1,6 @@
 package org.kevem.evm.crypto
 
-import org.kevem.evm.bytesToBigInteger
+import org.kevem.common.conversions.bytesToBigInteger
 import org.kevem.evm.crypto.bn128.*
 import org.kevem.evm.lang.component6
 import org.kevem.common.Byte
@@ -43,7 +43,11 @@ fun snarkV(input: List<Byte>): List<Byte> {
     val (points, fq2Points) = safeInput
         .chunked(192)
         .fold(Pair(emptyList<AltBn128Point>(), emptyList<AltBn128Fq2Point>())) { acc, bytes ->
-            val (p1X, p1Y, p2Xi, p2Xr, p2Yi, p2Yr) = bytes.chunked(32).map { bytesToBigInteger(it) }
+            val (p1X, p1Y, p2Xi, p2Xr, p2Yi, p2Yr) = bytes.chunked(32).map {
+                bytesToBigInteger(
+                    it
+                )
+            }
 
             val p1 = AltBn128Point(Fq(p1X), Fq(p1Y))
             val p2 = AltBn128Fq2Point(Fq2(p2Xr, p2Xi), Fq2(p2Yr, p2Yi))

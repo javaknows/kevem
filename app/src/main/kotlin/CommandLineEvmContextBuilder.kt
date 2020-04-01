@@ -1,7 +1,7 @@
 package org.kevem.app
 
 import org.kevem.evm.model.*
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.kevem.rpc.AppConfig
 import org.kevem.rpc.LocalAccount
 import org.kevem.rpc.LocalAccounts
@@ -54,7 +54,8 @@ class CommandLineAccountsCreator {
         return privateKeys.fold(Pair(emptyList(), emptyList())) { acc, pk ->
             val address = privateKeyToAddress(pk)
             val account = Account(Address(address), balance)
-            val localAccount = LocalAccount(Address(address), toByteList(pk), false)
+            val localAccount = LocalAccount(Address(address),
+                toByteList(pk), false)
 
             Pair(acc.first + account, acc.second + localAccount)
         }
@@ -69,7 +70,8 @@ class CommandLineAccountsCreator {
 
         return keyPairs.fold(Pair(emptyList(), emptyList())) { acc, kp ->
             val account = Account(Address(kp.address), balance)
-            val localAccount = LocalAccount(Address(kp.address), toByteList(kp.privateKey), false)
+            val localAccount = LocalAccount(Address(kp.address),
+                toByteList(kp.privateKey), false)
 
             Pair(acc.first + account, acc.second + localAccount)
         }

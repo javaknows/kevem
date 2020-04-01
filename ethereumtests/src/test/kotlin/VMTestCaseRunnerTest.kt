@@ -14,7 +14,7 @@ import org.kevem.evm.crypto.sha256
 import org.kevem.evm.gas.*
 import org.kevem.evm.model.*
 import org.kevem.common.Byte
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import java.lang.Exception
 import java.math.BigInteger
 import java.time.Instant
@@ -69,7 +69,11 @@ class VMTestCaseRunnerTest {
     }
 
     private fun assertOutDataMatches(out: String?, executed: ExecutionContext) =
-        assertThat(executed.lastReturnData).isEqualTo(BigIntegerIndexedList.fromBytes(toByteList(out)))
+        assertThat(executed.lastReturnData).isEqualTo(BigIntegerIndexedList.fromBytes(
+            toByteList(
+                out
+            )
+        ))
 
     private fun assertPostAccountsMatch(accounts: Accounts, executed: ExecutionContext) =
         accounts.list().forEach { a ->

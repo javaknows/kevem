@@ -2,11 +2,10 @@ package org.kevem.web3
 
 import org.kevem.evm.model.*
 import org.kevem.common.Byte
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.kevem.rpc.AppConfig
 import org.kevem.rpc.LocalAccount
 import org.kevem.rpc.LocalAccounts
-import org.kevem.rpc.toBigInteger
 import org.kevem.web3.test.Web3TestContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -19,6 +18,7 @@ import java.time.Instant
 import org.web3j.protocol.core.methods.request.Transaction as Web3RequestTransaction
 import org.web3j.protocol.core.methods.response.Transaction as Web3ResponseTransaction
 import org.web3j.protocol.core.methods.response.TransactionReceipt as Web3TransactionReceipt
+import org.kevem.common.conversions.*
 
 /**
  * Call supported RPC methods to make sure we get a result

@@ -7,6 +7,10 @@ import org.kevem.evm.numbers.BigIntMath
 import java.math.BigInteger
 import java.time.Instant
 import org.kevem.common.Byte
+import org.kevem.common.conversions.bytesToString
+import org.kevem.common.conversions.hexPrefix
+import org.kevem.common.conversions.stripHexPrefix
+import org.kevem.common.conversions.toBytes
 
 data class Word(val data: List<Byte>, private val numBytes: Int = 32) {
     init {

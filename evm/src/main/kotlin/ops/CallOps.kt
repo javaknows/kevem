@@ -1,17 +1,12 @@
 package org.kevem.evm.ops
 
 import org.kevem.common.Logger
-import org.kevem.evm.bytesToString
+import org.kevem.common.conversions.bytesToString
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
-import org.kevem.evm.crypto.*
 import org.kevem.evm.gas.CallGasCostCalc
-import org.kevem.common.Byte
 import org.kevem.evm.lang.*
 import org.kevem.evm.model.*
-import org.kevem.common.Byte.Companion.trimAndPadLeft
-import org.kevem.common.Byte.Companion.trimAndPadRight
-import org.kevem.evm.precompiled.expmod
 import java.math.BigInteger
 import org.kevem.evm.PrecompiledContractExecutor as Precompiled
 
@@ -164,7 +159,9 @@ object CallOps {
 
                     val (callData, newMemory) = memory.read(inLocation, inSize)
 
-                    log.debug("call from $nextCaller to $address, value: $value, data size: $inSize, gas: $gas, calldata: ${bytesToString(callData)}")
+                    log.debug("call from $nextCaller to $address, value: $value, data size: $inSize, gas: $gas, calldata: ${bytesToString(
+                        callData
+                    )}")
 
                     // TODO - DI CallGasCostCalc class
                     val callGas = CallGasCostCalc().calcCallCostAndCallGas(value, address, gas, context).second

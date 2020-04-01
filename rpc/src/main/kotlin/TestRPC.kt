@@ -4,11 +4,12 @@ import org.kevem.evm.StatefulTransactionProcessor
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.model.*
 import org.kevem.common.Byte
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
+import org.kevem.common.conversions.*
 
 class TestRPC(val evm: StatefulTransactionProcessor) {
 

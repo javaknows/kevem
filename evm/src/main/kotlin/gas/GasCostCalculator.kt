@@ -2,9 +2,8 @@ package org.kevem.evm.gas
 
 import org.kevem.common.Logger
 import org.kevem.evm.EIP
-import org.kevem.evm.Executor
 import org.kevem.evm.Opcode
-import org.kevem.evm.bytesToBigInteger
+import org.kevem.common.conversions.bytesToBigInteger
 import org.kevem.evm.model.Address
 import org.kevem.common.Byte
 import org.kevem.common.Byte.Companion.padRightToSize
@@ -111,7 +110,11 @@ class PredefinedContractGasCostCalc {
     }
 
     private fun expModGasCost(data: List<Byte>): BigInteger {
-        val (bSize, eSize, mSize) = padRightToSize(data, 96).chunked(32).map { bytesToBigInteger(it) }
+        val (bSize, eSize, mSize) = padRightToSize(data, 96).chunked(32).map {
+            bytesToBigInteger(
+                it
+            )
+        }
         val eSizeFactor = max(eSize, BigInteger.ONE)
         val mbSizeFactor = max(mSize, bSize)
         val mbSizeFactorSq = mbSizeFactor * mbSizeFactor

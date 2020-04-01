@@ -6,7 +6,7 @@ import org.junit.jupiter.api.assertThrows
 import org.kevem.common.KevemException
 
 import org.kevem.evm.model.Address
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.kevem.rpc.LocalAccount
 import java.math.BigInteger
 import java.time.Clock

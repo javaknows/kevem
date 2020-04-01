@@ -1,10 +1,11 @@
 package org.kevem.rpc
 
-import org.kevem.evm.bytesToString
+import org.kevem.common.conversions.bytesToString
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.TransactionEncoder
 import org.kevem.common.Byte
+import org.kevem.common.conversions.toBigInteger
 
 // TODO - remove this use of web3 when possible
 class TransactionSigner {

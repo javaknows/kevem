@@ -13,10 +13,11 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.model.*
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.kevem.rpc.*
 import java.math.BigInteger
 import java.time.Instant
+import org.kevem.common.conversions.*
 
 data class RequestAndResponse(val name: String, val request: String, val response: String)
 

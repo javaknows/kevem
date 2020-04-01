@@ -9,6 +9,8 @@ import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
 import org.kevem.evm.*
 import org.kevem.evm.collections.BigIntegerIndexedList
+import org.kevem.common.conversions.stripHexPrefix
+import org.kevem.common.conversions.toByteList
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -204,7 +206,11 @@ class ExecutorStepDefs : En {
 
         Given("contract code is (0x[a-zA-Z0-9]+)") { byteCode: String ->
             updateLastCallContext { callContext ->
-                callContext.copy(code = BigIntegerIndexedList.fromBytes(toByteList(byteCode)))
+                callContext.copy(code = BigIntegerIndexedList.fromBytes(
+                    toByteList(
+                        byteCode
+                    )
+                ))
             }
         }
 
@@ -277,7 +283,9 @@ class ExecutorStepDefs : En {
                 else data
 
             updateLastCallContext {
-                val newMemory = it.memory.write(toBigInteger(location), toByteList(bytes))
+                val newMemory = it.memory.write(toBigInteger(location),
+                    toByteList(bytes)
+                )
                 it.copy(memory = newMemory)
             }
         }
@@ -287,7 +295,9 @@ class ExecutorStepDefs : En {
             val data = "0x${stripHexPrefix(byte).repeat(toBigInteger(times).toInt())}"
 
             updateLastCallContext {
-                val newMemory = it.memory.write(toBigInteger(location), toByteList(data))
+                val newMemory = it.memory.write(toBigInteger(location),
+                    toByteList(data)
+                )
                 it.copy(memory = newMemory)
             }
         }
@@ -498,7 +508,9 @@ class ExecutorStepDefs : En {
         }
 
         Then("the code at address (0x[a-zA-Z0-9]+) is (.*)") { address: String, expectedCode: String ->
-            val parsedExpectedCode = if (expectedCode == "empty") emptyList() else toByteList(expectedCode)
+            val parsedExpectedCode = if (expectedCode == "empty") emptyList() else toByteList(
+                expectedCode
+            )
 
             checkResult {
                 val code = it.accounts.codeAt(Address(address))
@@ -604,7 +616,14 @@ class ExecutorStepDefs : En {
         }
 
         Then("return data is now (empty|0x[a-zA-Z0-9]+)") { value: String ->
-            val data = BigIntegerIndexedList.fromBytes(toByteList(value.replace("empty", "0x")))
+            val data = BigIntegerIndexedList.fromBytes(
+                toByteList(
+                    value.replace(
+                        "empty",
+                        "0x"
+                    )
+                )
+            )
 
             checkResult {
                 assertThat(it.lastReturnData).isEqualTo(data)

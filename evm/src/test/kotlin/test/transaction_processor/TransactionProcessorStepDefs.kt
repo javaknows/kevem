@@ -8,7 +8,7 @@ import io.cucumber.datatable.DataTable
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
 import org.kevem.evm.collections.BigIntegerIndexedList
-import org.kevem.evm.crypto.keccak256
+import org.kevem.common.conversions.toByteList
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
@@ -204,7 +204,10 @@ class TransactionProcessorStepDefs : En {
         }
 
         Given("transaction has data from classpath file \"(.*)\"") { file: String ->
-            transaction = transaction.copy(data = toByteList(loadFromClasspath(file)))
+            transaction = transaction.copy(data = toByteList(
+                loadFromClasspath(file)
+            )
+            )
         }
     }
 

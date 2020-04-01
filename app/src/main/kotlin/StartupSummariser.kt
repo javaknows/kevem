@@ -1,8 +1,7 @@
 package org.kevem.app
 
-import org.kevem.evm.bytesToString
+import org.kevem.common.conversions.bytesToString
 import org.kevem.evm.model.Account
-import org.kevem.rpc.AppConfig
 import org.kevem.rpc.LocalAccount
 import org.kevem.eth.Mnemonic
 import java.math.BigInteger

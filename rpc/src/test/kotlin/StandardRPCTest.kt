@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test
 
 import org.assertj.core.api.Assertions.assertThat
 import org.kevem.evm.model.*
-import org.kevem.evm.toByteList
-import org.kevem.evm.toStringHexPrefix
+import org.kevem.common.conversions.toByteList
+import org.kevem.common.conversions.toStringHexPrefix
 import org.kevem.rpc.*
 import java.math.BigInteger
 import java.time.Instant
@@ -46,7 +46,10 @@ class StandardRPCTest {
 
     private fun checkCumulativeGas(txHash: String, expectedValue: Int, block: MinedBlock) {
         val standardEvmOperations = mock<StandardEvmOperations> {
-            val tx = block.transactions.find { it.message.hash == toByteList(txHash) }!!
+            val tx = block.transactions.find { it.message.hash == toByteList(
+                txHash
+            )
+            }!!
             on { getTransactionReceipt(any()) } doReturn Pair(tx, block)
         }
 

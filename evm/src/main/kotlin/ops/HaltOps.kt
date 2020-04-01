@@ -1,9 +1,7 @@
 package org.kevem.evm.ops
 
-import org.kevem.common.Byte
 import org.kevem.common.Logger
-import org.kevem.evm.Executor
-import org.kevem.evm.coerceByteListToSize
+import org.kevem.common.conversions.coerceByteListToSize
 import org.kevem.evm.collections.BigIntegerIndexedList
 import org.kevem.evm.collections.BigIntegerIndexedList.Companion.emptyByteList
 import org.kevem.evm.gas.Refund

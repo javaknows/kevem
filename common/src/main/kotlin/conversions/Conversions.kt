@@ -1,4 +1,4 @@
-package org.kevem.evm
+package org.kevem.common.conversions
 
 import org.kevem.common.Byte
 import java.math.BigInteger
@@ -17,7 +17,8 @@ fun bytesToBigInteger(bytes: List<Byte>) =
 
 fun bytesToInt(bytes: List<Byte>) = BigInteger(bytes.joinToString("") { it.toStringNoHexPrefix() }, 16).toInt()
 
-fun bytesToString(bytes: List<Byte>) = hexPrefix(bytes.joinToString("") { it.toStringNoHexPrefix() })
+fun bytesToString(bytes: List<Byte>) =
+    hexPrefix(bytes.joinToString("") { it.toStringNoHexPrefix() })
 
 fun Int.toStringHexPrefix() = hexPrefix(toString(16))
 
@@ -41,3 +42,18 @@ fun toByteList(bytes: String?): List<Byte> =
         cleanStack.chunked(2).map { Byte(it) }
     } else emptyList()
 
+fun isEmptyHex(to: String?): Boolean = to == null || to == "0x" || to == ""
+
+fun toBigInteger(number: String) =
+    if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
+    else BigInteger(number)
+
+fun toBigIntegerOr(number: String?, default: BigInteger) = when {
+    number == null -> default
+    number.startsWith("0x") -> BigInteger(cleanHexNumber(number), 16)
+    else -> BigInteger(number)
+}
+
+fun toBigIntegerOrZero(number: String?) = toBigIntegerOr(number, BigInteger.ZERO)
+
+private fun cleanHexNumber(number: String) = number.replaceFirst("0x0+", "0x0").replaceFirst("0x", "")

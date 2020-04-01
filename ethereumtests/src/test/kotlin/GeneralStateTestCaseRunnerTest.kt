@@ -13,6 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.kevem.evm.*
 import org.kevem.evm.collections.BigIntegerIndexedList
+import org.kevem.common.conversions.bytesToString
+import org.kevem.common.conversions.toByteList
 import org.kevem.evm.gas.*
 import org.kevem.evm.model.*
 import org.kevem.rpc.*

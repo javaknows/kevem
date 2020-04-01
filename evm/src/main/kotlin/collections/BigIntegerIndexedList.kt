@@ -1,7 +1,7 @@
 package org.kevem.evm.collections
 
 import org.kevem.common.Byte
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import java.math.BigInteger
 
 /**
@@ -58,7 +58,9 @@ open class BigIntegerIndexedList<T>(
 
     companion object {
         fun fromByteString(data: String): BigIntegerIndexedList<Byte> =
-            BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO, toByteList(data))
+            BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO,
+                toByteList(data)
+            )
 
         fun fromBytes(data: List<Byte>): BigIntegerIndexedList<Byte> =
             BigIntegerIndexedList(Byte.Zero).write(BigInteger.ZERO, data)

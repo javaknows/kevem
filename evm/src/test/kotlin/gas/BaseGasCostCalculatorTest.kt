@@ -10,7 +10,7 @@ import org.kevem.evm.gas.BaseGasCostCalculator
 import org.kevem.evm.gas.CallGasCostCalc
 import org.kevem.evm.gas.PredefinedContractGasCostCalc
 import org.kevem.evm.model.*
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import test.TestObjects
 import java.math.BigInteger
 
@@ -20,7 +20,11 @@ class BaseGasCostCalculatorTest {
 
     @Test
     internal fun `check exp cost for byzantium hard fork`() {
-        val expArgs = Stack(listOf(toByteList("0x1"), toByteList("0x1"), toByteList("0x1")))
+        val expArgs = Stack(listOf(
+            toByteList("0x1"),
+            toByteList("0x1"),
+            toByteList("0x1")
+        ))
         val eips = listOf(EIP.EIP160)
         val context = createExecutionContext(expArgs, eips)
 
@@ -31,7 +35,11 @@ class BaseGasCostCalculatorTest {
 
     @Test
     internal fun `check exp cost for homestead hard fork`() {
-        val expArgumants = Stack(listOf(toByteList("0x1"), toByteList("0x1"), toByteList("0x1")))
+        val expArgumants = Stack(listOf(
+            toByteList("0x1"),
+            toByteList("0x1"),
+            toByteList("0x1")
+        ))
         val eips = emptyList<EIP>()
         val context = createExecutionContext(expArgumants, eips)
 

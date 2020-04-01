@@ -4,7 +4,7 @@ import org.kevem.evm.crypto.keccak256
 import org.kevem.evm.model.Address
 import org.kevem.common.Byte
 import org.kevem.evm.model.Word
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.web3j.rlp.RlpEncoder
 import org.web3j.rlp.RlpList
 import org.web3j.rlp.RlpString

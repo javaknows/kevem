@@ -2,12 +2,13 @@ package org.kevem.dsl
 
 import org.kevem.common.KevemException
 import org.kevem.evm.model.*
-import org.kevem.evm.toByteList
+import org.kevem.common.conversions.toByteList
 import org.kevem.rpc.*
 import org.kevem.eth.*
 import java.math.BigInteger
 import java.time.Clock
 import java.time.Instant
+import org.kevem.common.conversions.*
 
 fun eth(e: Long): BigInteger = e.toBigInteger().multiply(BigInteger("1000000000000000000"))
 fun eth(e: String): BigInteger = toBigInteger(e).multiply(BigInteger("1000000000000000000"))
@@ -77,7 +78,8 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
                 if (providedAddress != null && providedAddress != address) {
                     throw KevemException("Address must match private key - provided ${providedAddress} but require ${address}. Either don't set address explicitly or provide matching value.")
                 }
-                Pair(Account(Address(address), balance), LocalAccount(Address(address), toByteList(privateKey), false))
+                Pair(Account(Address(address), balance), LocalAccount(Address(address),
+                    toByteList(privateKey), false))
             }
             providedAddress != null -> {
                 Pair(Account(Address(providedAddress), balance), null)
@@ -101,7 +103,8 @@ class EvmCreator(private val creationContext: EvmCreationContext) {
 
         keyPairs.forEach { kp ->
             val account = Account(Address(kp.address), balance)
-            val localAccount =  LocalAccount(Address(kp.address), toByteList(kp.privateKey), false)
+            val localAccount =  LocalAccount(Address(kp.address),
+                toByteList(kp.privateKey), false)
 
             creationContext.addAccount(account, localAccount)
         }

@@ -1,4 +1,4 @@
-package org.kevem.evm
+package org.kevem.common.conversions
 
 import org.kevem.common.Byte
 import org.junit.jupiter.api.Test
