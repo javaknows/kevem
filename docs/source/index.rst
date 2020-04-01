@@ -11,7 +11,7 @@ Kevem
     :alt: Kevem logo
     :align: center
 
-Kevem is an Ethereum test client for testing web3j-based Kotlin/Java/JVM code.
+Kevem is an Ethereum client for testing web3j-based Kotlin/Java/JVM code.
 
 Using Kevem you can write tests which execute `web3j <https://www.web3labs.com/web3j>`_ calls in-process rather than calling an external Ethereum node.
 This means you can have a more reliable and slicker development experience without leaving your IDE.

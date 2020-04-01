@@ -250,7 +250,7 @@ class StandardEvmOperations(
 
         blocks.flatMap { it.transactions }
             .flatMap { it.result.logs }
-            .filter { address == null || address != null } // TODO - include source address in Log and filter here
+            .filter { address == null || address != null } // TODO - include source address in Log and filter here - https://github.com/wjsrobertson/kevem/issues/32
             .filter { topics == null || it.topics.any { t -> topics.contains(t) } }
     }
 

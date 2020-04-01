@@ -5,9 +5,9 @@
     "blockHash": "0x88e96d4537bea4d9c05d12549907b32561d3bf31f45aae734cdc119f13406cb6",
     "blockNumber": "0x1",
     "contractAddress": null,
-    "cumulativeGasUsed": "0x0",
+    "cumulativeGasUsed": "0x1",
     "from": "0xc94770007dda54cf92009bff0de90c06f603a09f",
-    "gasUsed": "0x0",
+    "gasUsed": "0x1",
     "logs": [
       {
         "address": "0xc94770007dda54cf92009bff0de90c06f603a09f",

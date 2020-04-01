@@ -50,7 +50,8 @@ class StandardRPC(
 
     fun netListening(): Boolean = true
 
-    fun ethProtocolVersion(): String = "63" // Does this change after a hard-fork?
+    fun ethProtocolVersion(): String =
+        "63" // Does this change after a hard-fork? https://github.com/wjsrobertson/kevem/issues/31
 
     fun ethSyncing(): Boolean = false
 
@@ -270,27 +271,27 @@ class StandardRPC(
     }
 
     fun ethNewFilter() {
-        TODO()
+        TODO() // https://github.com/wjsrobertson/kevem/issues/9
     }
 
     fun ethNewBlockFilter() {
-        TODO()
+        TODO() // https://github.com/wjsrobertson/kevem/issues/9
     }
 
     fun ethNewPendingTransactionFilter() {
-        TODO()
+        TODO() // https://github.com/wjsrobertson/kevem/issues/9
     }
 
     fun ethUninstallFilter() {
-        TODO()
+        TODO() // https://github.com/wjsrobertson/kevem/issues/9
     }
 
     fun ethGetFilterChanges() {
-        TODO()
+        TODO() // https://github.com/wjsrobertson/kevem/issues/9
     }
 
     fun ethGetFilterLogs() {
-        TODO()
+        TODO() // https://github.com/wjsrobertson/kevem/issues/9
     }
 
     fun ethGetLogs(filter: GetLogsParamDTO): List<LogDTO> {
@@ -303,7 +304,7 @@ class StandardRPC(
         val logs = standardEvmOperations.getLogs(from, to, address, topics, blockHash)
 
         return logs.map { log ->
-            // TODO - add all the tx and block values
+            // TODO - add all the tx and block values - https://github.com/wjsrobertson/kevem/issues/32
             LogDTO(
                 false,
                 "0x0",
@@ -319,78 +320,6 @@ class StandardRPC(
 
     fun ethChainId(): String = standardEvmOperations.chainId().toStringHexPrefix()
 
-    fun ethGetWork() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun ethSubmitWork() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun ethSubmitHashrate() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun ethGetProof() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun dbpUtString() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun dbgEtString() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun dbpUtHex() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun dbgEtHex() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhPost() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhVersion() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhNewIdentity() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhHasIdentity() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhNewGroup() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhAddToGroup() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhNewFilter() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhUninstallFilter() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhGetFilterChanges() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
-    fun shhGetMessages() {
-        throw UnsupportedOperationException("Not implemented")
-    }
-
     private fun toTransactionReceiptDTO(
         pair: Pair<MinedTransaction, MinedBlock>?,
         hash: List<Byte>,
@@ -399,6 +328,7 @@ class StandardRPC(
         return if (pair != null) {
             val (tx, block) = pair
             val txIndex = getTxIndex(block, hash)
+            val cumulativeGasUsed = sumGasUsedUntilTxIndex(block, txIndex)
 
             TransactionReceiptDTO(
                 txHash,
@@ -407,14 +337,30 @@ class StandardRPC(
                 block.block.number.toStringHexPrefix(),
                 tx.message.from.toString(),
                 tx.message.to.toString(),
-                block.gasUsed.toStringHexPrefix(), // TODO - should be cumulativeGasUsed
-                block.gasUsed.toStringHexPrefix(),
+                cumulativeGasUsed.toStringHexPrefix(),
+                tx.result.gasUsed.toStringHexPrefix(),
                 tx.result.created?.toString(),
-                tx.result.logs.mapIndexed { i, l -> toLogDTO(i, l, txIndex, tx, block) }, // TODO - populate
+                tx.result.logs.mapIndexed { i, l ->
+                    toLogDTO(
+                        i,
+                        l,
+                        txIndex,
+                        tx,
+                        block
+                    )
+                }, // TODO - populate - https://github.com/wjsrobertson/kevem/issues/32
                 "0x0",
                 if (tx.result.status == ResultStatus.COMPLETE) "0x1" else "0x0"
             )
         } else null
+    }
+
+    private fun sumGasUsedUntilTxIndex(block: MinedBlock, txIndex: Int): BigInteger {
+        return block.transactions
+            .filterIndexed { i, tx -> i <= txIndex }
+            .filter { it.result.status == ResultStatus.COMPLETE }
+            .map { it.result.gasUsed }
+            .reduce { acc, n -> acc + n }
     }
 
     private fun toLogDTO(index: Int, log: Log, txIndex: Int, tx: MinedTransaction, block: MinedBlock): LogDTO =
@@ -425,7 +371,7 @@ class StandardRPC(
             bytesToString(tx.message.hash),
             bytesToString(block.hash),
             block.block.number.toStringHexPrefix(),
-            tx.message.from.toString(), // TODO - should be address where log originated, not "from"
+            tx.message.from.toString(), // TODO - should be address where log originated, not "from" - https://github.com/wjsrobertson/kevem/issues/32
             bytesToString(log.data),
             log.topics.map { it.toString() }
         )
@@ -450,7 +396,7 @@ class StandardRPC(
             tx.message.to?.toString(),
             txIndex.toStringHexPrefix(),
             tx.message.value.toStringHexPrefix(),
-            "0x0", // TODO - include V, R, S
+            "0x0", // TODO - include V, R, S - https://github.com/wjsrobertson/kevem/issues/33
             "0x0",
             "0x0"
         )
