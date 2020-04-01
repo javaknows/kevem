@@ -2,8 +2,8 @@ package org.kevem.evm
 
 import org.kevem.common.KevemException
 import org.kevem.evm.crypto.keccak256
-import org.kevem.evm.locking.readLock
-import org.kevem.evm.locking.writeLock
+import org.kevem.common.locking.readLock
+import org.kevem.common.locking.writeLock
 import org.kevem.evm.model.*
 import java.math.BigInteger
 import java.time.Clock

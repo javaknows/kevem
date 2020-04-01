@@ -5,12 +5,6 @@ import org.kevem.evm.Opcode
 import org.kevem.common.conversions.toByteList
 import java.math.BigInteger
 
-fun toInt(number: String) = toBigInteger(number).toInt()
-
-fun toBigInteger(number: String) =
-    if (number.startsWith("0x")) BigInteger(number.replaceFirst("0x", ""), 16)
-    else BigInteger(number)
-
 fun byteCodeOrDataFromNamesOrHex(byteCodeNames: String): List<Byte> =
     byteCodeNames.split("[, ]".toRegex())
         .map { it.trim() }
@@ -19,4 +13,3 @@ fun byteCodeOrDataFromNamesOrHex(byteCodeNames: String): List<Byte> =
             else listOf(Opcode.fromName(it)?.code)
         }
         .filterNotNull()
-

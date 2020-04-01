@@ -4,7 +4,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
 import org.apache.cxf.endpoint.Server
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider
-import org.kevem.evm.locking.locked
+import org.kevem.common.locking.locked
 import org.kevem.rpc.KevemRpcService
 import org.kevem.rpc.jackson.RequestObjectMapper
 import org.kevem.rpc.module.*

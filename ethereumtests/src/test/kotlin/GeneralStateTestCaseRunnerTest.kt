@@ -36,11 +36,6 @@ class GeneralStateTestCaseRunnerTest {
     private val client = HttpClients.createDefault()
     private val mapper = jacksonObjectMapper()
 
-    //@BeforeAll
-    //fun setUp() {
-
-    //}
-
     @AfterEach
     fun tearDown() {
         server.stop()

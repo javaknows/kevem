@@ -56,4 +56,12 @@ fun toBigIntegerOr(number: String?, default: BigInteger) = when {
 
 fun toBigIntegerOrZero(number: String?) = toBigIntegerOr(number, BigInteger.ZERO)
 
+fun toBigIntegerOrNull(number: String?) = when {
+    number == null -> null
+    number.startsWith("0x") -> BigInteger(cleanHexNumber(number), 16)
+    else -> BigInteger(number)
+}
+
+fun toInt(number: String) = toBigInteger(number).toInt()
+
 private fun cleanHexNumber(number: String) = number.replaceFirst("0x0+", "0x0").replaceFirst("0x", "")

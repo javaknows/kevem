@@ -18,6 +18,7 @@ import org.kevem.common.conversions.toByteList
 import java.lang.Exception
 import java.math.BigInteger
 import java.time.Instant
+import org.kevem.common.conversions.*
 
 class VMTestCaseRunnerTest {
 
@@ -158,17 +159,4 @@ class VMTestCaseRunnerTest {
 
         return Accounts(accountList)
     }
-
-    // use from general location
-    private fun toBigInteger(number: String) =
-        if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
-        else BigInteger(number)
-
-    private fun cleanHexNumber(number: String) = number.replaceFirst("0x0+", "0x0").replaceFirst("0x", "")
-
-    fun toBigIntegerOrNull(number: String?) =
-        if (number == null) null
-        else if (number.startsWith("0x")) BigInteger(cleanHexNumber(number), 16)
-        else BigInteger(number)
-
 }

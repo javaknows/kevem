@@ -15,6 +15,8 @@ import java.time.Instant
 import org.kevem.evm.util.*
 import test.TestObjects
 import java.time.ZoneId
+import org.kevem.common.conversions.*
+import org.kevem.common.loadFromClasspath
 
 /**
  * Step definitions for TransactionProcessor and StatefulTransactionProcessor
@@ -204,9 +206,10 @@ class TransactionProcessorStepDefs : En {
         }
 
         Given("transaction has data from classpath file \"(.*)\"") { file: String ->
-            transaction = transaction.copy(data = toByteList(
-                loadFromClasspath(file)
-            )
+            transaction = transaction.copy(
+                data = toByteList(
+                    loadFromClasspath(file)
+                )
             )
         }
     }
@@ -216,10 +219,4 @@ class TransactionProcessorStepDefs : En {
             byteCodeOrDataFromNamesOrHex(code.replace("[\\[\\]]".toRegex(), ""))
         else
             toByteList(code)
-
-    private fun loadFromClasspath(path: String): String =
-        TransactionProcessorStepDefs::class.java.classLoader.getResource(path)
-            ?.readText()
-            ?: throw IllegalStateException("not found on classpath - $path")
-
 }

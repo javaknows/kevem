@@ -1,9 +1,7 @@
-package org.kevem.evm.locking
+package org.kevem.common.locking
 
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantLock
-
-// TODO - move to common
 
 fun <T> writeLock(lock: ReadWriteLock, op: () -> T): T {
     lock.writeLock().lock()

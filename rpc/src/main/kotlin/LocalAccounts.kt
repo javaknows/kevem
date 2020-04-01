@@ -1,7 +1,7 @@
 package org.kevem.rpc
 
-import org.kevem.evm.locking.readLock
-import org.kevem.evm.locking.writeLock
+import org.kevem.common.locking.writeLock
+import org.kevem.common.locking.readLock
 import org.kevem.evm.model.Address
 import org.kevem.common.Byte
 import org.kevem.common.conversions.toByteList
