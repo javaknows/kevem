@@ -17,8 +17,8 @@ open class RpcRequest<T>(
 )
 
 open class RpcResponse<T>(
-    val jsonrpc: String,
-    val id: Long,
+    val jsonrpc: String?,
+    val id: Long?,
     val result: T
 ) {
     constructor(request: RpcRequest<*>, result: T) : this(request.jsonrpc, request.id, result)

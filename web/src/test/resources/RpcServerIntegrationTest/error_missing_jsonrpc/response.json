@@ -1,0 +1,8 @@
+{
+  "jsonrpc": null,
+  "id": 64,
+  "result": {
+    "code": -1,
+    "message": "jsonrpc parameter is required"
+  }
+}

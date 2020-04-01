@@ -46,9 +46,10 @@ class Server {
         val modules = listOf(WebModule, NetModule, EthModule, TestModule)
 
         return JAXRSServerFactoryBean().apply {
-            providers = listOf<Any>(JacksonJsonProvider(RequestObjectMapper().create(
+            val jacksonProvider = JacksonJsonProvider(RequestObjectMapper().create(
                 modules.fold(emptyMap()) { a, m -> a + m.supported() }
-            )))
+            ))
+            providers = listOf<Any>(jacksonProvider, ErrorProvider())
             address = "http://$host:$port/"
 
             setResourceClasses(KevemWebRpcService::class.java)

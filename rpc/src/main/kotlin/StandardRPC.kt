@@ -28,8 +28,6 @@ data class AppConfig(
 
 class RpcException(msg: String) : KevemException(msg)
 
-class CategorisedRpcException(val code: Int, msg: String) : KevemException(msg)
-
 /**
  * https://github.com/ethereum/wiki/wiki/JSON-RPC
  */

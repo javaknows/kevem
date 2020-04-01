@@ -2,7 +2,7 @@ package org.kevem.rpc
 
 data class RequestDTO<T>(val jsonrpc: String, val id: Int, val params: List<T>)
 
-data class ErrorDTO(val code: Int, val message: String)
+data class ErrorDTO(val code: Long, val message: String)
 
 sealed class ResponseDTO<T>(val jsonrpc: String, val id: Int)
 class SuccessResponseDTO<T>(jsonrpc: String, id: Int, val result: T) : ResponseDTO<T>(jsonrpc, id)

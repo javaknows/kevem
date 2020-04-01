@@ -1,0 +1,8 @@
+{
+  "jsonrpc": "2.0",
+  "method": "invalid_method",
+  "params": [
+    "0x68656c6c6f20776f726c64"
+  ],
+  "id": 64
+}
