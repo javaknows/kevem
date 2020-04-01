@@ -53,8 +53,7 @@ class StandardRPC(
 
     fun netListening(): Boolean = true
 
-    fun ethProtocolVersion(): String =
-        "63" // Does this change after a hard-fork? https://github.com/wjsrobertson/kevem/issues/31
+    fun ethProtocolVersion(): String = "63"
 
     fun ethSyncing(): Boolean = false
 
