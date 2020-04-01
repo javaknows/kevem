@@ -36,6 +36,12 @@ All command line arguments
 +------+-----------------------------+--------------------------------------------------------------------+
 | -e   | --defaultBalanceEther <arg> |  balance for each generated account (100)                          |
 +------+-----------------------------+--------------------------------------------------------------------+
+| -a   | --account <arg>             | primary key of accounts to create. This argument can be            |
+|      |                             | repeated multiple times                                            |
++------+-----------------------------+--------------------------------------------------------------------+
+| -k   | --hardFork <arg>            | hard fork to use - one of: byzantium, constantinople, petersburg,  |
+|      |                             | istanbul (istanbul)                                               |
++------+-----------------------------+--------------------------------------------------------------------+
 | -g   | --gasPrice <arg>            |  block gas price in wei                                            |
 +------+-----------------------------+--------------------------------------------------------------------+
 | -l   | --gasLimit <arg>            |  block gas limit in wei                                            |
@@ -58,7 +64,7 @@ Kevem will print out available local accounts, their private keys and balances i
 
 ::
 
-    $ java -jar ./app/build/libs/kevem-app-0.1.0.jar -p 8888 -n 2 -m "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
+    $ java -jar ./app/build/libs/kevem-app-0.1.0.jar -n 2 -m "stay jeans limb improve struggle return predict flower assume giraffe mother spring"
     Kevem
 
     Available Accounts
@@ -84,4 +90,4 @@ Kevem will print out available local accounts, their private keys and balances i
     =========
     1000000000000000000000000000000
 
-    Listening on localhost:8888
+    Listening on localhost:8545

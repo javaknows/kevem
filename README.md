@@ -5,13 +5,17 @@
 [![Build Status](https://travis-ci.org/wjsrobertson/kevem.svg?branch=master)](https://travis-ci.org/wjsrobertson/kevem)
 [![Coverage Status](https://codecov.io/gh/wjsrobertson/kevem/branch/master/graph/badge.svg)](https://codecov.io/gh/wjsrobertson/kevem)
 
-Kevem is an implementation of the [Ethereum Virtual Machine](https://www.ethereum.org/) written in Kotlin.
+Kevem is an Ethereum client for testing web3j-based Kotlin/Java/JVM code.
 
-It is a test EVM client in the style of [Ganache](https://www.trufflesuite.com/ganache) written natively for the JVM in Kotlin. 
+It is an implementation of the [Ethereum Virtual Machine](https://www.ethereum.org/) written in Kotlin.
 
-Kevem allows running web3j tests completely in-process without using a separate Ganache instance. Alternatively it can be run as a standalone RPC server.
+It allows running web3j tests completely in-process using JUnit etc. Alternatively it can be run as a standalone RPC server.
 
-Kevem supports most EVM / Ethereum JSON-RPC behaviour but a list of missing features and shortcomings can be found in [the missing feature issues list](https://github.com/wjsrobertson/kevem/labels/missing%20feature). 
+It supports most EVM / Ethereum JSON-RPC behaviour but a list of missing features and limitations can be found in [the missing feature issues list](https://github.com/wjsrobertson/kevem/labels/missing%20feature). 
+
+## Documentation
+
+The latest documentation can be found on the [Kevem readthedocs site](https://kevem.readthedocs.io/en/latest/). 
 
 ## Running in-process 
 
