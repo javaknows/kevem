@@ -1,5 +1,9 @@
 <application>
   <component name="UISettings">
+    <option name="COLOR_BLINDNESS" value="deuteranopia" />
     <option name="DISABLE_MNEMONICS" value="false" />
+    <option name="EDITOR_AA_TYPE" value="Greyscale" />
+    <option name="IDE_AA_TYPE" value="Greyscale" />
+    <option name="OVERRIDE_NONIDEA_LAF_FONTS" value="true" />
   </component>
 </application>

@@ -2,9 +2,15 @@
   <component name="FileTypeManager" version="18">
     <extensionMap>
       <mapping ext="space.kts" type="Kotlin" />
+      <mapping ext="gradle.kts" type="Kotlin" />
       <mapping ext="main.kts" type="Kotlin" />
       <removed_mapping ext="apk" approved="true" type="ARCHIVE" />
+      <removed_mapping ext="config" approved="true" type="XML" />
       <removed_mapping ext="ignore" approved="true" type="IgnoreLang file" />
+      <removed_mapping ext="md" approved="true" type="XML" />
+      <removed_mapping ext="networkbranding" approved="true" type="JSON" />
+      <removed_mapping ext="permissionset" approved="true" type="XML" />
+      <removed_mapping ext="profile" approved="true" type="XML" />
       <removed_mapping ext="psd" approved="true" type="Image" />
     </extensionMap>
   </component>
